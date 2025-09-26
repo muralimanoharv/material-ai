@@ -1,0 +1,11 @@
+[project]
+name = "material-ai-backend"
+version = "0.1.0"
+description = "Material AI Agent with FastAPI server"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "deprecated==1.2.18",
+    "fastapi[all]>=0.116.1",
+    "google-adk[database]==0.3.0",
+]
