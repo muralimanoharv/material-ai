@@ -9,8 +9,13 @@ import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import CopyAllOutlinedIcon from '@mui/icons-material/CopyAllOutlined';
-import { useContext, useState } from "react";
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import { useContext, useState, useMemo, useCallback } from "react";
 import { AppContext, ChatItemContext, HistoryContext } from "../context";
+import FileBox from "./FileBox";
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
+import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined';
+
 
 
 
@@ -19,50 +24,81 @@ function TypographyParser(varient) {
 }
 export default function ChatItem(props) {
   const theme = useTheme()
+  const { setSnack, setPrompt } = useContext(AppContext)
+  const { chat } = useContext(ChatItemContext)
   let isUser = () => props.role == 'user'
+  let originalText = props.part?.text ?? ''
+  let isLargeText = originalText.length > 116
+  let truncatedText = isUser() && isLargeText ? 
+  `${originalText.substring(0, 116)}...` : originalText
+
+  const [text, setText] = useState(truncatedText)
+  const [textExpand, setTextExpand] = useState(false)
+
   let justifyContent = isUser() ? 'flex-end' : 'flex-start'
   let alignSelf = isUser() ? 'flex-end' : 'flex-start'
   let backgroundColor = isUser() ? theme.palette.background.paper : theme.palette.background.default;
-  let content = <div className='react-markdown'>
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      components={{
-        p: TypographyParser('p'),
-        h1: TypographyParser('h1'),
-        h2: TypographyParser('h2'),
-        h3: TypographyParser('h3'),
-        h4: TypographyParser('h4'),
-        h5: TypographyParser('h5'),
-        h6: TypographyParser('h6')
-      }}
-    >
-      {props.part?.text}
-    </ReactMarkdown>
-  </div>
+
+  let content = useMemo(() => {
+    let content = <div className='react-markdown'>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          p: TypographyParser('p'),
+          h1: TypographyParser('h1'),
+          h2: TypographyParser('h2'),
+          h3: TypographyParser('h3'),
+          h4: TypographyParser('h4'),
+          h5: TypographyParser('h5'),
+          h6: TypographyParser('h6'),
+          pre: (props) => <pre style={{
+            backgroundColor: theme.palette.background.paper,
+            padding: '10px'
+          }}>{props.children}</pre>
+        }}
+      >
+        {text}
+      </ReactMarkdown>
+    </div>
+    if (chat.cancelled) {
+      content = <Typography
+        sx={{ opacity: '0.9' }}
+        fontSize={'16px'} fontWeight={400}
+        mt={1} variant="h5"><i>{props.part?.text}</i>
+      </Typography>
+    }
+    if (props.part.functionCall) {
+      isFunctionCall = true
+      content = <Box sx={{ display: 'flex', gap: '5px', justifyContent: 'center', alignItems: 'center' }}>
+        <BoltIcon />
+        {props.part.functionCall.name}
+      </Box>
+    }
+    if (props.part.functionResponse) {
+      isFunctionCall = true
+      content = <Box sx={{ display: 'flex', gap: '5px', justifyContent: 'center', alignItems: 'center' }}>
+        <CheckIcon />
+        {props.part.functionResponse.name}
+      </Box>
+    }
+    return content
+  }, [props.part])
+
   let isFunctionCall = false
 
-  if (props.part.functionCall) {
-    isFunctionCall = true
-    content = <Box sx={{ display: 'flex', gap: '5px', justifyContent: 'center', alignItems: 'center' }}>
-      <BoltIcon />
-      {props.part.functionCall.name}
-    </Box>
-  }
-  if (props.part.functionResponse) {
-    isFunctionCall = true
-    content = <Box sx={{ display: 'flex', gap: '5px', justifyContent: 'center', alignItems: 'center' }}>
-      <CheckIcon />
-      {props.part.functionResponse.name}
-    </Box>
-  }
   if (isFunctionCall) backgroundColor = theme.palette.background.default
 
+  const classes = ["chat-item-box", `chat-item-box-${props.role}`]
+
   if (props)
-    return <Box className="chat-item-box" sx={{
+    return <Box className={classes.join(' ')} sx={{
       '&:hover .actions-child': {
         opacity: '1',
         transition: 'opacity 0.2s ease'
       },
+      display: 'flex',
+      flexDirection: 'column',
+      gap: props.fileNames?.length ? '5px' : undefined
     }}>
       <Box sx={{
         display: 'flex',
@@ -71,17 +107,53 @@ export default function ChatItem(props) {
         alignSelf,
         justifyContent,
         width: '100%',
-        alignItems: 'center'
+        alignItems: 'center',
+        flexWrap: 'wrap'
+      }}>
+        {
+          props.fileNames.map(fileName => <FileBox key={fileName} file={{ name: fileName }} />)
+        }
+      </Box>
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        gap: '10px',
+        alignSelf,
+        justifyContent,
+        width: '100%',
+        alignItems: 'flex-start'
       }}
       >
-
+        {
+          isUser() && <Box className="actions-child" sx={{
+            marginLeft: '20px',
+            opacity: '0',
+            transition: 'opacity 0.5s ease'
+          }}>
+            <Tooltip title="Copy prompt">
+              <IconButton onClick={async () => {
+                await navigator.clipboard.writeText(chat.prompt);
+                setSnack('Prompt copied')
+              }}>
+                <CopyAllOutlinedIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Edit prompt">
+              <IconButton onClick={() => {
+                setPrompt(chat.prompt)
+              }}>
+                <EditOutlinedIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        }
         <Box sx={{
           backgroundColor,
           borderRadius: '24px',
           borderTopRightRadius: isUser() ? '0px' : undefined,
           borderTopLeftRadius: !isUser() ? '0px' : undefined,
           maxWidth: isUser() ? '452px' : undefined,
-          padding: '12px 16px',
+          padding: isUser() ? '12px 16px' : '2px 16px',
           display: 'flex',
           alignItems: 'flex-start',
           gap: '20px'
@@ -89,6 +161,18 @@ export default function ChatItem(props) {
         >
           {!isUser() && !isFunctionCall ? <img src="/gemini.svg" /> : null}
           {content}
+          {
+            isUser() && isLargeText && <IconButton onClick={() => {
+              if (textExpand) {
+                setText(truncatedText)
+              } else {
+                setText(originalText)
+              }
+              setTextExpand(!textExpand)
+            }}>
+              {textExpand ? <KeyboardArrowUpOutlinedIcon /> : <KeyboardArrowDownOutlinedIcon />}
+            </IconButton>
+          }
         </Box>
       </Box>
       {!isUser() && !isFunctionCall ? <ModelButtons {...props} /> : null}
@@ -110,7 +194,7 @@ function ModelButtons(props) {
       icon: <ThumbUpOffAltIcon fontSize="small" />,
       tooltip: 'Good response',
       onClick: (action) => {
-        if(chat.selectedAction) {
+        if (chat.selectedAction) {
           setChat({ ...chat, selectedAction: undefined })
           return
         }
@@ -122,7 +206,7 @@ function ModelButtons(props) {
       icon: <ThumbDownOffAltIcon fontSize="small" />,
       tooltip: 'Bad response',
       onClick: (action) => {
-        if(chat.selectedAction) {
+        if (chat.selectedAction) {
           setChat({ ...chat, selectedAction: undefined })
           return
         }
@@ -158,10 +242,10 @@ function ModelButtons(props) {
     return "default"
   }
   return <Box
-    className="actions-child"
+    className="actions-child actions-child-model"
     sx={{
       marginLeft: '20px',
-      opacity: chat.selectedAction ? '1': '0',
+      opacity: chat.selectedAction ? '1' : '0',
       transition: 'opacity 0.5s ease'
     }}>
     {actions.map((action) => {

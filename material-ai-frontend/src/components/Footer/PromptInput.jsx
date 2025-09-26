@@ -1,26 +1,28 @@
 import Box from '@mui/material/Box';
 import { useContext, useState } from 'react';
-import { AppContext } from '../context';
-import { InputBase, IconButton, Typography, useTheme, Tooltip, Icon } from '@mui/material';
+import { AppContext } from '../../context';
+import { InputBase, IconButton, Typography, useTheme, Tooltip } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import StopRoundedIcon from '@mui/icons-material/StopRounded';
-import AddIcon from '@mui/icons-material/Add';
 import FullscreenOutlinedIcon from '@mui/icons-material/FullscreenOutlined';
 import FullscreenExitOutlinedIcon from '@mui/icons-material/FullscreenExitOutlined';
+import { CHAT_SECTION_WIDTH } from '../../assets/themes';
+import ModelSelectMenu from './ModelSelectMenu';
+import FileSelectMenu from './FileSelectMenu';
+import FileBox from '../FileBox';
 
-
-import { CHAT_SECTION_WIDTH } from '../assets/themes';
-import ModelSelectButton from './ModelSelectButton';
 
 export default function PromptInput() {
 
-    const { prompt, setPrompt, send, loading } = useContext(AppContext)
+    const { prompt, setPrompt, send, loading, 
+        files, setFiles, cancelApi } = useContext(AppContext)
     const theme = useTheme()
     const [fullScreen, setFullScreen] = useState(false)
+    
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        send(prompt)
+        send(prompt, { submittedFiles: [...files] })
     }
 
     const handleKeyDown = (event) => {
@@ -29,6 +31,12 @@ export default function PromptInput() {
             handleSubmit(event);
         }
     };
+
+    const onClearFile = (name) => {
+        setFiles(prevFiles => {
+            return [...prevFiles.filter(file => file.name !== name)]
+        })
+    }
 
     let boxShadow = '0 -25px 15px -5px rgba(255, 255, 255, 0.5)'
     if (theme.palette.mode == 'dark') {
@@ -66,6 +74,10 @@ export default function PromptInput() {
                     transition: 'box-shadow 0.3s ease, border-radius .1s cubic-bezier(.2,0,0,1), height .15s cubic-bezier(.2,0,0,1)'
                 }}
             >
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                    {files.map(file => <FileBox key={file.name} file={file} showClear onClearFile={onClearFile} />)}
+                </Box>
+
 
                 <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
                     <InputBase
@@ -111,19 +123,15 @@ export default function PromptInput() {
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Box>
-                        <Tooltip title="Add files">
-                            <IconButton
-                                color="default" aria-label="directions">
-                                <AddIcon fontSize='medium' />
-                            </IconButton>
-                        </Tooltip>
+                        <FileSelectMenu setFiles={setFiles} files={files} />
                     </Box>
                     <Box sx={{ display: 'flex', gap: '5px', justifyContent: 'center', alignItems: 'center' }}>
-                        <ModelSelectButton />
+                        <ModelSelectMenu />
                         {
                             loading ? (
                                 <Tooltip title="Stop response">
                                     <IconButton
+                                        onClick={cancelApi}
                                         sx={{ backgroundColor: theme.palette.background.paper }}
                                         color="primary" aria-label="directions">
                                         <StopRoundedIcon fontSize='medium' />
@@ -133,6 +141,7 @@ export default function PromptInput() {
                             ) : (
                                 <Tooltip title="Submit">
                                     <IconButton
+                                        onClick={handleSubmit}
                                         sx={{ backgroundColor: theme.palette.background.paper }}
                                         color="default" aria-label="directions">
                                         <SendIcon fontSize='medium' />

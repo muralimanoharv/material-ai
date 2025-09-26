@@ -5,7 +5,23 @@ p {
   margin: 0;
   padding: 0;
 }
+
 body {
   margin: 0;
   padding: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.chat-item-box-model .react-markdown > * {
+  animation: fadeIn 1s;
+  animation-fill-mode: forwards; 
 }

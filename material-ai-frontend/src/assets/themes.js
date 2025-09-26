@@ -58,7 +58,7 @@ const commonThemeOptions = (isLight) => ({
                     fontSize: '22px',
                     lineHeight: '28px',
                     letterSpacing: '0.1px',
-                    color: '#575b5f;'
+                    color: '#575b5f'
                 },
                 h5: {
                     fontWeight: 500,
@@ -72,7 +72,7 @@ const commonThemeOptions = (isLight) => ({
                     fontSize: '12px',
                     lineHeight: '16px',
                     letterSpacing: '0.1px',
-                    color: '#575b5f;'
+                    color: isLight ? '#575b5f' : '#a2a9b0'
                 },
                 p: {
                     fontSize: '16px',
@@ -95,9 +95,11 @@ export const lightTheme = createTheme({
         background: {
             default: '#ffffff',
             paper: '#f0f4f9',
+            card: '#f0f4f9',
+            cardHover: '#dde3ea'
         },
         text: {
-            primary: '#1b1c1d',
+            primary: '#07080aff',
             secondary: '#1b1c1d',
         },
     },
@@ -114,6 +116,8 @@ export const darkTheme = createTheme({
         background: {
             default: '#1b1c1d',
             paper: '#333537',
+            card: '#282a2c',
+            cardHover: '#3d3f42'
         },
         text: {
             primary: '#e8eaed',

@@ -5,10 +5,10 @@ import MenuItem from '@mui/material/MenuItem';
 import { Box, Typography, useTheme } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { MODELS } from '../assets/models';
-import { AppContext } from '../context';
+import { MODELS } from '../../assets/config';
+import { AppContext } from '../../context';
 
-export default function ModelSelectButton() {
+export default function ModelSelectMenu() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const { currentModel, setCurrentModel } = React.useContext(AppContext)
     const open = Boolean(anchorEl);
@@ -24,8 +24,8 @@ export default function ModelSelectButton() {
     return (
         <div>
             <Button
-                id="basic-button"
-                aria-controls={open ? 'basic-menu' : undefined}
+                id="model-button"
+                aria-controls={open ? 'model-menu' : undefined}
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}
                 onClick={handleClick}
@@ -40,7 +40,7 @@ export default function ModelSelectButton() {
                 {currentModel}
             </Button>
             <Menu
-                id="basic-menu"
+                id="model-menu"
                 anchorEl={anchorEl}
                 anchorOrigin={{
                     vertical: verticle,
@@ -51,7 +51,7 @@ export default function ModelSelectButton() {
                 onClose={handleClose}
                 slotProps={{
                     list: {
-                        'aria-labelledby': 'basic-button',
+                        'aria-labelledby': 'model-button',
                     },
                 }}
             >

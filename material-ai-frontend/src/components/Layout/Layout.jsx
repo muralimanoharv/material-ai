@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import CssBaseline from '@mui/material/CssBaseline';
-import PromptInput from '../PromptInput';
+import PromptInput from '../Footer/PromptInput';
 import Header from './Header';
 import { ThemeToggleContext, LayoutContext } from '../../context';
 import SettingsSwipeableDrawer from './Drawers/SettingsSwipeableDrawer';
@@ -73,11 +73,18 @@ export default function Layout(props) {
 
     React.useEffect(() => {
         if (scrollableBoxRef.current) {
-            const scrollableElement = scrollableBoxRef.current;
-            scrollableElement.scrollTo({
-                top: scrollableElement.scrollHeight,
-                behavior: 'smooth'
-            });
+            // const scrollableElement = scrollableBoxRef.current;
+            // scrollableElement.scrollTo({
+            //     top: scrollableElement.scrollHeight,
+            //     behavior: 'smooth'
+            // });
+            let last_model_box = document.querySelector('.chat-item-box-user:last-of-type')
+            if(!last_model_box) return
+            last_model_box.scrollIntoView({
+                behavior: 'smooth',
+                inline: 'start',
+                block: 'start'
+            })
         }
     }, [props.history]);
 

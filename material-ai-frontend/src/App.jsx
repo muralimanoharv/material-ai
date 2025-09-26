@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { AppContext, HistoryContext } from './context.jsx'
 import { INPUT_JSON, translate } from './translator.jsx'
-import { create_session, send_message } from './api.js'
+import { create_session, send_message, fileToBase64 } from './api.js'
 import './App.css'
 import Layout from './components/Layout/Layout.jsx'
 import ChatSection from './components/ChatSection.jsx'
-import { MODELS } from './assets/models.js'
+import { MODELS } from './assets/config.js'
 import { Snackbar } from '@mui/material'
 
 
@@ -15,7 +15,8 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [snack, setSnack] = useState('')
   const [currentModel, setCurrentModel] = useState(MODELS[0].model)
-
+  const [files, setFiles] = useState([])
+  const [controller, setController] = useState(undefined)
 
   const setPrompt = (prompt) => {
     setState(prevState => {
@@ -26,24 +27,61 @@ function App() {
     })
   }
 
-  const send = async (prompt, options = { ignoreUserHistory: false }) => {
-    if (!prompt) return
-    if (!options.ignoreUserHistory) {
+  const cancelApi = async () => {
+    return new Promise((resolve) => {
+      if (!controller) {
+        resolve();
+        return;
+      }
       add_history({
-        role: 'user',
+        role: 'model',
         id: `${new Date().getTime()}`,
         prompt,
-        parts: [
-          {
-            text: prompt
-          }
-        ]
+        cancelled: true,
+        parts: [{ text: 'You stopped this response' }]
       })
-    }
+      controller.abort()
+      setTimeout(() => {
+        resolve()
+      }, 100)
+    })
 
-    setPrompt('')
+  }
+
+  const send = async (prompt, options = { ignoreUserHistory: false, submittedFiles: [] }) => {
+    if (!prompt) return
     try {
-      const messages = await send_message(appContext)({ ...state, prompt })
+      await cancelApi()
+      const controller = new AbortController();
+      setController(controller)
+      const parts = [{ text: prompt }]
+      if (options.submittedFiles?.length) {
+        let submittedFiles = options.submittedFiles;
+        const fileDataPromises = submittedFiles.map(fileToBase64);
+        const resolvedFileData = await Promise.all(fileDataPromises);
+        const fileParts = resolvedFileData.map((file) => ({
+          inline_data: {
+            mime_type: file.type,
+            data: file.data
+          }
+        }));
+        const fileNames = resolvedFileData.map((file) => file.name);
+        parts.push(...fileParts)
+        parts.push({ text: JSON.stringify({ fileNames }) })
+      }
+      if (!options.ignoreUserHistory) {
+        add_history({
+          role: 'user',
+          id: `${new Date().getTime()}`,
+          prompt,
+          parts
+        })
+      }
+
+      setPrompt('')
+      setFiles([])
+
+      const messages = await send_message(appContext)({ ...state, parts, controller })
       for (let message of messages) {
         add_history({
           ...message.content,
@@ -53,8 +91,15 @@ function App() {
         })
       }
     } catch (e) {
+      if (e.name === 'AbortError') {
+        return;
+      }
       console.error(e)
       setPrompt(prompt)
+      setFiles(options.submittedFiles)
+      setSnack('Some error has occured, Please try again later')
+    } finally {
+      setController(undefined)
     }
   }
 
@@ -76,7 +121,8 @@ function App() {
   const appContext = {
     ...state, setPrompt,
     send, loading, setLoading, currentModel,
-    setCurrentModel, setSnack
+    setCurrentModel, setSnack, files, setFiles,
+    cancelApi
   }
 
 
