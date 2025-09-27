@@ -9,7 +9,7 @@ import FullscreenExitOutlinedIcon from '@mui/icons-material/FullscreenExitOutlin
 import { CHAT_SECTION_WIDTH } from '../../assets/themes';
 import ModelSelectMenu from './ModelSelectMenu';
 import FileSelectMenu from './FileSelectMenu';
-import FileBox from '../FileBox';
+import FileBox from '../Chat/FileBox';
 
 
 export default function PromptInput() {

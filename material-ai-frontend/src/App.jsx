@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { AppContext, HistoryContext } from './context.jsx'
-import { INPUT_JSON, translate } from './translator.jsx'
+// import { INPUT_JSON, translate } from './translator.jsx'
 import { create_session, send_message, fileToBase64 } from './api.js'
 import './App.css'
 import Layout from './components/Layout/Layout.jsx'
-import ChatSection from './components/ChatSection.jsx'
+import ChatSection from './components/Chat/ChatSection.jsx'
 import { MODELS } from './assets/config.js'
 import { Snackbar } from '@mui/material'
 

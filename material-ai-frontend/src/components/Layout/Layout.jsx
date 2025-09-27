@@ -1,66 +1,14 @@
 import * as React from 'react';
-import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import MuiDrawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
 import CssBaseline from '@mui/material/CssBaseline';
-import PromptInput from '../Footer/PromptInput';
 import Header from './Header';
 import { ThemeToggleContext, LayoutContext } from '../../context';
 import SettingsSwipeableDrawer from './Drawers/SettingsSwipeableDrawer';
 import MenuButton from './Buttons/MenuButton';
 import SettingsButton from './Buttons/SettingsButton';
-
-const drawerWidth = 240;
-
-const openedMixin = (theme) => ({
-    width: drawerWidth,
-    transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-    }),
-    overflowX: 'hidden',
-});
-
-const closedMixin = (theme) => ({
-    transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-    }),
-    overflowX: 'hidden',
-    width: `calc(${theme.spacing(7)} + 1px)`,
-    [theme.breakpoints.up('sm')]: {
-        width: `calc(${theme.spacing(8)} + 1px)`,
-    },
-});
-
-
-
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-    ({ theme }) => ({
-        width: drawerWidth,
-        flexShrink: 0,
-        whiteSpace: 'nowrap',
-        boxSizing: 'border-box',
-        variants: [
-            {
-                props: ({ open }) => open,
-                style: {
-                    ...openedMixin(theme),
-                    '& .MuiDrawer-paper': openedMixin(theme),
-                },
-            },
-            {
-                props: ({ open }) => !open,
-                style: {
-                    ...closedMixin(theme),
-                    '& .MuiDrawer-paper': closedMixin(theme),
-                },
-            },
-        ],
-    }),
-);
+import MaterialDrawer from '../material/MaterialDrawer';
+import Footer from './Footer';
 
 export default function Layout(props) {
     const [open, setOpen] = React.useState(false);
@@ -79,7 +27,7 @@ export default function Layout(props) {
             //     behavior: 'smooth'
             // });
             let last_model_box = document.querySelector('.chat-item-box-user:last-of-type')
-            if(!last_model_box) return
+            if (!last_model_box) return
             last_model_box.scrollIntoView({
                 behavior: 'smooth',
                 inline: 'start',
@@ -105,21 +53,14 @@ export default function Layout(props) {
         }>
             <Box sx={{ display: 'flex', flexFlow: 1 }}>
                 <CssBaseline />
-                <Drawer variant="permanent" open={open}>
+                <MaterialDrawer variant="permanent" open={open}>
                     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-                        <Box>
-                            <List>
-                                <MenuButton />
-                            </List>
-                        </Box>
+                        <MenuButton />
                         <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'flex-end' }}>
-                            <List sx={{ flexGrow: 1 }}>
-                                <SettingsButton />
-                            </List>
+                            <SettingsButton />
                         </Box>
-
                     </Box>
-                </Drawer>
+                </MaterialDrawer>
                 <SettingsSwipeableDrawer />
                 <Box component="main" sx={{ flexGrow: 1 }}>
                     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -127,9 +68,7 @@ export default function Layout(props) {
                         <Box sx={{ flexGrow: 1, overflowY: 'auto', padding: '0 16px' }} ref={scrollableBoxRef}>
                             {props.children}
                         </Box>
-                        <Box sx={{ flexShrink: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            <PromptInput />
-                        </Box>
+                        <Footer />
                     </Box>
                 </Box>
             </Box>

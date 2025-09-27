@@ -1,12 +1,14 @@
 import React, { useContext, useEffect, useState } from "react"
 import { Box } from "@mui/material"
-import { ChatItemContext, HistoryContext } from "../context"
+import { ChatItemContext, HistoryContext } from "../../context"
 import ChatItem from "./ChatItem"
-import { CHAT_SECTION_WIDTH } from "../assets/themes"
-import { isValidJson } from "../api"
+import { CHAT_SECTION_WIDTH } from "../../assets/themes"
+import { isValidJson } from "../../api"
 
 export default function ChatSection() {
   const { history } = useContext(HistoryContext)
+
+  console.log(history)
 
   return <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center' }}>
     <Box sx={
@@ -51,6 +53,8 @@ function ChatItemSection(props) {
       } else {
         text_parts.push(part);
       }
+    } else {
+      text_parts.push(part);
     }
   }
 

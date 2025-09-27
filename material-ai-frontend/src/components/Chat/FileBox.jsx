@@ -22,7 +22,7 @@ export default function FileBox(props) {
                     opacity: '1'
                 },
                 cursor: !props.showClear ? 'pointer' : undefined,
-                backgroundColor: !props.showClear ? theme.palette.background?.card : undefined,
+                backgroundColor: theme.palette.background?.card,
                 '&:hover' : {
                     backgroundColor: !props.showClear ? theme.palette.background?.cardHover : undefined
                 }

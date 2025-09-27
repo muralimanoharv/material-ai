@@ -3,7 +3,6 @@ import * as React from 'react';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -12,6 +11,7 @@ import PaletteIcon from '@mui/icons-material/Palette';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ThemeSwipeableDrawer from './ThemeSwipeableDrawer';
 import { LayoutContext } from '../../../context';
+import MaterialList from '../../material/MaterialList';
 
 
 export default function SettingsSwipeableDrawer() {
@@ -20,6 +20,8 @@ export default function SettingsSwipeableDrawer() {
         setSettingsDrawerOpen,
         settingsDrawerOpen,
     } = React.useContext(LayoutContext)
+
+    const theme = useTheme()
 
     return <>
         <SwipeableDrawer
@@ -30,16 +32,12 @@ export default function SettingsSwipeableDrawer() {
             }}
         >
             <Box p={2} >
-                <List>
-                    <ListItem
-                        disablePadding>
+                <MaterialList>
+                    <ListItem disablePadding>
                         <ListItemButton
                             sx={{
-                                '&:hover': {
-                                    backgroundColor: 'transparent',
-                                },
+                                backgroundColor: theme.palette.background.default,
                             }}
-
                             onClick={() => setThemeDrawerOpen(true)}>
                             <ListItemIcon>
                                 <PaletteIcon />
@@ -48,9 +46,8 @@ export default function SettingsSwipeableDrawer() {
                             <ArrowRightIcon />
                         </ListItemButton>
                     </ListItem>
-                </List>
+                </MaterialList>
             </Box>
-
         </SwipeableDrawer>
         <ThemeSwipeableDrawer />
     </>

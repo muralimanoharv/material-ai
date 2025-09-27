@@ -10,14 +10,28 @@ const commonThemeOptions = (isLight) => ({
     typography: {
         fontFamily: 'Inter, "Helvetica Neue", Arial, sans-serif',
         button: {
-            fontWeight: 500,            
-            fontSize: '14px',        
-            textTransform: 'none',  
+            fontWeight: 500,
+            fontSize: '14px',
+            textTransform: 'none',
             letterSpacing: 'normal',
             lineHeight: 'normal'
         },
     },
     components: {
+        MuiMenu: {
+            styleOverrides: {
+                paper: ({ theme }) => ({
+                    backgroundColor: theme.palette.background.card,
+                }),
+            }
+        },
+        MuiPaper: {
+            styleOverrides: {
+                root: {
+                    '--Paper-overlay': 'none !important',
+                },
+            },
+        },
         MuiButton: {
             styleOverrides: {
                 root: {
@@ -45,27 +59,31 @@ const commonThemeOptions = (isLight) => ({
                     fontWeight: 500,
                     fontSize: '26px',
                     lineHeight: '28px',
-                    letterSpacing: '0.1px'
+                    letterSpacing: '0.1px',
+                    color: isLight ? '#575b5f' : '#a2a9b0'
+
                 },
                 h3: {
                     fontWeight: 500,
                     fontSize: '24px',
                     lineHeight: '28px',
-                    letterSpacing: '0.1px'
+                    letterSpacing: '0.1px',
+                    color: isLight ? '#575b5f' : '#a2a9b0'
+
                 },
                 h4: {
                     fontWeight: 500,
-                    fontSize: '22px',
-                    lineHeight: '28px',
-                    letterSpacing: '0.1px',
-                    color: '#575b5f'
+                    fontSize: '14px',
+                    lineHeight: '20px',
+                    letterSpacing: 'normal',
+                    color: isLight ? '#575b5f' : '#a2a9b0'
                 },
                 h5: {
                     fontWeight: 500,
                     fontSize: '14px',
                     lineHeight: '20px',
                     letterSpacing: 'normal',
-                    color: '#575b5f'
+                    color: isLight ? '#1f1f1f' : '#e3e3e3'
                 },
                 h6: {
                     fontWeight: 400,
@@ -78,7 +96,7 @@ const commonThemeOptions = (isLight) => ({
                     fontSize: '16px',
                     fontWeight: 400,
                     wordBreak: 'break-word',
-                    lineHeight: '28px',
+                    lineHeight: '26px',
                 }
             },
         },
@@ -120,7 +138,7 @@ export const darkTheme = createTheme({
             cardHover: '#3d3f42'
         },
         text: {
-            primary: '#e8eaed',
+            primary: '#fff',
             secondary: '#9aa0a6',
         },
     },

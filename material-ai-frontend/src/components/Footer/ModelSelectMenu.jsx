@@ -2,17 +2,16 @@ import * as React from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { MODELS } from '../../assets/config';
 import { AppContext } from '../../context';
 
 export default function ModelSelectMenu() {
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const { currentModel, setCurrentModel } = React.useContext(AppContext)
+    const { currentModel } = React.useContext(AppContext)
+    const [anchorEl, setAnchorEl] = React.useState(null); 
     const open = Boolean(anchorEl);
-    const theme = useTheme()
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -22,7 +21,7 @@ export default function ModelSelectMenu() {
     const verticle = -100 - (MODELS.length - 1) * 50
 
     return (
-        <div>
+        <React.Fragment>
             <Button
                 id="model-button"
                 aria-controls={open ? 'model-menu' : undefined}
@@ -46,7 +45,6 @@ export default function ModelSelectMenu() {
                     vertical: verticle,
                     horizontal: 'left',
                 }}
-
                 open={open}
                 onClose={handleClose}
                 slotProps={{
@@ -60,37 +58,37 @@ export default function ModelSelectMenu() {
                         sx={{
                             padding: '8px 16px'
                         }}
-                        variant='h5'>
+                        variant='h4'>
                         Choose your model
                     </Typography>
-                    {MODELS.map(({ model, tagline }) => {
-                        return <MenuItem
-                            onClick={() => {
-                                // setCurrentModel(model)
-                            }} key={model}>
-                            <Box sx={{
-                                width: '100%',
-                                display: 'flex',
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                                alignItems: 'center'
-                            }}>
-                                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                    <Typography variant='h5'><strong>{tagline}</strong></Typography>
-                                    <Typography variant='h6'>{model}</Typography>
-                                </Box>
-                                {
-                                    currentModel == model ?
-                                        <Box>
-                                            <CheckCircleIcon color='primary' />
-                                        </Box> : null
-                                }
-                            </Box>
-                        </MenuItem>
-                    })}
-
+                    {MODELS.map(({ model, tagline }) =>
+                        <ThemeItem model={model} tagline={tagline} key={model} />)}
                 </Box>
             </Menu>
-        </div>
+        </React.Fragment>
     );
+}
+
+function ThemeItem({ model, tagline }) {
+    const { currentModel } = React.useContext(AppContext)
+    return <MenuItem key={model}>
+        <Box sx={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+        }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Typography variant='h5'>{tagline}</Typography>
+                <Typography variant='h6'>{model}</Typography>
+            </Box>
+            {
+                currentModel == model ?
+                    <Box>
+                        <CheckCircleIcon color='primary' />
+                    </Box> : null
+            }
+        </Box>
+    </MenuItem>
 }

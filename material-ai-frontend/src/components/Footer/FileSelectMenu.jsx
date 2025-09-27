@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { Box, IconButton, ListItemIcon, Tooltip, Typography } from '@mui/material';
+import { Box, IconButton, ListItemIcon, Tooltip, Typography, useTheme } from '@mui/material';
 import { FILE_OPTIONS } from '../../assets/config';
 import AddIcon from '@mui/icons-material/Add';
 import { AppContext } from '../../context';
@@ -9,6 +9,7 @@ import { AppContext } from '../../context';
 export default function FileSelectMenu(props) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const fileInputRef = React.useRef(null);
+    const theme = useTheme()
     const { setSnack } = React.useContext(AppContext)
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
@@ -88,7 +89,7 @@ export default function FileSelectMenu(props) {
                             <ListItemIcon>
                                 {<Icon fontSize='small' />}
                             </ListItemIcon>
-                            <Typography variant='h5'><strong>{title}</strong></Typography>
+                            <Typography variant='h5'>{title}</Typography>
                         </MenuItem>
                     })}
 
