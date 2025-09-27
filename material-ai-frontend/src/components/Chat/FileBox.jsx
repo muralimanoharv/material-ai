@@ -11,7 +11,6 @@ export default function FileBox(props) {
     return <Tooltip title={file.name} key={file.name}>
         <Box
             sx={{
-                backgroundColor: theme.palette.background.paper,
                 minWidth: '150px',
                 width: '210px',
                 display: 'flex',

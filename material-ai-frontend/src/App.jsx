@@ -1,31 +1,31 @@
 import { useState, useEffect } from 'react'
-import { AppContext, HistoryContext } from './context.jsx'
+import { Routes, Route } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+
+import { AppContext } from './context.jsx'
 // import { INPUT_JSON, translate } from './translator.jsx'
-import { create_session, send_message, fileToBase64 } from './api.js'
-import './App.css'
+import { create_session, send_message, fileToBase64, get_sessions, fetch_session } from './api.js'
 import Layout from './components/Layout/Layout.jsx'
-import ChatSection from './components/Chat/ChatSection.jsx'
 import { MODELS } from './assets/config.js'
 import { Snackbar } from '@mui/material'
+import ChatPage from './components/pages/ChatPage.jsx';
+import './App.css'
 
 
 function App() {
-  const [state, setState] = useState(null)
+  const [session, setSession] = useState()
+  const [user, setUser] = useState('user')
+  const [prompt, setPrompt] = useState('')
   const [history, setHistory] = useState([])
+  const [sessions, setSessions] = useState([])
   const [loading, setLoading] = useState(false)
   const [snack, setSnack] = useState('')
   const [currentModel, setCurrentModel] = useState(MODELS[0].model)
   const [files, setFiles] = useState([])
   const [controller, setController] = useState(undefined)
+  const navigate = useNavigate();
 
-  const setPrompt = (prompt) => {
-    setState(prevState => {
-      return {
-        ...prevState,
-        prompt
-      }
-    })
-  }
+  const isValidSession = () => !!session
 
   const cancelApi = async () => {
     return new Promise((resolve) => {
@@ -51,6 +51,13 @@ function App() {
   const send = async (prompt, options = { ignoreUserHistory: false, submittedFiles: [] }) => {
     if (!prompt) return
     try {
+      let session_id = session;
+      let user_id = user;
+      if (!isValidSession()) {
+        session_id = (await create_session({ user_id })).session_id
+        setSession(session_id)
+        navigate(`/${session_id}`);
+      }
       await cancelApi()
       const controller = new AbortController();
       setController(controller)
@@ -81,7 +88,13 @@ function App() {
       setPrompt('')
       setFiles([])
 
-      const messages = await send_message(appContext)({ ...state, parts, controller })
+      const messages = await send_message(appContext)(
+        {
+          session_id,
+          user_id,
+          parts,
+          controller
+        })
       for (let message of messages) {
         add_history({
           ...message.content,
@@ -117,34 +130,45 @@ function App() {
     })
   }
 
-
   const appContext = {
-    ...state, setPrompt,
+    session, setSession, user, setUser,
+    prompt, setPrompt, isValidSession,
     send, loading, setLoading, currentModel,
     setCurrentModel, setSnack, files, setFiles,
-    cancelApi
+    cancelApi, history, add_history, delete_history, sessions
   }
 
 
   useEffect(() => {
-    create_session({ user_id: 'user' })
-      .then(session => {
-        setState({
-          ...session,
-          prompt: ''
-        })
+    get_sessions(appContext)({ user_id: user })
+      .then(sessions => {
+        setSessions(sessions)
       })
   }, []);
 
-  if (!state) return null;
+  useEffect(() => {
+    if(!session) return;
+    setHistory([])
+    fetch_session(appContext)({session_id: session, user_id: user})
+    .then(sessionDto => {
+      setHistory(sessionDto.events.map(event => {
+        return {
+          ...event.content,
+          id: event.id,
+          prompt: ''
+        }
+      }))
+    })
+  }, [session])
 
   return (
     <>
       <AppContext.Provider value={appContext}>
         <Layout history={history}>
-          <HistoryContext.Provider value={{ history, add_history, delete_history }}>
-            <ChatSection />
-          </HistoryContext.Provider>
+          <Routes>
+            <Route path="/:sessionId" element={<ChatPage />} />
+            <Route path="/" element={<ChatPage />} />
+          </Routes>
         </Layout>
         <Snackbar
           open={!!snack}

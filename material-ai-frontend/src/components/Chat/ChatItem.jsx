@@ -18,8 +18,8 @@ export default function ChatItem(props) {
   let isUser = () => props.role == 'user'
   let isLargeText = () => text.length > 116
   let isFunctionCall = () => props.part.functionResponse || props.part.functionCall
-  let justifyContent = isUser() ? 'flex-end' : 'flex-start'
-  let alignSelf = isUser() ? 'flex-end' : 'flex-start'
+  let justifyContent = isUser() && !isFunctionCall() ? 'flex-end' : 'flex-start'
+  let alignSelf = isUser() && !isFunctionCall() ? 'flex-end' : 'flex-start'
   let backgroundColor = isUser() && !isFunctionCall() ?
     theme.palette.background.paper : theme.palette.background.default;
 
@@ -79,7 +79,7 @@ export default function ChatItem(props) {
       alignItems: 'flex-start'
     }}
     >
-      {isUser() && <UserButtons />}
+      {isUser() && !isFunctionCall() && <UserButtons />}
       <Box sx={{
         backgroundColor,
         borderRadius: '24px',
@@ -95,7 +95,7 @@ export default function ChatItem(props) {
         {!isUser() && !isFunctionCall() ? <img src="/gemini.svg" /> : null}
         {content}
         {
-          isUser() && isLargeText() && (
+          isUser() && isLargeText() && !isFunctionCall() (
             <UserTextToggleButton
               textExpand={textExpand}
               textExpandToggle={textExpandToggle}

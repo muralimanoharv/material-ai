@@ -3,14 +3,16 @@ import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import Header from './Header';
-import { ThemeToggleContext, LayoutContext } from '../../context';
+import { ThemeToggleContext, LayoutContext, AppContext } from '../../context';
 import SettingsSwipeableDrawer from './Drawers/SettingsSwipeableDrawer';
 import MenuButton from './Buttons/MenuButton';
 import SettingsButton from './Buttons/SettingsButton';
 import MaterialDrawer from '../material/MaterialDrawer';
 import Footer from './Footer';
+import SessionHistorySection from './SessionHistorySection';
 
 export default function Layout(props) {
+    const { sessions } = React.useContext(AppContext)
     const [open, setOpen] = React.useState(false);
     const [settingsDrawerOpen, setSettingsDrawerOpen] = React.useState(false);
     const [themeDrawerOpen, setThemeDrawerOpen] = React.useState(false);
@@ -56,9 +58,10 @@ export default function Layout(props) {
                 <MaterialDrawer variant="permanent" open={open}>
                     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
                         <MenuButton />
-                        <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'flex-end' }}>
-                            <SettingsButton />
+                        <Box sx={{ flexGrow: 1, display: 'flex', overflowY: 'auto' }}>
+                            {!!sessions.length && <SessionHistorySection />}
                         </Box>
+                        <SettingsButton />
                     </Box>
                 </MaterialDrawer>
                 <SettingsSwipeableDrawer />

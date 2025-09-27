@@ -42,6 +42,46 @@ export function send_message(context) {
     }
 }
 
+export function get_sessions(context) {
+    return async ({user_id}) => {
+        try {
+            const response = await fetch(`${HOST}/apps/${APP_NAME}/users/${user_id}/sessions`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+            let body = await response.json();
+            return body
+        } finally {
+        }
+    }
+}
+
+export function get_session_history(context) {
+    return async ({startIdx, endIdx}) => {
+        return new Promise((resolve) => {
+             resolve(context.sessions)
+        })
+    }
+}
+
+export function fetch_session(context) {
+    return async ({session_id, user_id}) => {
+        try {
+            const response = await fetch(`${HOST}/apps/${APP_NAME}/users/${user_id}/sessions/${session_id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+            let body = await response.json();
+            return body
+        } finally {
+        }
+    }
+}
+
 
 
 /**

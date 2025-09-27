@@ -4,14 +4,13 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import CopyAllOutlinedIcon from '@mui/icons-material/CopyAllOutlined';
 import { useContext } from 'react';
-import { AppContext, ChatItemContext, HistoryContext } from '../../context';
+import { AppContext, ChatItemContext } from '../../context';
 import { Box, IconButton, Tooltip } from '@mui/material';
 
 
 export default function ModelButtons(props) {
 
-  const { send, setSnack } = useContext(AppContext)
-  const { delete_history } = useContext(HistoryContext);
+  const { send, setSnack, delete_history } = useContext(AppContext)
   const { chat, setChat } = useContext(ChatItemContext)
 
   const actions = [

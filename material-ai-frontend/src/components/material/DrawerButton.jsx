@@ -2,35 +2,36 @@
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import { List, Tooltip, Typography } from "@mui/material";
+import { List, ListItemText, Tooltip, Typography } from "@mui/material";
 import { useContext } from 'react';
 import { LayoutContext } from '../../context';
 
 export default function DrawerButton({ icon: Icon, title, onClick, tooltip = '' }) {
     const { open } = useContext(LayoutContext)
     return <List>
-        <Tooltip title={tooltip}>
-            <ListItem disablePadding
-                sx={
-                    { display: 'block' }
-                }>
-                <ListItemButton
-                    onClick={onClick}
-                    disableRipple
-                    sx={[
-                        {
-                            minHeight: 48,
-                            px: 2.5,
+
+        <ListItem disablePadding
+            sx={
+                { display: 'block' }
+            }>
+            <ListItemButton
+                onClick={onClick}
+                disableRipple
+                sx={[
+                    {
+                        minHeight: 48,
+                        px: 2.5,
+                    },
+                    open
+                        ? {
+                            justifyContent: 'initial',
+                        }
+                        : {
+                            justifyContent: 'center',
                         },
-                        open
-                            ? {
-                                justifyContent: 'initial',
-                            }
-                            : {
-                                justifyContent: 'center',
-                            },
-                    ]}
-                >
+                ]}
+            >
+                <Tooltip title={tooltip}>
                     <ListItemIcon
                         sx={[
                             {
@@ -48,6 +49,9 @@ export default function DrawerButton({ icon: Icon, title, onClick, tooltip = '' 
                     >
                         <Icon fontSize="small" />
                     </ListItemIcon>
+                </Tooltip>
+
+                <ListItemText>
                     <Typography
                         fontWeight={300}
                         variant="h5"
@@ -63,8 +67,10 @@ export default function DrawerButton({ icon: Icon, title, onClick, tooltip = '' 
                     >
                         {title}
                     </Typography>
-                </ListItemButton>
-            </ListItem>
-        </Tooltip>
+
+                </ListItemText>
+
+            </ListItemButton>
+        </ListItem>
     </List>
 }
