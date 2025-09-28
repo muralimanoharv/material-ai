@@ -21,6 +21,10 @@ body {
   }
 }
 
+.session-history {
+    transition: opacity 0.5s ease-in-out;
+}
+
 .chat-item-box-model .react-markdown > * {
   animation: fadeIn 1s;
   animation-fill-mode: forwards; 

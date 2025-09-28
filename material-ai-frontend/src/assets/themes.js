@@ -18,18 +18,12 @@ const commonThemeOptions = (isLight) => ({
         },
     },
     components: {
-        MuiMenu: {
-            styleOverrides: {
-                paper: ({ theme }) => ({
-                    backgroundColor: theme.palette.background.card,
-                }),
-            }
-        },
         MuiPaper: {
             styleOverrides: {
-                root: {
+                root: ({ theme }) => ({
                     '--Paper-overlay': 'none !important',
-                },
+                    background: theme.palette.background.card
+                }),
             },
         },
         MuiButton: {
@@ -108,17 +102,19 @@ export const lightTheme = createTheme({
     palette: {
         mode: 'light',
         primary: {
-            main: '#1a73e8',
+            main: '#0842a0',
         },
         background: {
             default: '#ffffff',
             paper: '#f0f4f9',
             card: '#f0f4f9',
-            cardHover: '#dde3ea'
+            cardHover: '#dde3ea',
+            history: '#d3e3fd'
         },
         text: {
             primary: '#07080aff',
             secondary: '#1b1c1d',
+            selected: '#0842a0',
         },
     },
 });
@@ -135,11 +131,13 @@ export const darkTheme = createTheme({
             default: '#1b1c1d',
             paper: '#333537',
             card: '#282a2c',
-            cardHover: '#3d3f42'
+            cardHover: '#3d3f42',
+            history: '#1f3760'
         },
         text: {
             primary: '#fff',
             secondary: '#9aa0a6',
+            selected: '#d3e3fd',
         },
     },
 });

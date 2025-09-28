@@ -1,5 +1,5 @@
 
-import { Box, useTheme } from "@mui/material"
+import { Box, Typography, useTheme } from "@mui/material"
 import { useContext, useMemo, useState } from "react";
 import { ChatItemContext } from "../../context";
 import ModelButtons from "./ModelButtons";

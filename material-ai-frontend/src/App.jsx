@@ -50,13 +50,16 @@ function App() {
 
   const send = async (prompt, options = { ignoreUserHistory: false, submittedFiles: [] }) => {
     if (!prompt) return
+    let session_id = session;
+    let is_new_session = false
     try {
-      let session_id = session;
+      setLoading(true)
       let user_id = user;
       if (!isValidSession()) {
         session_id = (await create_session({ user_id })).session_id
         setSession(session_id)
         navigate(`/${session_id}`);
+        is_new_session = true;
       }
       await cancelApi()
       const controller = new AbortController();
@@ -91,7 +94,6 @@ function App() {
       const messages = await send_message(appContext)(
         {
           session_id,
-          user_id,
           parts,
           controller
         })
@@ -113,6 +115,12 @@ function App() {
       setSnack('Some error has occured, Please try again later')
     } finally {
       setController(undefined)
+      setLoading(false)
+      if (is_new_session) {
+        setSessions(prevSessions => {
+          return [{ id: session_id }, ...prevSessions]
+        })
+      }
     }
   }
 
@@ -129,36 +137,40 @@ function App() {
       return [...prevHistory.filter(history => history.id !== id)]
     })
   }
+  const clear_history = () => {
+    setHistory([])
+  }
 
   const appContext = {
     session, setSession, user, setUser,
     prompt, setPrompt, isValidSession,
     send, loading, setLoading, currentModel,
     setCurrentModel, setSnack, files, setFiles,
-    cancelApi, history, add_history, delete_history, sessions
+    cancelApi, history, add_history, delete_history, sessions,
+    clear_history
   }
 
 
   useEffect(() => {
-    get_sessions(appContext)({ user_id: user })
+    get_sessions(appContext)()
       .then(sessions => {
-        setSessions(sessions)
+        setSessions([...sessions].reverse())
       })
   }, []);
 
   useEffect(() => {
-    if(!session) return;
     setHistory([])
-    fetch_session(appContext)({session_id: session, user_id: user})
-    .then(sessionDto => {
-      setHistory(sessionDto.events.map(event => {
-        return {
-          ...event.content,
-          id: event.id,
-          prompt: ''
-        }
-      }))
-    })
+    if (!session) return;
+    fetch_session(appContext)({ session_id: session, user_id: user })
+      .then(sessionDto => {
+        setHistory(sessionDto.events.map(event => {
+          return {
+            ...event.content,
+            id: event.id,
+            prompt: ''
+          }
+        }))
+      })
   }, [session])
 
   return (

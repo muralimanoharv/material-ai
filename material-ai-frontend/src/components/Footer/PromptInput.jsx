@@ -134,13 +134,13 @@ export default function PromptInput() {
                                         onClick={cancelApi}
                                         sx={{ backgroundColor: theme.palette.background.paper }}
                                         color="primary" aria-label="directions">
-                                        <StopRoundedIcon fontSize='medium' />
+                                        <StopRoundedIcon sx={{color: theme.palette.text.selected}} fontSize='medium' />
                                     </IconButton>
                                 </Tooltip>
-
                             ) : (
                                 <Tooltip title="Submit">
                                     <IconButton
+                                        disabled={!prompt}
                                         onClick={handleSubmit}
                                         sx={{ backgroundColor: theme.palette.background.paper }}
                                         color="default" aria-label="directions">

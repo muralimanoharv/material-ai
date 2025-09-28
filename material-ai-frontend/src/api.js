@@ -13,39 +13,34 @@ export async function create_session({ user_id }) {
 }
 
 export function send_message(context) {
-    return async ({ parts, session_id, user_id, controller}) => {
-        try {
-            context.setLoading(true)
+    return async ({ parts, session_id, controller }) => {
 
-            const response = await fetch(`${HOST}/run`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
+        const response = await fetch(`${HOST}/run`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                app_name: APP_NAME,
+                user_id: context.user,
+                session_id,
+                new_message: {
+                    role: "user",
+                    parts
                 },
-                body: JSON.stringify({
-                    app_name: APP_NAME,
-                    user_id,
-                    session_id,
-                    new_message: {
-                        role: "user",
-                        parts
-                    },
-                    streaming: false
-                }),
-                signal: controller.signal
-            })
-            let body = await response.json();
-            return body
-        } finally {
-            context.setLoading(false)
-        }
+                streaming: false
+            }),
+            signal: controller.signal
+        })
+        let body = await response.json();
+        return body
     }
 }
 
 export function get_sessions(context) {
-    return async ({user_id}) => {
+    return async () => {
         try {
-            const response = await fetch(`${HOST}/apps/${APP_NAME}/users/${user_id}/sessions`, {
+            const response = await fetch(`${HOST}/apps/${APP_NAME}/users/${context.user}/sessions`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -58,18 +53,10 @@ export function get_sessions(context) {
     }
 }
 
-export function get_session_history(context) {
-    return async ({startIdx, endIdx}) => {
-        return new Promise((resolve) => {
-             resolve(context.sessions)
-        })
-    }
-}
-
 export function fetch_session(context) {
-    return async ({session_id, user_id}) => {
+    return async ({ session_id }) => {
         try {
-            const response = await fetch(`${HOST}/apps/${APP_NAME}/users/${user_id}/sessions/${session_id}`, {
+            const response = await fetch(`${HOST}/apps/${APP_NAME}/users/${context.user}/sessions/${session_id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -90,18 +77,18 @@ export function fetch_session(context) {
  * @returns {Promise<string>} A promise that resolves with the base64 string.
  */
 export function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      // Get just the base64 content
-      const encoded = reader.result.toString().split(',')[1];
-      
-      // Resolve with an object containing both data and type
-      resolve({ data: encoded, type: file.type, name: file.name });
-    };
-    reader.onerror = error => reject(error);
-  });
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            // Get just the base64 content
+            const encoded = reader.result.toString().split(',')[1];
+
+            // Resolve with an object containing both data and type
+            resolve({ data: encoded, type: file.type, name: file.name });
+        };
+        reader.onerror = error => reject(error);
+    });
 }
 
 /**
@@ -110,10 +97,10 @@ export function fileToBase64(file) {
  * @returns {boolean} True if the string is valid JSON, otherwise false.
  */
 export function isValidJson(str) {
-  try {
-    JSON.parse(str);
-  } catch (e) {
-    return false;
-  }
-  return true;
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
 }

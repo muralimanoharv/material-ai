@@ -6,7 +6,7 @@ import { List, ListItemText, Tooltip, Typography } from "@mui/material";
 import { useContext } from 'react';
 import { LayoutContext } from '../../context';
 
-export default function DrawerButton({ icon: Icon, title, onClick, tooltip = '' }) {
+export default function DrawerButton({ icon: Icon, title, onClick, tooltip = '', disabled = false }) {
     const { open } = useContext(LayoutContext)
     return <List>
 
@@ -17,6 +17,7 @@ export default function DrawerButton({ icon: Icon, title, onClick, tooltip = '' 
             <ListItemButton
                 onClick={onClick}
                 disableRipple
+                disabled={disabled}
                 sx={[
                     {
                         minHeight: 48,

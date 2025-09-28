@@ -10,6 +10,7 @@ import SettingsButton from './Buttons/SettingsButton';
 import MaterialDrawer from '../material/MaterialDrawer';
 import Footer from './Footer';
 import SessionHistorySection from './SessionHistorySection';
+import NewChatButton from './Buttons/NewChatButton';
 
 export default function Layout(props) {
     const { sessions } = React.useContext(AppContext)
@@ -58,7 +59,8 @@ export default function Layout(props) {
                 <MaterialDrawer variant="permanent" open={open}>
                     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
                         <MenuButton />
-                        <Box sx={{ flexGrow: 1, display: 'flex', overflowY: 'auto' }}>
+                        <NewChatButton />
+                        <Box sx={{ flexGrow: 1, display: 'flex', overflowY: 'auto', overflowX: 'hidden' }}>
                             {!!sessions.length && <SessionHistorySection />}
                         </Box>
                         <SettingsButton />
