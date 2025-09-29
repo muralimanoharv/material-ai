@@ -1,7 +1,6 @@
+const HOST = import.meta.env.VITE_API_BASE_URL;
 
-const HOST = `http://localhost:8000`
-
-export async function create_session() {
+export function create_session(context) {
 
     return async () => {
         const response = await fetch(`${HOST}/apps/${context.selectedAgent}/users/${context.user}/sessions`, {
