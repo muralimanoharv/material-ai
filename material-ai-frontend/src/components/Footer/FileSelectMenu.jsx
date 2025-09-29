@@ -48,6 +48,7 @@ export default function FileSelectMenu(props) {
         <div>
             <Tooltip title="Add files">
                 <IconButton
+                    id='file-button'
                     color="default"
                     aria-label="add file"
                     aria-controls={open ? 'file-menu' : undefined}

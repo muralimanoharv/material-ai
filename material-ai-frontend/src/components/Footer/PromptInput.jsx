@@ -9,6 +9,7 @@ import FullscreenExitOutlinedIcon from '@mui/icons-material/FullscreenExitOutlin
 import { CHAT_SECTION_WIDTH } from '../../assets/themes';
 import ModelSelectMenu from './ModelSelectMenu';
 import FileSelectMenu from './FileSelectMenu';
+import AgentSelectMenu from './AgentSelectMenu';
 import FileBox from '../Chat/FileBox';
 
 
@@ -122,8 +123,9 @@ export default function PromptInput() {
 
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Box>
+                    <Box sx={{display: 'flex', justifyContent: 'flex-start', gap: '5px'}}>
                         <FileSelectMenu setFiles={setFiles} files={files} />
+                        <AgentSelectMenu setFiles={setFiles} files={files} />
                     </Box>
                     <Box sx={{ display: 'flex', gap: '5px', justifyContent: 'center', alignItems: 'center' }}>
                         <ModelSelectMenu />

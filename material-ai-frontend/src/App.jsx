@@ -1,16 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom';
-import { useNavigate, useParams } from 'react-router-dom';
-
+import { useNavigate } from 'react-router-dom';
 import { AppContext } from './context.jsx'
 // import { INPUT_JSON, translate } from './translator.jsx'
-import { create_session, send_message, fileToBase64, get_sessions, fetch_session } from './api.js'
+import { create_session, send_message, fileToBase64, fetch_sessions, fetch_session, fetch_agents } from './api.js'
 import Layout from './components/Layout/Layout.jsx'
 import { MODELS } from './assets/config.js'
 import { Snackbar } from '@mui/material'
 import ChatPage from './components/pages/ChatPage.jsx';
 import './App.css'
-
 
 function App() {
   const [session, setSession] = useState()
@@ -18,6 +16,8 @@ function App() {
   const [prompt, setPrompt] = useState('')
   const [history, setHistory] = useState([])
   const [sessions, setSessions] = useState([])
+  const [agents, setAgents] = useState([])
+  const [selectedAgent, setSelectedAgent] = useState('')
   const [loading, setLoading] = useState(false)
   const [snack, setSnack] = useState('')
   const [currentModel, setCurrentModel] = useState(MODELS[0].model)
@@ -56,7 +56,7 @@ function App() {
       setLoading(true)
       let user_id = user;
       if (!isValidSession()) {
-        session_id = (await create_session({ user_id })).session_id
+        session_id = (await create_session(appContext)()).session_id
         setSession(session_id)
         navigate(`/${session_id}`);
         is_new_session = true;
@@ -147,23 +147,31 @@ function App() {
     send, loading, setLoading, currentModel,
     setCurrentModel, setSnack, files, setFiles,
     cancelApi, history, add_history, delete_history, sessions,
-    clear_history
+    clear_history, agents, selectedAgent, setSelectedAgent
   }
 
 
   useEffect(() => {
-    get_sessions(appContext)()
+    if(!selectedAgent) return
+    fetch_sessions(appContext)()
       .then(sessions => {
         setSessions([...sessions].reverse())
       })
-  }, []);
+  }, [selectedAgent]);
+
+  useEffect(() => {
+    fetch_agents()().then(agents => {
+      setAgents(agents)
+      setSelectedAgent(agents[0])
+    })
+  }, [])
 
   useEffect(() => {
     setHistory([])
-    if (!session) return;
-    fetch_session(appContext)({ session_id: session, user_id: user })
+    if (!session || !selectedAgent) return;
+    fetch_session(appContext)({ session_id: session })
       .then(sessionDto => {
-        setHistory(sessionDto.events.map(event => {
+        setHistory(sessionDto?.events.map(event => {
           return {
             ...event.content,
             id: event.id,
@@ -171,7 +179,7 @@ function App() {
           }
         }))
       })
-  }, [session])
+  }, [session, selectedAgent])
 
   return (
     <>

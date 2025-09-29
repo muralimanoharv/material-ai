@@ -1,15 +1,16 @@
 
-const APP_NAME = 'material_ai_agent'
 const HOST = `http://localhost:8000`
-const API = `${HOST}/apps/${APP_NAME}`
 
+export async function create_session() {
 
-export async function create_session({ user_id }) {
-    const response = await fetch(`${API}/users/${user_id}/sessions`, {
-        method: 'POST',
-    })
-    let body = await response.json();
-    return { user_id: body.user_id, session_id: body.id }
+    return async () => {
+        const response = await fetch(`${HOST}/apps/${context.selectedAgent}/users/${context.user}/sessions`, {
+            method: 'POST',
+        })
+        let body = await response.json();
+        return { user_id: body.user_id, session_id: body.id }
+    }
+
 }
 
 export function send_message(context) {
@@ -21,7 +22,7 @@ export function send_message(context) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                app_name: APP_NAME,
+                app_name: context.selectedAgent,
                 user_id: context.user,
                 session_id,
                 new_message: {
@@ -37,35 +38,42 @@ export function send_message(context) {
     }
 }
 
-export function get_sessions(context) {
+export function fetch_sessions(context) {
     return async () => {
-        try {
-            const response = await fetch(`${HOST}/apps/${APP_NAME}/users/${context.user}/sessions`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            })
-            let body = await response.json();
-            return body
-        } finally {
-        }
+        const response = await fetch(`${HOST}/apps/${context.selectedAgent}/users/${context.user}/sessions`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        let body = await response.json();
+        return body
     }
 }
 
 export function fetch_session(context) {
     return async ({ session_id }) => {
-        try {
-            const response = await fetch(`${HOST}/apps/${APP_NAME}/users/${context.user}/sessions/${session_id}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            })
-            let body = await response.json();
-            return body
-        } finally {
-        }
+        const response = await fetch(`${HOST}/apps/${context.selectedAgent}/users/${context.user}/sessions/${session_id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        let body = await response.json();
+        return body
+    }
+}
+
+export function fetch_agents() {
+    return async () => {
+        const response = await fetch(`${HOST}/list-apps`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        let body = await response.json();
+        return body
     }
 }
 
