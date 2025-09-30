@@ -9,10 +9,12 @@ import CheckIcon from '@mui/icons-material/Check';
 import UserTextToggleButton from "./UserTextToggleButton";
 import UserButtons from "./UserButtons";
 import FilesBox from "./FilesBox";
+import { FEEDBACK } from "../../assets/config";
+import ChatNegativeFeebackSelection from "./ChatNegativeFeebackSelection";
 
 export default function ChatItem(props) {
   const theme = useTheme()
-  const { chat } = useContext(ChatItemContext)
+  const { chat, feedback, negativeFeedbackToggle } = useContext(ChatItemContext)
   const [textExpand, setTextExpand] = useState(false)
   const text = props.part?.text ?? ''
   let isUser = () => props.role == 'user'
@@ -79,7 +81,7 @@ export default function ChatItem(props) {
       alignItems: 'flex-start'
     }}
     >
-      {isUser() && !isFunctionCall() && <UserButtons />}
+      {isUser() && !isFunctionCall() && <UserButtons text={text}/>}
       <Box sx={{
         backgroundColor,
         borderRadius: '24px',
@@ -95,7 +97,7 @@ export default function ChatItem(props) {
         {!isUser() && !isFunctionCall() ? <img src="/gemini.svg" /> : null}
         {content}
         {
-          isUser() && isLargeText() && !isFunctionCall() (
+          isUser() && isLargeText() && !isFunctionCall()(
             <UserTextToggleButton
               textExpand={textExpand}
               textExpandToggle={textExpandToggle}
@@ -105,5 +107,11 @@ export default function ChatItem(props) {
       </Box>
     </Box>
     {!isUser() && !isFunctionCall() ? <ModelButtons {...props} /> : null}
+    {
+      feedback
+      && feedback.feedback_category == FEEDBACK.negative.value
+      && negativeFeedbackToggle && (
+        <ChatNegativeFeebackSelection />)
+    }
   </Box>
 }

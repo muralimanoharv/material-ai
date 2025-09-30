@@ -20,3 +20,22 @@ export const FILE_OPTIONS = [
         icon: AttachFileOutlinedIcon
     },
 ]
+
+export const ERROR_MESSAGE = 'Some error has occured, Please try again later'
+
+export const FEEDBACK = {
+    positive: {
+        value: 'GOOD',
+    },
+    negative: {
+        value: 'BAD',
+        categories: [
+            "Not / poorly personalized",
+            "Problem with saving information",
+            "Not factually correct",
+            "Didn't follow instructions",
+            "Offensive / Unsafe",
+            "Wrong language"
+        ]
+    }
+}

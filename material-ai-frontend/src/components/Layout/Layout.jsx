@@ -15,12 +15,17 @@ import NewChatButton from './Buttons/NewChatButton';
 export default function Layout(props) {
     const { sessions } = React.useContext(AppContext)
     const [open, setOpen] = React.useState(false);
+    const [hoverOpen, setHoverOpen] = React.useState(false);
     const [settingsDrawerOpen, setSettingsDrawerOpen] = React.useState(false);
     const [themeDrawerOpen, setThemeDrawerOpen] = React.useState(false);
     const theme = useTheme();
     const { theme: currentTheme, setTheme } = React.useContext(ThemeToggleContext)
 
     const scrollableBoxRef = React.useRef(null);
+
+    let isDrawerOpen = () => {
+        return open || hoverOpen
+    }
 
     React.useEffect(() => {
         if (scrollableBoxRef.current) {
@@ -45,6 +50,8 @@ export default function Layout(props) {
             {
                 open,
                 setOpen,
+                setHoverOpen,
+                isDrawerOpen,
                 settingsDrawerOpen,
                 setSettingsDrawerOpen,
                 themeDrawerOpen,
@@ -54,16 +61,22 @@ export default function Layout(props) {
                 setTheme
             }
         }>
+
             <Box sx={{ display: 'flex', flexFlow: 1 }}>
                 <CssBaseline />
-                <MaterialDrawer variant="permanent" open={open}>
+                <MaterialDrawer variant="permanent" open={isDrawerOpen()}>
                     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
                         <MenuButton />
-                        <NewChatButton />
-                        <Box sx={{ flexGrow: 1, display: 'flex', overflowY: 'auto', overflowX: 'hidden' }}>
-                            {!!sessions.length && <SessionHistorySection />}
+                        <Box
+                            onMouseLeave={() => setHoverOpen(false)}
+                            onMouseEnter={() => setHoverOpen(true)}
+                            sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                            <NewChatButton />
+                            <Box sx={{ flexGrow: 1, display: 'flex', overflowY: 'auto', overflowX: 'hidden' }}>
+                                {!!sessions.length && <SessionHistorySection />}
+                            </Box>
+                            <SettingsButton />
                         </Box>
-                        <SettingsButton />
                     </Box>
                 </MaterialDrawer>
                 <SettingsSwipeableDrawer />

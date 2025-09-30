@@ -5,6 +5,10 @@ import DrawerButton from "../../material/DrawerButton";
 
 
 export default function MenuButton() {
-    const { open, setOpen } = useContext(LayoutContext)
-    return <DrawerButton tooltip="Expand menu" icon={MenuIcon} title="" onClick={() => setOpen(!open)} />
+    const { open, setOpen, setHoverOpen } = useContext(LayoutContext)
+    return <DrawerButton tooltip="Expand menu" icon={MenuIcon} title="" 
+    onClick={() => {
+        setOpen(!open)
+        setHoverOpen(false)
+    }} />
 }

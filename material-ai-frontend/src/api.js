@@ -38,8 +38,8 @@ export function send_message(context) {
 }
 
 export function fetch_sessions(context) {
-    return async () => {
-        const response = await fetch(`${HOST}/apps/${context.selectedAgent}/users/${context.user}/sessions`, {
+    return async ({ selectedAgent }) => {
+        const response = await fetch(`${HOST}/apps/${selectedAgent}/users/${context.user}/sessions`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -77,6 +77,26 @@ export function fetch_agents() {
 }
 
 
+export function send_feedback() {
+
+    return async ({ feedback_category, feedback_text, id }) => {
+        const response = await fetch(`${HOST}/feedback`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+
+            },
+            body: JSON.stringify({
+                feedback_category,
+                feedback_text,
+                id
+            })
+        })
+        let body = await response.text();
+        return body
+    }
+}
+
 
 /**
  * Converts a File object to a base64 encoded string.
@@ -97,6 +117,8 @@ export function fileToBase64(file) {
         reader.onerror = error => reject(error);
     });
 }
+
+
 
 /**
  * Checks if a string is a valid JSON string.

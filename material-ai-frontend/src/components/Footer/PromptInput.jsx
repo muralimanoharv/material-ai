@@ -15,7 +15,7 @@ import FileBox from '../Chat/FileBox';
 
 export default function PromptInput() {
 
-    const { prompt, setPrompt, send, loading, 
+    const { prompt, setPrompt, send, promptLoading, 
         files, setFiles, cancelApi } = useContext(AppContext)
     const theme = useTheme()
     const [fullScreen, setFullScreen] = useState(false)
@@ -130,7 +130,7 @@ export default function PromptInput() {
                     <Box sx={{ display: 'flex', gap: '5px', justifyContent: 'center', alignItems: 'center' }}>
                         <ModelSelectMenu />
                         {
-                            loading ? (
+                            promptLoading ? (
                                 <Tooltip title="Stop response">
                                     <IconButton
                                         onClick={cancelApi}

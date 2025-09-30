@@ -5,20 +5,22 @@ import { AppContext } from './context.jsx'
 // import { INPUT_JSON, translate } from './translator.jsx'
 import { create_session, send_message, fileToBase64, fetch_sessions, fetch_session, fetch_agents } from './api.js'
 import Layout from './components/Layout/Layout.jsx'
-import { MODELS } from './assets/config.js'
+import { ERROR_MESSAGE, MODELS } from './assets/config.js'
 import { Snackbar } from '@mui/material'
 import ChatPage from './components/pages/ChatPage.jsx';
 import './App.css'
 
 function App() {
   const [session, setSession] = useState()
-  const [user, setUser] = useState('user')
+  const [user, setUser] = useState('Murali')
   const [prompt, setPrompt] = useState('')
   const [history, setHistory] = useState([])
   const [sessions, setSessions] = useState([])
   const [agents, setAgents] = useState([])
   const [selectedAgent, setSelectedAgent] = useState('')
   const [loading, setLoading] = useState(false)
+  const [sessionLoading, setSessionLoading] = useState(true)
+  const [promptLoading, setPromptLoading] = useState(false)
   const [snack, setSnack] = useState('')
   const [currentModel, setCurrentModel] = useState(MODELS[0].model)
   const [files, setFiles] = useState([])
@@ -53,7 +55,7 @@ function App() {
     let session_id = session;
     let is_new_session = false
     try {
-      setLoading(true)
+      setPromptLoading(true)
       let user_id = user;
       if (!isValidSession()) {
         session_id = (await create_session(appContext)()).session_id
@@ -112,10 +114,10 @@ function App() {
       console.error(e)
       setPrompt(prompt)
       setFiles(options.submittedFiles)
-      setSnack('Some error has occured, Please try again later')
+      setSnack(ERROR_MESSAGE)
     } finally {
       setController(undefined)
-      setLoading(false)
+      setPromptLoading(false)
       if (is_new_session) {
         setSessions(prevSessions => {
           return [{ id: session_id }, ...prevSessions]
@@ -147,38 +149,59 @@ function App() {
     send, loading, setLoading, currentModel,
     setCurrentModel, setSnack, files, setFiles,
     cancelApi, history, add_history, delete_history, sessions,
-    clear_history, agents, selectedAgent, setSelectedAgent
+    clear_history, agents, selectedAgent, setSelectedAgent,
+    promptLoading, sessionLoading
   }
 
 
-  useEffect(() => {
-    if(!selectedAgent) return
-    fetch_sessions(appContext)()
-      .then(sessions => {
-        setSessions([...sessions].reverse())
-      })
-  }, [selectedAgent]);
+  const onAppLoad = async () => {
+    try {
+      setLoading(true)
+      const agents = await fetch_agents(appContext)()
+      const selectedAgent = agents[0]
+      setAgents(agents)
+      setSelectedAgent(selectedAgent)
+      const sessions = await fetch_sessions(appContext)({ selectedAgent })
+      setSessions([...sessions].reverse())
+    } catch (e) {
+      console.error(e)
+      setSnack(ERROR_MESSAGE)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    fetch_agents()().then(agents => {
-      setAgents(agents)
-      setSelectedAgent(agents[0])
-    })
-  }, [])
+    onAppLoad()
+  }, []);
+
+  const getSession = async (sessionId) => {
+    try {
+      setSessionLoading(true)
+      const sessionDto = await fetch_session(appContext)({ session_id: sessionId })
+      setHistory(sessionDto?.events.map(event => {
+        return {
+          ...event.content,
+          id: event.id,
+          prompt: ''
+        }
+      }))
+    } catch (e) {
+      console.error(e)
+      setSnack(ERROR_MESSAGE)
+    } finally {
+      setTimeout(() => {
+        setSessionLoading(false)
+      }, 1000)
+      
+    }
+
+  }
 
   useEffect(() => {
     setHistory([])
     if (!session || !selectedAgent) return;
-    fetch_session(appContext)({ session_id: session })
-      .then(sessionDto => {
-        setHistory(sessionDto?.events.map(event => {
-          return {
-            ...event.content,
-            id: event.id,
-            prompt: ''
-          }
-        }))
-      })
+    getSession(session)
   }, [session, selectedAgent])
 
   return (

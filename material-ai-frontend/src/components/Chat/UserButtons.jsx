@@ -2,11 +2,10 @@ import { Box, IconButton, Tooltip } from "@mui/material";
 import CopyAllOutlinedIcon from '@mui/icons-material/CopyAllOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { useContext } from "react";
-import { ChatItemContext, AppContext } from "../../context";
+import { AppContext } from "../../context";
 
 
-export default function UserButtons() {
-    const { chat } = useContext(ChatItemContext)
+export default function UserButtons(props) {
     const { setSnack, setPrompt } = useContext(AppContext)
     return <Box className="actions-child" sx={{
         marginLeft: '20px',
@@ -15,7 +14,7 @@ export default function UserButtons() {
     }}>
         <Tooltip title="Copy prompt">
             <IconButton onClick={async () => {
-                await navigator.clipboard.writeText(chat.prompt);
+                await navigator.clipboard.writeText(props.text);
                 setSnack('Prompt copied')
             }}>
                 <CopyAllOutlinedIcon fontSize="small" />
@@ -23,7 +22,7 @@ export default function UserButtons() {
         </Tooltip>
         <Tooltip title="Edit prompt">
             <IconButton onClick={() => {
-                setPrompt(chat.prompt)
+                setPrompt(props.text)
             }}>
                 <EditOutlinedIcon fontSize="small" />
             </IconButton>

@@ -7,7 +7,8 @@ import { useContext } from 'react';
 import { LayoutContext } from '../../context';
 
 export default function DrawerButton({ icon: Icon, title, onClick, tooltip = '', disabled = false }) {
-    const { open } = useContext(LayoutContext)
+    const { isDrawerOpen } = useContext(LayoutContext)
+    const open = isDrawerOpen()
     return <List>
 
         <ListItem disablePadding

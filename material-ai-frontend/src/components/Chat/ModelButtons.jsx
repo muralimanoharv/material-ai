@@ -1,41 +1,56 @@
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import CopyAllOutlinedIcon from '@mui/icons-material/CopyAllOutlined';
 import { useContext } from 'react';
 import { AppContext, ChatItemContext } from '../../context';
 import { Box, IconButton, Tooltip } from '@mui/material';
+import { FEEDBACK } from '../../assets/config';
 
 
 export default function ModelButtons(props) {
 
   const { send, setSnack, delete_history } = useContext(AppContext)
-  const { chat, setChat } = useContext(ChatItemContext)
+  const { feedback, setFeedback, postPostiveFeedback, chat, setNegativeFeedbackToggle } = useContext(ChatItemContext)
 
   const actions = [
     {
       icon: <ThumbUpOffAltIcon fontSize="small" />,
+      filledIcon: <ThumbUpIcon fontSize='small' />,
+      value: FEEDBACK.positive.value,
       tooltip: 'Good response',
-      onClick: (action) => {
-        if (chat.selectedAction) {
-          setChat({ ...chat, selectedAction: undefined })
+      onClick: async () => {
+        if (feedback?.feedback_category === FEEDBACK.positive.value) {
+          setFeedback()
           return
         }
-        setChat({ ...chat, selectedAction: action.tooltip })
-        setSnack('Thank you! Your feedback helps make Gemini better for everyone')
+        const dto = {
+          feedback_category: FEEDBACK.positive.value,
+          feedback_text: ''
+        }
+        await postPostiveFeedback(dto)
       },
     },
     {
       icon: <ThumbDownOffAltIcon fontSize="small" />,
+      filledIcon: <ThumbDownIcon fontSize='small' />,
+      value: FEEDBACK.negative.value,
       tooltip: 'Bad response',
-      onClick: (action) => {
-        if (chat.selectedAction) {
-          setChat({ ...chat, selectedAction: undefined })
+      onClick: async () => {
+        if (feedback?.feedback_category === FEEDBACK.negative.value) {
+          setFeedback()
           return
         }
-        setChat({ ...chat, selectedAction: action.tooltip })
-        setSnack('Thank you for helping improve Gemini')
+        const dto = {
+          feedback_category: FEEDBACK.negative.value,
+          feedback_text: '',
+          id: chat.id
+        }
+        setFeedback(dto)
+        setNegativeFeedbackToggle(true)
       },
     },
     {
@@ -53,7 +68,7 @@ export default function ModelButtons(props) {
       onClick: () => { }
     },
     {
-      icon: <CopyAllOutlinedIcon fontSize="small" />,
+      icon: <CopyAllOutlinedIcon  fontSize="small" />,
       tooltip: 'Copy response',
       onClick: async () => {
         await navigator.clipboard.writeText(props.part.text);
@@ -62,21 +77,32 @@ export default function ModelButtons(props) {
     }
   ]
   let getColor = (action) => {
-    if (chat?.selectedAction == action.tooltip) return 'primary'
+    if ([FEEDBACK.negative.value, FEEDBACK.positive.value].includes(action.value)) {
+      if (feedback?.feedback_category == action.value) return 'primary';
+    }
     return "default"
+  }
+  let getIcon = (action) => {
+    if ([FEEDBACK.negative.value, FEEDBACK.positive.value].includes(action.value)) {
+      if (feedback?.feedback_category == action.value) return action.filledIcon;
+    }
+    return action.icon
   }
   return <Box
     className="actions-child actions-child-model"
     sx={{
       marginLeft: '20px',
-      opacity: chat.selectedAction ? '1' : '0',
+      opacity: !!feedback ? '1' : '0',
       transition: 'opacity 0.5s ease'
     }}>
     {actions.map((action) => {
       return <Tooltip key={action.tooltip} title={action.tooltip}>
-        <IconButton color={getColor(action)} onClick={() => {
-          action.onClick(action)
-        }} key={action.tooltip}>{action.icon}</IconButton>
+        <IconButton
+          color={getColor(action)}
+          onClick={action.onClick}
+          key={action.tooltip}>
+          {getIcon(action)}
+        </IconButton>
       </Tooltip>
     })}
   </Box>

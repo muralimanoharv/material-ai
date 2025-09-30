@@ -6,10 +6,10 @@ import { useNavigate } from "react-router-dom";
 
 
 export default function NewChatButton() {
-    const { clear_history, loading } = useContext(AppContext)
+    const { clear_history, promptLoading } = useContext(AppContext)
     const navigate = useNavigate()
     return <DrawerButton
-        disabled={loading}
+        disabled={promptLoading}
         tooltip="New Chat (Ctrl+Shift+O)"
         icon={AddCommentOutlinedIcon} title="New chat"
         onClick={() => {

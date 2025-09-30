@@ -8,12 +8,12 @@ import { useNavigate } from "react-router-dom"
 
 export default function SessionHistorySection() {
     const context = useContext(AppContext)
-    const { open } = useContext(LayoutContext)
+    const { isDrawerOpen } = useContext(LayoutContext)
     return <>
         <Box display={'flex'} flexDirection='column' padding='0 16px' gap='10px'>
-            <Typography display={open ? 'block' : 'none'} fontSize={'14px'} variant="h6">Recent</Typography>
+            <Typography display={isDrawerOpen() ? 'block' : 'none'} fontSize={'14px'} variant="h6">Recent</Typography>
             {
-                context.sessions.reverse().map(
+                context.sessions.map(
                     session => <SessionItem key={session.id} session={session} />
                 )
             }
@@ -27,7 +27,7 @@ function SessionItem(props) {
     const navigate = useNavigate()
     const session = props.session;
     const [title, setTitle] = useState(session.id)
-    const { open } = useContext(LayoutContext)
+    const { isDrawerOpen } = useContext(LayoutContext)
 
     useEffect(() => {
         fetch_session(context)(
@@ -56,14 +56,14 @@ function SessionItem(props) {
                 navigate(`/${session.id}`)
             }}
             key={session.id}
-            height={open ? 'auto' : 0}
-            width={open ? drawerWidth - 35 : 0}
+            height={isDrawerOpen() ? 'auto' : 0}
+            width={isDrawerOpen() ? drawerWidth - 35 : 0}
             sx={{
-                opacity: open ? '1' : '0',
+                opacity: isDrawerOpen() ? '1' : '0',
                 cursor: 'pointer',
                 padding: '8px 8px 8px 12px',
                 borderRadius: '16px',
-                backgroundColor: open ? (context.session === session.id
+                backgroundColor: isDrawerOpen() ? (context.session === session.id
                     ? theme.palette.background.history : undefined ) : undefined,
                 '&:hover': {
                     backgroundColor: context.session === session.id ?

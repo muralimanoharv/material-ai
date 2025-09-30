@@ -45,8 +45,8 @@ const commonThemeOptions = (isLight) => ({
             styleOverrides: {
                 h1: {
                     fontWeight: 500,
-                    fontSize: '28px',
-                    lineHeight: '28px',
+                    fontSize: '36px',
+                    lineHeight: '38.4px',
                     letterSpacing: '0.1px'
                 },
                 h2: {
@@ -115,6 +115,7 @@ export const lightTheme = createTheme({
             primary: '#07080aff',
             secondary: '#1b1c1d',
             selected: '#0842a0',
+            tagline: '#9a9b9c'
         },
     },
 });
@@ -138,6 +139,7 @@ export const darkTheme = createTheme({
             primary: '#fff',
             secondary: '#9aa0a6',
             selected: '#d3e3fd',
+            tagline: '#747775'
         },
     },
 });

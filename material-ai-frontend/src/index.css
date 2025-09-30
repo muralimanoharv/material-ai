@@ -21,6 +21,34 @@ body {
   }
 }
 
+@keyframes slideUpFadeIn {
+  from {
+    transform: translateY(100px); 
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0); 
+    opacity: 1;
+  }
+}
+
+.animated-text {
+  animation: slideUpFadeIn 1s ease-out forwards; 
+  animation-name: slideUpFadeIn;
+  animation-duration: 1s;
+  animation-timing-function: ease-out; 
+  animation-fill-mode: forwards; 
+}
+
+.tagline-text {
+  opacity: 0; 
+  animation-name: fadeIn;
+  animation-duration: 0.2s; 
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards; 
+  animation-delay: 1s; 
+}
+
 .session-history {
     transition: opacity 0.5s ease-in-out;
 }
