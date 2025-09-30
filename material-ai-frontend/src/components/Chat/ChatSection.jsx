@@ -7,7 +7,7 @@ import { isValidJson, send_feedback } from "../../api"
 import { ERROR_MESSAGE } from "../../assets/config"
 
 export default function ChatSection() {
-  const { history, promptLoading } = useContext(AppContext)
+  const { history } = useContext(AppContext)
 
   return <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center', position: 'relative' }}>
     <Box sx={

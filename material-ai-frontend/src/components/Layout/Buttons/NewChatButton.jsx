@@ -1,19 +1,20 @@
 import { useContext } from "react";
 import DrawerButton from "../../material/DrawerButton";
 import AddCommentOutlinedIcon from '@mui/icons-material/AddCommentOutlined';
-import { AppContext } from "../../../context";
-import { useNavigate } from "react-router-dom";
+import { AppContext, LayoutContext } from "../../../context";
+import { useMobileHook } from "../../../hooks";
 
 
 export default function NewChatButton() {
-    const { clear_history, promptLoading } = useContext(AppContext)
-    const navigate = useNavigate()
+    const { on_new_chat, promptLoading } = useContext(AppContext)
+    const { setOpen } = useContext(LayoutContext)
+    const isMobile = useMobileHook();
     return <DrawerButton
         disabled={promptLoading}
         tooltip="New Chat (Ctrl+Shift+O)"
         icon={AddCommentOutlinedIcon} title="New chat"
         onClick={() => {
-            clear_history()
-            navigate('/')
+            on_new_chat()
+            if(isMobile) setOpen(false)
         }} />
 }

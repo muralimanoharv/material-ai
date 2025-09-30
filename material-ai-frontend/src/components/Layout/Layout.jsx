@@ -7,10 +7,12 @@ import { ThemeToggleContext, LayoutContext, AppContext } from '../../context';
 import SettingsSwipeableDrawer from './Drawers/SettingsSwipeableDrawer';
 import MenuButton from './Buttons/MenuButton';
 import SettingsButton from './Buttons/SettingsButton';
-import MaterialDrawer from '../material/MaterialDrawer';
+import MaterialDrawer, { drawerWidth } from '../material/MaterialDrawer';
 import Footer from './Footer';
 import SessionHistorySection from './SessionHistorySection';
 import NewChatButton from './Buttons/NewChatButton';
+import { Drawer } from '@mui/material';
+import { useMobileHook } from '../../hooks';
 
 export default function Layout(props) {
     const { sessions } = React.useContext(AppContext)
@@ -18,12 +20,14 @@ export default function Layout(props) {
     const [hoverOpen, setHoverOpen] = React.useState(false);
     const [settingsDrawerOpen, setSettingsDrawerOpen] = React.useState(false);
     const [themeDrawerOpen, setThemeDrawerOpen] = React.useState(false);
+    const isMobile = useMobileHook();
     const theme = useTheme();
     const { theme: currentTheme, setTheme } = React.useContext(ThemeToggleContext)
 
     const scrollableBoxRef = React.useRef(null);
 
     let isDrawerOpen = () => {
+        if (isMobile) return open;
         return open || hoverOpen
     }
 
@@ -64,9 +68,9 @@ export default function Layout(props) {
 
             <Box sx={{ display: 'flex', flexFlow: 1 }}>
                 <CssBaseline />
-                <MaterialDrawer variant="permanent" open={isDrawerOpen()}>
+                <FlexibleDrawer>
                     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-                        <MenuButton />
+                        {!isMobile && <MenuButton />}
                         <Box
                             onMouseLeave={() => setHoverOpen(false)}
                             onMouseEnter={() => setHoverOpen(true)}
@@ -78,7 +82,7 @@ export default function Layout(props) {
                             <SettingsButton />
                         </Box>
                     </Box>
-                </MaterialDrawer>
+                </FlexibleDrawer>
                 <SettingsSwipeableDrawer />
                 <Box component="main" sx={{ flexGrow: 1 }}>
                     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -95,6 +99,36 @@ export default function Layout(props) {
 }
 
 
+function FlexibleDrawer(props) {
+    const { isDrawerOpen, setOpen, open } = React.useContext(LayoutContext)
+    const isMobile = useMobileHook();
+
+    if (isMobile) {
+        return (
+            <Drawer
+                sx={{
+                    '& .MuiDrawer-paper': {
+                        minWidth: drawerWidth, 
+                        boxSizing: 'border-box',
+                    },
+                }}
+                ModalProps={{
+                    keepMounted: true
+                }}
+                onClose={() => {
+                    setOpen(false)
+                }}
+                open={isDrawerOpen()}>
+                {props.children}
+            </Drawer>
+        )
+    }
+    return (
+        <MaterialDrawer variant="permanent" open={isDrawerOpen()}>
+            {props.children}
+        </MaterialDrawer>
+    )
+}
 
 
 

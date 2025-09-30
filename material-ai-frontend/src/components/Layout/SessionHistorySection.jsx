@@ -4,6 +4,7 @@ import { fetch_session } from "../../api"
 import { Box, Tooltip, Typography, useTheme } from "@mui/material"
 import { drawerWidth } from "../material/MaterialDrawer"
 import { useNavigate } from "react-router-dom"
+import { useMobileHook } from "../../hooks"
 
 
 export default function SessionHistorySection() {
@@ -27,7 +28,8 @@ function SessionItem(props) {
     const navigate = useNavigate()
     const session = props.session;
     const [title, setTitle] = useState(session.id)
-    const { isDrawerOpen } = useContext(LayoutContext)
+    const { isDrawerOpen, setOpen } = useContext(LayoutContext)
+    const isMobile = useMobileHook();
 
     useEffect(() => {
         fetch_session(context)(
@@ -52,8 +54,11 @@ function SessionItem(props) {
     return <Tooltip placement="right" title={title}>
 
         <Box className="session-history"
-            onClick={() => {
-                navigate(`/${session.id}`)
+            onClick={async () => {
+                await context.getSession({ sessionId: session.id })
+                await navigate(`/${session.id}`)
+                context.setSession(session.id)
+                if (isMobile) setOpen(false)
             }}
             key={session.id}
             height={isDrawerOpen() ? 'auto' : 0}
@@ -64,7 +69,7 @@ function SessionItem(props) {
                 padding: '8px 8px 8px 12px',
                 borderRadius: '16px',
                 backgroundColor: isDrawerOpen() ? (context.session === session.id
-                    ? theme.palette.background.history : undefined ) : undefined,
+                    ? theme.palette.background.history : undefined) : undefined,
                 '&:hover': {
                     backgroundColor: context.session === session.id ?
                         theme.palette.background.history : theme.palette.background.cardHover,

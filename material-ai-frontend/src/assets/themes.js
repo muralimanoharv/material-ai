@@ -4,6 +4,9 @@ import { createTheme } from '@mui/material/styles';
 
 export const CHAT_SECTION_WIDTH = '760px'
 const commonThemeOptions = (isLight) => ({
+    app: {
+        isMobileQuery: (theme) => theme.breakpoints.down(960),
+    },
     shape: {
         borderRadius: 8,
     },

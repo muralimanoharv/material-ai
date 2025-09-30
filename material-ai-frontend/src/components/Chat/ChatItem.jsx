@@ -150,7 +150,7 @@ function LoadingIndicator() {
   return (
     <Box sx={{ position: 'relative', display: 'inline-flex' }}>
       <GradientSVG />
-      <CircularProgress variant="indeterminate" enableTrackSlot size={30} sx={{
+      <CircularProgress variant="indeterminate" size={30} sx={{
         '& .MuiCircularProgress-circle': {
           stroke: 'url(#linearColors)',
         },

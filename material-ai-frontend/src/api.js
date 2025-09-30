@@ -51,8 +51,8 @@ export function fetch_sessions(context) {
 }
 
 export function fetch_session(context) {
-    return async ({ session_id }) => {
-        const response = await fetch(`${HOST}/apps/${context.selectedAgent}/users/${context.user}/sessions/${session_id}`, {
+    return async ({ session_id, selected_agent }) => {
+        const response = await fetch(`${HOST}/apps/${selected_agent ?? context.selectedAgent}/users/${context.user}/sessions/${session_id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'

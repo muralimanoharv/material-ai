@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from './context.jsx'
 // import { INPUT_JSON, translate } from './translator.jsx'
@@ -19,13 +19,14 @@ function App() {
   const [agents, setAgents] = useState([])
   const [selectedAgent, setSelectedAgent] = useState('')
   const [loading, setLoading] = useState(false)
-  const [sessionLoading, setSessionLoading] = useState(true)
   const [promptLoading, setPromptLoading] = useState(false)
   const [snack, setSnack] = useState('')
   const [currentModel, setCurrentModel] = useState(MODELS[0].model)
   const [files, setFiles] = useState([])
+  const [showHeading, setShowHeading] = useState(false)
   const [controller, setController] = useState(undefined)
   const navigate = useNavigate();
+  const location = useLocation();
 
   const isValidSession = () => !!session
 
@@ -56,11 +57,9 @@ function App() {
     let is_new_session = false
     try {
       setPromptLoading(true)
-      let user_id = user;
       if (!isValidSession()) {
         session_id = (await create_session(appContext)()).session_id
         setSession(session_id)
-        navigate(`/${session_id}`);
         is_new_session = true;
       }
       await cancelApi()
@@ -82,6 +81,7 @@ function App() {
         parts.push({ text: JSON.stringify({ fileNames }) })
       }
       const id = `${new Date().getTime()}`
+      setShowHeading(false)
       if (!options.ignoreUserHistory) {
         add_history({
           role: 'user',
@@ -110,6 +110,9 @@ function App() {
           prompt,
         })
       }
+      if (is_new_session) {
+        navigate(`/${session_id}`);
+      }
     } catch (e) {
       if (e.name === 'AbortError') {
         return;
@@ -129,11 +132,12 @@ function App() {
     }
   }
 
-  const add_history = (history) => {
+  const add_history = (newHistory) => {
     setHistory(prevHistory => {
+      if (!prevHistory || !prevHistory.length) return [newHistory]
       return [
         ...prevHistory,
-        history
+        newHistory
       ]
     })
   }
@@ -155,42 +159,18 @@ function App() {
     setHistory([])
   }
 
-  const appContext = {
-    session, setSession, user, setUser,
-    prompt, setPrompt, isValidSession,
-    send, loading, setLoading, currentModel,
-    setCurrentModel, setSnack, files, setFiles,
-    cancelApi, history, add_history, delete_history, sessions,
-    clear_history, agents, selectedAgent, setSelectedAgent,
-    promptLoading, sessionLoading
+  const on_new_chat = () => {
+    clear_history()
+    setSession()
+    navigate('/')
+    setShowHeading(true)
   }
 
-
-  const onAppLoad = async () => {
+  const getSession = async ({ sessionId, selectedAgent }) => {
     try {
       setLoading(true)
-      const agents = await fetch_agents(appContext)()
-      const selectedAgent = agents[0]
-      setAgents(agents)
-      setSelectedAgent(selectedAgent)
-      const sessions = await fetch_sessions(appContext)({ selectedAgent })
-      setSessions([...sessions].reverse())
-    } catch (e) {
-      console.error(e)
-      setSnack(ERROR_MESSAGE)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    onAppLoad()
-  }, []);
-
-  const getSession = async (sessionId) => {
-    try {
-      setSessionLoading(true)
-      const sessionDto = await fetch_session(appContext)({ session_id: sessionId })
+      const sessionDto = await fetch_session(appContext)({ session_id: sessionId, selected_agent: selectedAgent })
+      setShowHeading(false)
       setHistory(sessionDto?.events.map(event => {
         return {
           ...event.content,
@@ -203,18 +183,54 @@ function App() {
       setSnack(ERROR_MESSAGE)
     } finally {
       setTimeout(() => {
-        setSessionLoading(false)
-      }, 1000)
-
+        setLoading(false)
+      }, 500)
     }
 
   }
 
+  const appContext = {
+    session, setSession, user, setUser,
+    prompt, setPrompt, isValidSession,
+    send, loading, setLoading, currentModel,
+    setCurrentModel, setSnack, files, setFiles,
+    cancelApi, history, add_history, delete_history, sessions,
+    clear_history, agents, selectedAgent, setSelectedAgent,
+    promptLoading, getSession, showHeading,
+    on_new_chat
+  }
+
+
+  const onAppLoad = async () => {
+    try {
+      setLoading(true)
+      const agents = await fetch_agents(appContext)()
+      const selectedAgent = agents[0]
+      setAgents(agents)
+      setSelectedAgent(selectedAgent)
+      const sessions = await fetch_sessions(appContext)({ selectedAgent })
+      setSessions([...sessions].reverse())
+      if (location.pathname === '/') {
+        setShowHeading(true)
+        return;
+      }
+      let sessionId = location.pathname.substring(1)
+      setSession(sessionId)
+      await getSession({ sessionId, selectedAgent })
+    } catch (e) {
+      console.error(e)
+      setSnack(ERROR_MESSAGE)
+    } finally {
+      setTimeout(() => {
+        setLoading(false)
+      }, 500)
+    }
+  }
+
   useEffect(() => {
-    setHistory([])
-    if (!session || !selectedAgent) return;
-    getSession(session)
-  }, [session, selectedAgent])
+    onAppLoad()
+  }, []);
+
 
   return (
     <>
