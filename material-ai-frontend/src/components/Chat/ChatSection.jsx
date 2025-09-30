@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react"
+import React, { useContext, useMemo, useState } from "react"
 import { Box } from "@mui/material"
 import { ChatItemContext, AppContext } from "../../context"
 import ChatItem from "./ChatItem"
@@ -8,7 +8,6 @@ import { ERROR_MESSAGE } from "../../assets/config"
 
 export default function ChatSection() {
   const { history } = useContext(AppContext)
-
   return <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'center', position: 'relative' }}>
     <Box sx={
       {
@@ -77,14 +76,12 @@ function ChatItemSection(props) {
         } else {
           text_parts.push(part);
         }
-      } else if (!part.inlineData) {
+      } else if (!part.inline_data) {
         text_parts.push(part);
       }
     }
     return [text_parts, fileNames]
   }, [])
-
-
 
   return <ChatItemContext.Provider value={{
     chat,

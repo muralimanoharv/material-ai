@@ -90,6 +90,7 @@ export default function PromptInput() {
                         autoFocus
                         multiline
                         fullWidth
+                        id='input-base'
                         autoComplete='off'
                         sx={{
                             padding: '2px 12px', flex: 1,

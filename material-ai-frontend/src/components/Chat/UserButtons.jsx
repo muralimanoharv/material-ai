@@ -6,7 +6,7 @@ import { AppContext } from "../../context";
 
 
 export default function UserButtons(props) {
-    const { setSnack, setPrompt } = useContext(AppContext)
+    const { setSnack, setPrompt, input_focus } = useContext(AppContext)
     return <Box className="actions-child" sx={{
         marginLeft: '20px',
         opacity: '0',
@@ -23,6 +23,7 @@ export default function UserButtons(props) {
         <Tooltip title="Edit prompt">
             <IconButton onClick={() => {
                 setPrompt(props.text)
+                input_focus()
             }}>
                 <EditOutlinedIcon fontSize="small" />
             </IconButton>

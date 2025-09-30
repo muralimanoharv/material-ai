@@ -159,11 +159,16 @@ function App() {
     setHistory([])
   }
 
+  const input_focus = () => {
+    document.getElementById('input-base')?.focus()
+  }
+
   const on_new_chat = () => {
     clear_history()
     setSession()
     navigate('/')
     setShowHeading(true)
+    input_focus()
   }
 
   const getSession = async ({ sessionId, selectedAgent }) => {
@@ -178,6 +183,7 @@ function App() {
           prompt: ''
         }
       }))
+      input_focus()
     } catch (e) {
       console.error(e)
       setSnack(ERROR_MESSAGE)
@@ -197,7 +203,7 @@ function App() {
     cancelApi, history, add_history, delete_history, sessions,
     clear_history, agents, selectedAgent, setSelectedAgent,
     promptLoading, getSession, showHeading,
-    on_new_chat
+    on_new_chat, input_focus
   }
 
 
