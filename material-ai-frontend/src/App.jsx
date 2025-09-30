@@ -81,12 +81,14 @@ function App() {
         parts.push(...fileParts)
         parts.push({ text: JSON.stringify({ fileNames }) })
       }
+      const id = `${new Date().getTime()}`
       if (!options.ignoreUserHistory) {
         add_history({
           role: 'user',
-          id: `${new Date().getTime()}`,
+          id,
           prompt,
-          parts
+          parts,
+          loading: true
         })
       }
 
@@ -99,6 +101,7 @@ function App() {
           parts,
           controller
         })
+      update_history(id, { loading: false })
       for (let message of messages) {
         add_history({
           ...message.content,
@@ -137,6 +140,15 @@ function App() {
   const delete_history = (id) => {
     setHistory(prevHistory => {
       return [...prevHistory.filter(history => history.id !== id)]
+    })
+  }
+
+  const update_history = (id, history) => {
+    setHistory(prevHistory => {
+      return [...prevHistory.map((hist) => {
+        if (hist.id !== id) return hist
+        return { ...hist, ...history }
+      })]
     })
   }
   const clear_history = () => {
@@ -193,7 +205,7 @@ function App() {
       setTimeout(() => {
         setSessionLoading(false)
       }, 1000)
-      
+
     }
 
   }

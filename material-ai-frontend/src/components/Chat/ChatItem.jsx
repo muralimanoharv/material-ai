@@ -1,5 +1,5 @@
 
-import { Box, Typography, useTheme } from "@mui/material"
+import { Box, CircularProgress, Typography, useTheme } from "@mui/material"
 import { useContext, useMemo, useState } from "react";
 import { ChatItemContext } from "../../context";
 import ModelButtons from "./ModelButtons";
@@ -39,13 +39,13 @@ export default function ChatItem(props) {
       </Typography>
     }
     if (props.part.functionCall) {
-      return <Box sx={{ display: 'flex', gap: '5px', justifyContent: 'center', alignItems: 'center' }}>
+      return <Box sx={{ display: 'flex', gap: '25px', justifyContent: 'center', alignItems: 'center' }}>
         <BoltIcon />
         {props.part.functionCall.name}
       </Box>
     }
     if (props.part.functionResponse) {
-      return <Box sx={{ display: 'flex', gap: '5px', justifyContent: 'center', alignItems: 'center' }}>
+      return <Box sx={{ display: 'flex', gap: '25px', justifyContent: 'center', alignItems: 'center' }}>
         <CheckIcon />
         {props.part.functionResponse.name}
       </Box>
@@ -81,7 +81,7 @@ export default function ChatItem(props) {
       alignItems: 'flex-start'
     }}
     >
-      {isUser() && !isFunctionCall() && <UserButtons text={text}/>}
+      {isUser() && !isFunctionCall() && <UserButtons text={text} />}
       <Box sx={{
         backgroundColor,
         borderRadius: '24px',
@@ -113,5 +113,66 @@ export default function ChatItem(props) {
       && negativeFeedbackToggle && (
         <ChatNegativeFeebackSelection />)
     }
+    {
+      chat?.loading && 
+      <Box
+        className="gemini-loader-container"
+        sx={{
+          borderRadius: '24px',
+          padding: '2px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '20px'
+        }}
+      >
+        <LoadingIndicator />
+        <Typography className="gemini-spark" variant="p">Just a sec...</Typography>
+
+
+      </Box>
+    }
   </Box>
+}
+
+
+function LoadingIndicator() {
+  const GradientSVG = () => (
+    <svg width={0} height={0}>
+      <linearGradient id="linearColors" x1={0} y1={0} x2={1} y2={1}>
+        <stop offset="0%" stopColor="#4285F4" />
+        <stop offset="25%" stopColor="#34A853" />
+        <stop offset="50%" stopColor="#FBBC05" />
+        <stop offset="75%" stopColor="#EA4335" />
+        <stop offset="100%" stopColor="#4285F4" />
+      </linearGradient>
+    </svg>
+  );
+  return (
+    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+      <GradientSVG />
+      <CircularProgress variant="indeterminate" enableTrackSlot size={30} sx={{
+        '& .MuiCircularProgress-circle': {
+          stroke: 'url(#linearColors)',
+        },
+      }} />
+      <Box
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: 'absolute',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <img
+          src="/gemini.svg"
+          alt="Loading icon"
+          style={{ width: '50%', height: '50%', borderRadius: '50%' }}
+        />
+      </Box>
+    </Box>
+  );
 }

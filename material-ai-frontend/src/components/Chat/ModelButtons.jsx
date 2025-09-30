@@ -91,7 +91,7 @@ export default function ModelButtons(props) {
   return <Box
     className="actions-child actions-child-model"
     sx={{
-      marginLeft: '20px',
+      marginLeft: '60px',
       opacity: !!feedback ? '1' : '0',
       transition: 'opacity 0.5s ease'
     }}>

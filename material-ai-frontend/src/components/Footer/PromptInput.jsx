@@ -39,7 +39,7 @@ export default function PromptInput() {
         })
     }
 
-    let boxShadow = '0 -25px 15px -5px rgba(255, 255, 255, 0.5)'
+    let boxShadow = '0 -25px 15px -5px rgba(255, 255, 255, 1)'
     if (theme.palette.mode == 'dark') {
         boxShadow = '0 -25px 15px -5px rgba(19, 19, 20, 0.5)'
     }
@@ -63,6 +63,7 @@ export default function PromptInput() {
             margin: '0 16px',
             transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
             boxShadow,
+            zIndex: '999'
         }}>
             <Box
                 component="form"
