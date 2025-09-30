@@ -24,7 +24,7 @@ root_agent = Agent(
     model="gemini-2.0-flash",
     description="You are a agnet used to build React Material UI Application",
     instruction="""
-    Say Hello and pass on to sub agent called "sub_agent_1" when  user questions about current affairs 
+    Say Hello and pass on to sub agent called "sub_agent_1" when  user questions about current affairs
     """,
-    sub_agents=[another_agent]
+    sub_agents=[another_agent, another_agent_2]
 )
