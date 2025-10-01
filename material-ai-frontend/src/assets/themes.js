@@ -123,7 +123,6 @@ export const lightTheme = createTheme({
     },
 });
 
-// --- Dark Theme (Gemini-inspired) ---
 export const darkTheme = createTheme({
     ...commonThemeOptions(false),
     palette: {

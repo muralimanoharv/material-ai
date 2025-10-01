@@ -68,15 +68,12 @@ function App() {
       const parts = [{ text: prompt }]
       if (options.submittedFiles?.length) {
         let submittedFiles = options.submittedFiles;
-        const fileDataPromises = submittedFiles.map(fileToBase64);
-        const resolvedFileData = await Promise.all(fileDataPromises);
-        const fileParts = resolvedFileData.map((file) => ({
+        const fileParts = submittedFiles.map((file) => ({
           inline_data: {
-            mime_type: file.type,
-            data: file.data
+            ...file.inlineData
           }
         }));
-        const fileNames = resolvedFileData.map((file) => file.name);
+        const fileNames = submittedFiles.map((file) => file.name);
         parts.push(...fileParts)
         parts.push({ text: JSON.stringify({ fileNames }) })
       }
@@ -108,6 +105,9 @@ function App() {
           role: 'model',
           id: message.id,
           prompt,
+          actions: {
+            ...message.actions
+          }
         })
       }
       if (is_new_session) {
@@ -180,7 +180,10 @@ function App() {
         return {
           ...event.content,
           id: event.id,
-          prompt: ''
+          prompt: '',
+          actions: {
+            ...event.actions
+          }
         }
       }))
       input_focus()

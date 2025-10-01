@@ -5,6 +5,7 @@ import { Box, IconButton, ListItemIcon, Tooltip, Typography, useTheme } from '@m
 import { FILE_OPTIONS } from '../../assets/config';
 import AddIcon from '@mui/icons-material/Add';
 import { AppContext } from '../../context';
+import { fileToBase64 } from '../../api';
 
 export default function FileSelectMenu(props) {
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -28,7 +29,7 @@ export default function FileSelectMenu(props) {
         return !!currentFiles.find(file => file.name === name)
     }
 
-    const handleFileChange = (event) => {
+    const handleFileChange = async (event) => {
         const newFiles = [...props.files]
         if (event.target.files && event.target.files.length) {
             for (let file of event.target.files) {
@@ -36,7 +37,16 @@ export default function FileSelectMenu(props) {
                     setSnack(`You already uploaded a file named ${file.name}`)
                     continue;
                 }
-                newFiles.push(file)
+                const {data, type} = await fileToBase64(file)
+                newFiles.push({
+                    name: file.name,
+                    version: 0,
+                    type: 'upload',
+                    inlineData: {
+                        data,
+                        mimeType: type
+                    }
+                })
             }
         }
         props.setFiles([...newFiles])

@@ -63,9 +63,11 @@ function ChatItemSection(props) {
     }
   }
 
-  const [text_parts, fileNames] = useMemo(() => {
-    let text_parts = []
+  const [text_parts, files] = useMemo(() => {
+    let textParts = []
     let fileNames = []
+    let fileData = []
+    let filesList = []
 
     for (let part of chat.parts) {
       if (part.text) {
@@ -74,23 +76,50 @@ function ChatItemSection(props) {
           let json = JSON.parse(text)
           if (json.fileNames) fileNames = json.fileNames ?? []
         } else {
-          text_parts.push(part);
+          textParts.push(part);
         }
-      } else if (!part.inline_data) {
-        text_parts.push(part);
+      } else if (part.inline_data || part.inlineData) {
+        fileData.push(part.inline_data || part.inlineData)
+      } else {
+        textParts.push(part)
       }
     }
-    return [text_parts, fileNames]
+    for(let i = 0; i < fileNames.length; i++) {
+      let fileDto = {
+        name: fileNames[i],
+        version: 0,
+        type: 'upload',
+      }
+      if(fileData[i]) {
+        fileDto = {...fileDto, inlineData: {...fileData[i]}}
+      }
+      filesList.push(fileDto)
+    }
+
+    if (chat?.actions?.artifact_delta) {
+      Object.keys(chat.actions.artifact_delta)
+        .forEach(key => {
+          filesList.push({
+            name: key,
+            version: chat.actions.artifact_delta[key],
+            type: 'artifact'
+          })
+        })
+    }
+    return [textParts, filesList]
   }, [])
 
-  return <ChatItemContext.Provider value={{
+
+  const chatContext = {
     chat,
-    fileNames, postPostiveFeedback,
+    files, postPostiveFeedback,
     feedback, setFeedback, postNegativeFeedback, negativeFeedbackToggle, setNegativeFeedbackToggle
-  }} key={chat.id}>
+  }
+
+  return <ChatItemContext.Provider value={chatContext} key={chat.id}>
     <React.Fragment key={chat.id}>
       {text_parts.map((part, idx) => {
-        return <ChatItem key={idx} part={part} role={chat.role} fileNames={fileNames} />
+        return <ChatItem key={idx} part={part} role={chat.role} files={files} />
       })}
     </React.Fragment>
   </ChatItemContext.Provider>

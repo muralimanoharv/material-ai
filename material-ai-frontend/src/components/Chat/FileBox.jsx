@@ -1,15 +1,56 @@
 import { useTheme } from "@emotion/react";
 import { Box, IconButton, Tooltip, Typography } from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
+import { fetch_artifact, formatBase64Data } from "../../api";
+import { useContext } from "react";
+import { AppContext } from "../../context";
+import { ERROR_MESSAGE } from "../../assets/config";
 
 export default function FileBox(props) {
+    const context = useContext(AppContext)
     const file = props.file;
     const theme = useTheme()
-    const name = file.name.split('.')[0]
-    const extension = file.name.split('.')[1]
+    const fileName = file.name;
+    const parts = fileName.split('.')
+    const name = parts[0]
+    const extension = parts[parts.length - 1]
 
-    return <Tooltip title={file.name} key={file.name}>
+    const onClick = async () => {
+        try {
+            if (props.showClear) return
+            let inlineData
+            if (file.inlineData) {
+                inlineData = file.inlineData
+            } else if (file.type === 'artifact') {
+                let artifact = await fetch_artifact(context)({ artifact_name: file.name, version: file.version })
+                inlineData = artifact.inlineData
+            }
+            if (!inlineData) return
+            const response = await fetch(
+                formatBase64Data(inlineData.data, inlineData.mimeType || inlineData.mime_type))
+            const blob = await response.blob()
+            const blobUrl = URL.createObjectURL(blob);
+            window.open(blobUrl, '_blank');
+
+        } catch (e) {
+            console.error(e)
+            context.setSnack(ERROR_MESSAGE)
+        }
+    }
+
+    if (['jpg', 'jpeg', 'png', 'svg', 'gif', 'webp'].includes(extension)) {
+        return <Tooltip title={fileName} key={fileName}>
+            <img
+                style={{ width: '80px', height: '80px', objectFit: 'cover', cursor: 'pointer' }}
+                src={formatBase64Data(file.inlineData.data, file.inlineData.mimeType)}
+                onClick={onClick}
+                alt={fileName} />
+        </Tooltip>
+    }
+
+    return <Tooltip title={fileName} key={fileName}>
         <Box
+            onClick={onClick}
             sx={{
                 minWidth: '150px',
                 width: '210px',
@@ -22,11 +63,11 @@ export default function FileBox(props) {
                 },
                 cursor: !props.showClear ? 'pointer' : undefined,
                 backgroundColor: theme.palette.background?.card,
-                '&:hover' : {
+                '&:hover': {
                     backgroundColor: !props.showClear ? theme.palette.background?.cardHover : undefined
                 }
             }}
-            key={file.name}>
+            key={fileName}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
                 <Box sx={{
                     display: 'flex',
@@ -37,7 +78,7 @@ export default function FileBox(props) {
                 }}>
                     <Typography noWrap color={theme.palette.text.primary} variant='h5'>{name}</Typography>
                     {props.showClear && <IconButton
-                        onClick={() => props.onClearFile(file.name)}
+                        onClick={() => props.onClearFile(fileName)}
                         className='file-clear-button'
                         sx={{
                             backgroundColor: theme.palette.background.default,
@@ -49,12 +90,14 @@ export default function FileBox(props) {
                         <ClearIcon fontSize='small' />
                     </IconButton>}
                 </Box>
-                {
-                    extension == 'pdf' && <Box sx={{ display: 'flex', gap: '10px' }}>
-                        <img style={{ width: '16px', height: '16px' }} src='/pdf.png' alt='pdf' />
-                        <Typography variant='h6' fontWeight={500}>PDF</Typography>
-                    </Box>
-                }
+                <Box sx={{ display: 'flex', gap: '10px' }}>
+                    <img style={{ width: '16px', height: '16px' }}
+                        src={extension == 'pdf' ? `/pdf.png` : '/csv.png'}
+                        alt={extension} />
+                    <Typography variant='h6' textTransform='uppercase' fontWeight={500}>
+                        {extension}
+                    </Typography>
+                </Box>
             </Box>
         </Box>
 

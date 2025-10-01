@@ -67,10 +67,10 @@ export default function ChatItem(props) {
         },
         display: 'flex',
         flexDirection: 'column',
-        gap: props.fileNames?.length ? '5px' : undefined
+        gap: props.files?.length ? '5px' : undefined
       }
     }>
-    <FilesBox fileNames={props.fileNames} />
+    <FilesBox alignSelf={alignSelf} justifyContent={justifyContent} files={props.files} />
     <Box sx={{
       display: 'flex',
       flexDirection: 'row',

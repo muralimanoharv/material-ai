@@ -10,14 +10,21 @@ export default function FilesBox(props) {
         display: 'flex',
         flexDirection: 'row',
         gap: '10px',
-        alignSelf: 'flex-end',
-        justifyContent: 'flex-end',
+        alignSelf: props.alignSelf,
+        justifyContent: props.justifyContent,
         width: '100%',
         alignItems: 'center',
-        flexWrap: 'wrap'
+        flexWrap: 'wrap',
+        marginLeft: '60px'
     }}>
         {
-            props.fileNames.map(fileName => <FileBox key={fileName} file={{ name: fileName }} />)
+            props.files.map(
+                (file) =>
+                    <FileBox
+                        key={file.name}
+                        file={file}
+                    />
+            )
         }
     </Box>
 }

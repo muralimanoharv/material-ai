@@ -119,6 +119,35 @@ export function fileToBase64(file) {
 }
 
 
+export function fetch_artifact(context) {
+    return async ({ artifact_name, version }) => {
+        const response = await fetch(`${HOST}/apps/${context.selectedAgent}/users/${context.user}/sessions/${context.session}/artifacts/${artifact_name}?version=${version}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        let body = await response.json();
+        return body
+    }
+}
+
+export function formatBase64Data(data, mimeType) {
+    return `data:${mimeType};base64,${fixBase64String(data)}`;
+}
+
+export function fixBase64String(base64) {
+    // Replace URL-safe characters if they exist
+    base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+
+    // Fix base64 padding
+    while (base64.length % 4 !== 0) {
+        base64 += '=';
+    }
+
+    return base64;
+}
+
 
 /**
  * Checks if a string is a valid JSON string.
