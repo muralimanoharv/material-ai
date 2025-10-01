@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { AppContext, LayoutContext } from "../../context";
 import MenuIcon from '@mui/icons-material/Menu';
 import { useMobileHook } from "../../hooks";
+import { config } from "../../assets/config";
 
 export default function Header() {
     const { loading, on_new_chat} = useContext(AppContext)
@@ -30,8 +31,7 @@ export default function Header() {
                 <Box sx={{ cursor: 'pointer' }} onClick={() => {
                     on_new_chat()
                 }}>
-                    <Typography fontSize={'22px'} lineHeight={'26px'} variant="h4"> Gemini </Typography>
-
+                    <Typography fontSize={'22px'} lineHeight={'26px'} variant="h4"> {config.title} </Typography>
                 </Box>
             </Box>
             {

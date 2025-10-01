@@ -2,9 +2,9 @@ import { useContext, useState } from "react";
 import MaterialList from "../material/MaterialList";
 import CloseIcon from '@mui/icons-material/Close';
 import { Box, Button, IconButton, ListItem, ListItemButton, TextField, Typography, useTheme } from "@mui/material"
-import { FEEDBACK } from "../../assets/config";
 import { ChatItemContext } from "../../context";
 import CheckIcon from '@mui/icons-material/Check';
+import { config } from "../../assets/config";
 
 
 
@@ -41,7 +41,7 @@ export default function ChatNegativeFeebackSelection() {
         <Box>
             <MaterialList>
                 {
-                    FEEDBACK.negative.categories.map(category => {
+                    config.feedback.negative.categories.map(category => {
                         return <ListItem disablePadding key={category}>
                             <ListItemButton
                                 onClick={() => {

@@ -2,6 +2,7 @@ import ChatSection from "../Chat/ChatSection";
 import { useContext } from "react";
 import { AppContext } from "../../context";
 import { Box, Typography, useTheme } from "@mui/material";
+import { config } from "../../assets/config";
 
 
 export default function ChatPage() {
@@ -28,7 +29,7 @@ export default function ChatPage() {
                     fontWeight={400}
                     variant="h1"
                     className="tagline-text">
-                    What should we do today?
+                    {config.greeting}
                 </Typography>
             </Box>
         )}

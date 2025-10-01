@@ -5,7 +5,7 @@ import { AppContext } from './context.jsx'
 // import { INPUT_JSON, translate } from './translator.jsx'
 import { create_session, send_message, fileToBase64, fetch_sessions, fetch_session, fetch_agents } from './api.js'
 import Layout from './components/Layout/Layout.jsx'
-import { ERROR_MESSAGE, MODELS } from './assets/config.js'
+import { config } from './assets/config.js'
 import { Snackbar } from '@mui/material'
 import ChatPage from './components/pages/ChatPage.jsx';
 import './App.css'
@@ -21,7 +21,7 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [promptLoading, setPromptLoading] = useState(false)
   const [snack, setSnack] = useState('')
-  const [currentModel, setCurrentModel] = useState(MODELS[0].model)
+  const [currentModel, setCurrentModel] = useState(config.models[0].model)
   const [files, setFiles] = useState([])
   const [showHeading, setShowHeading] = useState(false)
   const [controller, setController] = useState(undefined)
@@ -51,7 +51,7 @@ function App() {
 
   }
 
-  const send = async (prompt, options = { ignoreUserHistory: false, submittedFiles: [] }) => {
+  const send = async (prompt, options = { submittedFiles: [] }) => {
     if (!prompt) return
     let session_id = session;
     let is_new_session = false
@@ -79,15 +79,14 @@ function App() {
       }
       const id = `${new Date().getTime()}`
       setShowHeading(false)
-      if (!options.ignoreUserHistory) {
-        add_history({
-          role: 'user',
-          id,
-          prompt,
-          parts,
-          loading: true
-        })
-      }
+      add_history({
+        role: 'user',
+        id,
+        prompt,
+        parts,
+        loading: true
+      })
+
 
       setPrompt('')
       setFiles([])
@@ -120,7 +119,7 @@ function App() {
       console.error(e)
       setPrompt(prompt)
       setFiles(options.submittedFiles)
-      setSnack(ERROR_MESSAGE)
+      setSnack(config.errorMessage)
     } finally {
       setController(undefined)
       setPromptLoading(false)
@@ -176,20 +175,26 @@ function App() {
       setLoading(true)
       const sessionDto = await fetch_session(appContext)({ session_id: sessionId, selected_agent: selectedAgent })
       setShowHeading(false)
-      setHistory(sessionDto?.events.map(event => {
-        return {
+      let history = []
+      let prevPrompt = ''
+      for (let event of sessionDto?.events) {
+        if(event.content.role == 'user') {
+          prevPrompt = event?.content?.parts[0]?.text ?? prevPrompt
+        }
+        history.push({
           ...event.content,
           id: event.id,
-          prompt: '',
+          prompt: prevPrompt,
           actions: {
             ...event.actions
           }
-        }
-      }))
+        })
+      }
+      setHistory(history)
       input_focus()
     } catch (e) {
       console.error(e)
-      setSnack(ERROR_MESSAGE)
+      setSnack(config.errorMessage)
     } finally {
       setTimeout(() => {
         setLoading(false)
@@ -228,7 +233,7 @@ function App() {
       await getSession({ sessionId, selectedAgent })
     } catch (e) {
       console.error(e)
-      setSnack(ERROR_MESSAGE)
+      setSnack(config.errorMessage)
     } finally {
       setTimeout(() => {
         setLoading(false)

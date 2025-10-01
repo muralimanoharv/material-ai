@@ -2,10 +2,19 @@ import * as React from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Box, IconButton, ListItemIcon, Tooltip, Typography, useTheme } from '@mui/material';
-import { FILE_OPTIONS } from '../../assets/config';
 import AddIcon from '@mui/icons-material/Add';
 import { AppContext } from '../../context';
 import { fileToBase64 } from '../../api';
+import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
+
+
+
+const FILE_OPTIONS = [
+    {
+        title: 'Upload files',
+        icon: AttachFileOutlinedIcon
+    },
+]
 
 export default function FileSelectMenu(props) {
     const [anchorEl, setAnchorEl] = React.useState(null);

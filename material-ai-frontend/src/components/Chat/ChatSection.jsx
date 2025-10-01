@@ -4,7 +4,7 @@ import { ChatItemContext, AppContext } from "../../context"
 import ChatItem from "./ChatItem"
 import { CHAT_SECTION_WIDTH } from "../../assets/themes"
 import { isValidJson, send_feedback } from "../../api"
-import { ERROR_MESSAGE } from "../../assets/config"
+import { config } from "../../assets/config"
 
 export default function ChatSection() {
   const { history } = useContext(AppContext)
@@ -46,7 +46,7 @@ function ChatItemSection(props) {
       context.setSnack('Thank you! Your feedback helps make Gemini better for everyone')
     } catch (e) {
       console.error(e);
-      context.setSnack(ERROR_MESSAGE)
+      context.setSnack(config.errorMessage)
     }
   }
 
@@ -59,7 +59,7 @@ function ChatItemSection(props) {
       context.setSnack('Thank you for helping improve Gemini')
     } catch (e) {
       console.error(e);
-      context.setSnack(ERROR_MESSAGE)
+      context.setSnack(config.errorMessage)
     }
   }
 

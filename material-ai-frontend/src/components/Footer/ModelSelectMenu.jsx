@@ -5,8 +5,8 @@ import MenuItem from '@mui/material/MenuItem';
 import { Box, Typography } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { MODELS } from '../../assets/config';
 import { AppContext } from '../../context';
+import { config } from '../../assets/config';
 
 export default function ModelSelectMenu() {
     const { currentModel } = React.useContext(AppContext)
@@ -18,7 +18,7 @@ export default function ModelSelectMenu() {
     const handleClose = () => {
         setAnchorEl(null);
     };
-    const verticle = -100 - (MODELS.length - 1) * 50
+    const verticle = -100 - (config.models.length - 1) * 50
 
     return (
         <React.Fragment>
@@ -61,7 +61,7 @@ export default function ModelSelectMenu() {
                         variant='h4'>
                         Choose your model
                     </Typography>
-                    {MODELS.map(({ model, tagline }) =>
+                    {config.models.map(({ model, tagline }) =>
                         <ThemeItem model={model} tagline={tagline} key={model} />)}
                 </Box>
             </Menu>

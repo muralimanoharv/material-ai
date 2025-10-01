@@ -8,27 +8,27 @@ import CopyAllOutlinedIcon from '@mui/icons-material/CopyAllOutlined';
 import { useContext } from 'react';
 import { AppContext, ChatItemContext } from '../../context';
 import { Box, IconButton, Tooltip } from '@mui/material';
-import { FEEDBACK } from '../../assets/config';
+import { config } from '../../assets/config';
 
 
 export default function ModelButtons(props) {
 
-  const { send, setSnack, delete_history } = useContext(AppContext)
+  const { send, setSnack } = useContext(AppContext)
   const { feedback, setFeedback, postPostiveFeedback, chat, setNegativeFeedbackToggle } = useContext(ChatItemContext)
 
   const actions = [
     {
       icon: <ThumbUpOffAltIcon fontSize="small" />,
       filledIcon: <ThumbUpIcon fontSize='small' />,
-      value: FEEDBACK.positive.value,
+      value: config.feedback.positive.value,
       tooltip: 'Good response',
       onClick: async () => {
-        if (feedback?.feedback_category === FEEDBACK.positive.value) {
+        if (feedback?.feedback_category === config.feedback.positive.value) {
           setFeedback()
           return
         }
         const dto = {
-          feedback_category: FEEDBACK.positive.value,
+          feedback_category: config.feedback.positive.value,
           feedback_text: ''
         }
         await postPostiveFeedback(dto)
@@ -37,15 +37,15 @@ export default function ModelButtons(props) {
     {
       icon: <ThumbDownOffAltIcon fontSize="small" />,
       filledIcon: <ThumbDownIcon fontSize='small' />,
-      value: FEEDBACK.negative.value,
+      value: config.feedback.negative.value,
       tooltip: 'Bad response',
       onClick: async () => {
-        if (feedback?.feedback_category === FEEDBACK.negative.value) {
+        if (feedback?.feedback_category === config.feedback.negative.value) {
           setFeedback()
           return
         }
         const dto = {
-          feedback_category: FEEDBACK.negative.value,
+          feedback_category: config.feedback.negative.value,
           feedback_text: '',
           id: chat.id
         }
@@ -58,8 +58,7 @@ export default function ModelButtons(props) {
       tooltip: 'Redo',
       onClick: () => {
         let prompt = chat.prompt
-        delete_history(chat.id)
-        send(prompt, { ignoreUserHistory: true })
+        send(prompt)
       },
     },
     {
@@ -77,13 +76,13 @@ export default function ModelButtons(props) {
     }
   ]
   let getColor = (action) => {
-    if ([FEEDBACK.negative.value, FEEDBACK.positive.value].includes(action.value)) {
+    if ([config.feedback.negative.value, config.feedback.positive.value].includes(action.value)) {
       if (feedback?.feedback_category == action.value) return 'primary';
     }
     return "default"
   }
   let getIcon = (action) => {
-    if ([FEEDBACK.negative.value, FEEDBACK.positive.value].includes(action.value)) {
+    if ([config.feedback.negative.value, config.feedback.positive.value].includes(action.value)) {
       if (feedback?.feedback_category == action.value) return action.filledIcon;
     }
     return action.icon

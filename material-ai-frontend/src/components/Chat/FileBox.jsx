@@ -4,7 +4,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { fetch_artifact, formatBase64Data } from "../../api";
 import { useContext } from "react";
 import { AppContext } from "../../context";
-import { ERROR_MESSAGE } from "../../assets/config";
+import { config } from "../../assets/config";
 
 export default function FileBox(props) {
     const context = useContext(AppContext)
@@ -34,7 +34,7 @@ export default function FileBox(props) {
 
         } catch (e) {
             console.error(e)
-            context.setSnack(ERROR_MESSAGE)
+            context.setSnack(config.errorMessage)
         }
     }
 

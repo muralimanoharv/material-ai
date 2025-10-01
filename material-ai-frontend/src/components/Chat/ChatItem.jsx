@@ -9,8 +9,8 @@ import CheckIcon from '@mui/icons-material/Check';
 import UserTextToggleButton from "./UserTextToggleButton";
 import UserButtons from "./UserButtons";
 import FilesBox from "./FilesBox";
-import { FEEDBACK } from "../../assets/config";
 import ChatNegativeFeebackSelection from "./ChatNegativeFeebackSelection";
+import { config } from "../../assets/config";
 
 export default function ChatItem(props) {
   const theme = useTheme()
@@ -109,7 +109,7 @@ export default function ChatItem(props) {
     {!isUser() && !isFunctionCall() ? <ModelButtons {...props} /> : null}
     {
       feedback
-      && feedback.feedback_category == FEEDBACK.negative.value
+      && feedback.feedback_category == config.feedback.negative.value
       && negativeFeedbackToggle && (
         <ChatNegativeFeebackSelection />)
     }
