@@ -15,7 +15,7 @@ export default function FilesBox(props) {
         width: '100%',
         alignItems: 'center',
         flexWrap: 'wrap',
-        marginLeft: '60px'
+        paddingLeft: '60px'
     }}>
         {
             props.files.map(

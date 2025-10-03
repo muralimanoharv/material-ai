@@ -7,9 +7,10 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { AppContext } from '../../context';
 import { config } from '../../assets/config';
+import { menuNeedsLogin } from '../../hoc';
 
 export default function ModelSelectMenu() {
-    const { currentModel } = React.useContext(AppContext)
+    const { currentModel, user } = React.useContext(AppContext)
     const [anchorEl, setAnchorEl] = React.useState(null); 
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
@@ -19,6 +20,8 @@ export default function ModelSelectMenu() {
         setAnchorEl(null);
     };
     const verticle = -100 - (config.models.length - 1) * 50
+
+    if(!user) return null;
 
     return (
         <React.Fragment>
@@ -62,14 +65,14 @@ export default function ModelSelectMenu() {
                         Choose your model
                     </Typography>
                     {config.models.map(({ model, tagline }) =>
-                        <ThemeItem model={model} tagline={tagline} key={model} />)}
+                        <ModelItem model={model} tagline={tagline} key={model} />)}
                 </Box>
             </Menu>
         </React.Fragment>
     );
 }
 
-function ThemeItem({ model, tagline }) {
+function ModelItem({ model, tagline }) {
     const { currentModel } = React.useContext(AppContext)
     return <MenuItem key={model}>
         <Box sx={{

@@ -15,7 +15,6 @@ import { Drawer } from '@mui/material';
 import { useMobileHook } from '../../hooks';
 
 export default function Layout(props) {
-    const { sessions } = React.useContext(AppContext)
     const [open, setOpen] = React.useState(false);
     const [hoverOpen, setHoverOpen] = React.useState(false);
     const [settingsDrawerOpen, setSettingsDrawerOpen] = React.useState(false);
@@ -77,7 +76,7 @@ export default function Layout(props) {
                             sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                             <NewChatButton />
                             <Box sx={{ flexGrow: 1, display: 'flex', overflowY: 'auto', overflowX: 'hidden' }}>
-                                {!!sessions.length && <SessionHistorySection />}
+                                <SessionHistorySection />
                             </Box>
                             <SettingsButton />
                         </Box>

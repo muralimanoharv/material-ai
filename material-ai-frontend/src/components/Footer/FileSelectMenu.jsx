@@ -6,6 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { AppContext } from '../../context';
 import { fileToBase64 } from '../../api';
 import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
+import { menuNeedsLogin } from '../../hoc';
 
 
 
@@ -16,10 +17,9 @@ const FILE_OPTIONS = [
     },
 ]
 
-export default function FileSelectMenu(props) {
+function FileSelectMenu(props) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const fileInputRef = React.useRef(null);
-    const theme = useTheme()
     const { setSnack } = React.useContext(AppContext)
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
@@ -29,7 +29,7 @@ export default function FileSelectMenu(props) {
         setAnchorEl(null);
     };
 
-    const uploadFile = () => {
+    const onFileUpload = () => {
         fileInputRef.current.click();
     }
 
@@ -46,7 +46,7 @@ export default function FileSelectMenu(props) {
                     setSnack(`You already uploaded a file named ${file.name}`)
                     continue;
                 }
-                const {data, type} = await fileToBase64(file)
+                const { data, type } = await fileToBase64(file)
                 newFiles.push({
                     name: file.name,
                     version: 0,
@@ -91,7 +91,7 @@ export default function FileSelectMenu(props) {
                 id="file-menu"
                 anchorEl={anchorEl}
                 anchorOrigin={{
-                    vertical: -50,
+                    vertical: -70,
                     horizontal: 'left',
                 }}
 
@@ -103,18 +103,27 @@ export default function FileSelectMenu(props) {
                     },
                 }}
             >
-                <Box sx={{ width: 200 }}>
-                    {FILE_OPTIONS.map(({ title, icon: Icon }) => {
-                        return <MenuItem onClick={() => uploadFile()} key={title}>
-                            <ListItemIcon>
-                                {<Icon fontSize='small' />}
-                            </ListItemIcon>
-                            <Typography variant='h5'>{title}</Typography>
-                        </MenuItem>
-                    })}
+                <FileSelectMenuBody onFileUpload={onFileUpload} />
 
-                </Box>
             </Menu>
         </div>
     );
 }
+
+
+const FileSelectMenuBody = menuNeedsLogin((props) => {
+    return <Box sx={{ width: 200 }}>
+        {FILE_OPTIONS.map(({ title, icon: Icon }) => {
+            return <MenuItem onClick={() => props.uploadFile()} key={title}>
+                <ListItemIcon>
+                    {<Icon fontSize='small' />}
+                </ListItemIcon>
+                <Typography variant='h5'>{title}</Typography>
+            </MenuItem>
+        })}
+
+    </Box>
+}, 'Sign in to upload files')
+
+
+export default FileSelectMenu

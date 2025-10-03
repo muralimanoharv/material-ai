@@ -3,16 +3,17 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from './context.jsx'
 // import { INPUT_JSON, translate } from './translator.jsx'
-import { create_session, send_message, fileToBase64, fetch_sessions, fetch_session, fetch_agents } from './api.js'
+import { create_session, send_message, fileToBase64, fetch_sessions, fetch_session, fetch_agents, fetch_user, UNAUTHORIZED, NOTFOUND } from './api.js'
 import Layout from './components/Layout/Layout.jsx'
 import { config } from './assets/config.js'
 import { Snackbar } from '@mui/material'
 import ChatPage from './components/pages/ChatPage.jsx';
 import './App.css'
+import LoginPage from './components/pages/LoginPage.jsx';
 
 function App() {
   const [session, setSession] = useState()
-  const [user, setUser] = useState('Murali')
+  const [user, setUser] = useState(undefined)
   const [prompt, setPrompt] = useState('')
   const [history, setHistory] = useState([])
   const [sessions, setSessions] = useState([])
@@ -55,6 +56,7 @@ function App() {
     if (!prompt) return
     let session_id = session;
     let is_new_session = false
+    const id = `${new Date().getTime()}`
     try {
       setPromptLoading(true)
       if (!isValidSession()) {
@@ -77,7 +79,6 @@ function App() {
         parts.push(...fileParts)
         parts.push({ text: JSON.stringify({ fileNames }) })
       }
-      const id = `${new Date().getTime()}`
       setShowHeading(false)
       add_history({
         role: 'user',
@@ -116,9 +117,15 @@ function App() {
       if (e.name === 'AbortError') {
         return;
       }
-      console.error(e)
+      if(e.name === UNAUTHORIZED) {
+        update_history(id, { loading: false })
+        setHistory([])
+        setShowHeading(true)
+        return
+      }
       setPrompt(prompt)
       setFiles(options.submittedFiles)
+      console.error(e)
       setSnack(config.errorMessage)
     } finally {
       setController(undefined)
@@ -170,15 +177,19 @@ function App() {
     input_focus()
   }
 
-  const getSession = async ({ sessionId, selectedAgent }) => {
+  const getSession = async ({ sessionId, selectedAgent, user }) => {
     try {
       setLoading(true)
-      const sessionDto = await fetch_session(appContext)({ session_id: sessionId, selected_agent: selectedAgent })
+      const sessionDto = await fetch_session(appContext)({
+        session_id: sessionId,
+        selected_agent: selectedAgent,
+        user: user?.email
+      })
       setShowHeading(false)
       let history = []
       let prevPrompt = ''
       for (let event of sessionDto?.events) {
-        if(event.content.role == 'user') {
+        if (event.content.role == 'user') {
           prevPrompt = event?.content?.parts[0]?.text ?? prevPrompt
         }
         history.push({
@@ -193,6 +204,11 @@ function App() {
       setHistory(history)
       input_focus()
     } catch (e) {
+      if(e.name == UNAUTHORIZED) return
+      if(e.name == NOTFOUND) {
+        on_new_chat()
+        return;
+      }
       console.error(e)
       setSnack(config.errorMessage)
     } finally {
@@ -218,20 +234,32 @@ function App() {
   const onAppLoad = async () => {
     try {
       setLoading(true)
+      const user_info = await fetch_user(appContext)()
+      if(!user_info) {
+        setShowHeading(true)
+        return;
+      }
+      setUser(user_info.user_response)
+      const user = user_info;
       const agents = await fetch_agents(appContext)()
       const selectedAgent = agents[0]
       setAgents(agents)
       setSelectedAgent(selectedAgent)
-      const sessions = await fetch_sessions(appContext)({ selectedAgent })
+      const sessions = await fetch_sessions({ ...appContext, user })({ selectedAgent })
       setSessions([...sessions].reverse())
       if (location.pathname === '/') {
         setShowHeading(true)
         return;
       }
       let sessionId = location.pathname.substring(1)
+      await getSession({ sessionId, selectedAgent, user })
       setSession(sessionId)
-      await getSession({ sessionId, selectedAgent })
     } catch (e) {
+      setShowHeading(true)
+      if(e.name == UNAUTHORIZED) {
+        navigate("/")
+        return
+      };
       console.error(e)
       setSnack(config.errorMessage)
     } finally {
@@ -251,6 +279,7 @@ function App() {
       <AppContext.Provider value={appContext}>
         <Layout history={history}>
           <Routes>
+            <Route path="/login" element={<LoginPage />} />
             <Route path="/:sessionId" element={<ChatPage />} />
             <Route path="/" element={<ChatPage />} />
           </Routes>

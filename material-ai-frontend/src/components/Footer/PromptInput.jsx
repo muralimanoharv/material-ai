@@ -16,7 +16,7 @@ import FileBox from '../Chat/FileBox';
 export default function PromptInput() {
 
     const { prompt, setPrompt, send, promptLoading, 
-        files, setFiles, cancelApi } = useContext(AppContext)
+        files, setFiles, cancelApi, user } = useContext(AppContext)
     const theme = useTheme()
     const [fullScreen, setFullScreen] = useState(false)
     
@@ -87,6 +87,7 @@ export default function PromptInput() {
                         onChange={(e) => setPrompt(e.target.value)}
                         onKeyDown={handleKeyDown}
                         onPaste={handlePaste}
+                        disabled={!user}
                         autoFocus
                         multiline
                         fullWidth
@@ -106,7 +107,7 @@ export default function PromptInput() {
                                 },
                             }
                         }}
-                        placeholder="Ask Gemini"
+                        placeholder={user ? "Ask Gemini" : "Sign in to ask gemini"}
 
                         inputProps={{
                             'aria-label': 'Ask Gemini', style: {
@@ -144,7 +145,7 @@ export default function PromptInput() {
                             ) : (
                                 <Tooltip title="Submit">
                                     <IconButton
-                                        disabled={!prompt}
+                                        disabled={!prompt || !user}
                                         onClick={handleSubmit}
                                         sx={{ backgroundColor: theme.palette.background.paper }}
                                         color="default" aria-label="directions">

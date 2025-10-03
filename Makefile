@@ -13,7 +13,7 @@ build-ui:
 	@echo "UI build complete.✅"
 
 run: build-ui
-	FASTAPI_ENV=dev uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+	uv run uvicorn src.main:get_app --host 0.0.0.0 --port 8000 --reload
 
-preview: build-ui
-	FASTAPI_ENV=prod uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+debug: build-ui
+	uv run python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m uvicorn src.main:get_app --host 0.0.0.0 --port 8000 --reload

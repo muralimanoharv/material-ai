@@ -40,6 +40,14 @@ body {
   animation-fill-mode: forwards; 
 }
 
+
+.fade-in-animation {
+  animation-name: fadeIn;
+  animation-duration: 0.2s; 
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards; 
+}
+
 .tagline-text {
   opacity: 0; 
   animation-name: fadeIn;

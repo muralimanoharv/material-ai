@@ -6,11 +6,11 @@ import { useMobileHook } from "../../../hooks";
 
 
 export default function NewChatButton() {
-    const { on_new_chat, promptLoading } = useContext(AppContext)
+    const { on_new_chat, promptLoading, user } = useContext(AppContext)
     const { setOpen } = useContext(LayoutContext)
     const isMobile = useMobileHook();
     return <DrawerButton
-        disabled={promptLoading}
+        disabled={promptLoading || !user}
         tooltip="New Chat (Ctrl+Shift+O)"
         icon={AddCommentOutlinedIcon} title="New chat"
         onClick={() => {

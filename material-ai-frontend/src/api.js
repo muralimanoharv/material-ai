@@ -1,11 +1,14 @@
-const HOST = import.meta.env.VITE_API_BASE_URL;
+import { HOST } from "./assets/config";
+
 
 export function create_session(context) {
 
     return async () => {
-        const response = await fetch(`${HOST}/apps/${context.selectedAgent}/users/${context.user}/sessions`, {
+        const response = await fetch(`${HOST}/apps/${context.selectedAgent}/users/${context.user.email}/sessions`, {
             method: 'POST',
+            credentials: 'include',
         })
+        handle_response(response, context)
         let body = await response.json();
         return { user_id: body.user_id, session_id: body.id }
     }
@@ -20,9 +23,10 @@ export function send_message(context) {
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'include',
             body: JSON.stringify({
                 app_name: context.selectedAgent,
-                user_id: context.user,
+                user_id: context.user.email,
                 session_id,
                 new_message: {
                     role: "user",
@@ -32,6 +36,7 @@ export function send_message(context) {
             }),
             signal: controller.signal
         })
+        handle_response(response, context)
         let body = await response.json();
         return body
     }
@@ -39,42 +44,68 @@ export function send_message(context) {
 
 export function fetch_sessions(context) {
     return async ({ selectedAgent }) => {
-        const response = await fetch(`${HOST}/apps/${selectedAgent}/users/${context.user}/sessions`, {
+        const response = await fetch(`${HOST}/apps/${selectedAgent}/users/${context.user.email}/sessions`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'include',
         })
+        handle_response(response, context)
         let body = await response.json();
         return body
     }
 }
 
 export function fetch_session(context) {
-    return async ({ session_id, selected_agent }) => {
-        const response = await fetch(`${HOST}/apps/${selected_agent ?? context.selectedAgent}/users/${context.user}/sessions/${session_id}`, {
+    return async ({ session_id, selected_agent, user }) => {
+        const response = await fetch(`${HOST}/apps/${selected_agent ?? context.selectedAgent}/users/${user ?? context.user.email}/sessions/${session_id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'include',
         })
+        handle_response(response, context)
+        if(response.status == 404) {
+            throw new NotFound()
+        }
         let body = await response.json();
         return body
     }
 }
 
-export function fetch_agents() {
+export function fetch_agents(context) {
     return async () => {
         const response = await fetch(`${HOST}/list-apps`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'include',
         })
+        handle_response(response, context)
         let body = await response.json();
         return body
     }
 }
+
+export function fetch_user(context) {
+    return async () => {
+        const response = await fetch(`${HOST}/user`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+        })
+        handle_response(response, context)
+        let body = await response.json();
+        return body
+    }
+}
+
+
 
 
 export function send_feedback() {
@@ -84,19 +115,49 @@ export function send_feedback() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-
             },
+            credentials: 'include',
             body: JSON.stringify({
                 feedback_category,
                 feedback_text,
                 id
             })
         })
+        handle_response(response, context)
         let body = await response.text();
         return body
     }
 }
 
+
+
+
+
+export function fetch_artifact(context) {
+    return async ({ artifact_name, version }) => {
+        const response = await fetch(`${HOST}/apps/${context.selectedAgent}/users/${context.user.email}/sessions/${context.session}/artifacts/${artifact_name}?version=${version}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+        })
+        handle_response(response, context)
+        let body = await response.json();
+        return body
+    }
+}
+
+export async function sign_out(context) {
+    const response = await fetch(`${HOST}/logout`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+    })
+    handle_response(response, context)
+}
 
 /**
  * Converts a File object to a base64 encoded string.
@@ -116,20 +177,6 @@ export function fileToBase64(file) {
         };
         reader.onerror = error => reject(error);
     });
-}
-
-
-export function fetch_artifact(context) {
-    return async ({ artifact_name, version }) => {
-        const response = await fetch(`${HOST}/apps/${context.selectedAgent}/users/${context.user}/sessions/${context.session}/artifacts/${artifact_name}?version=${version}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-        let body = await response.json();
-        return body
-    }
 }
 
 export function formatBase64Data(data, mimeType) {
@@ -161,4 +208,33 @@ export function isValidJson(str) {
         return false;
     }
     return true;
+}
+
+function handle_response(respone, context) {
+    if(respone.status != 401) return
+    context.setUser()
+    throw new Unauthorized()
+}
+
+export const UNAUTHORIZED = 'Unauthorized'
+export const NOTFOUND = 'NotFound'
+
+class Unauthorized extends Error {
+  constructor() {
+    super('Unauthorized to access API');
+    this.name = UNAUTHORIZED;
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, Unauthorized);
+    }
+  }
+}
+
+class NotFound extends Error {
+  constructor() {
+    super('Unauthorized to access API');
+    this.name = NOTFOUND;
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, Unauthorized);
+    }
+  }
 }

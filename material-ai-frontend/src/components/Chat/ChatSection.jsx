@@ -3,7 +3,7 @@ import { Box } from "@mui/material"
 import { ChatItemContext, AppContext } from "../../context"
 import ChatItem from "./ChatItem"
 import { CHAT_SECTION_WIDTH } from "../../assets/themes"
-import { isValidJson, send_feedback } from "../../api"
+import { isValidJson, send_feedback, UNAUTHORIZED } from "../../api"
 import { config } from "../../assets/config"
 
 export default function ChatSection() {
@@ -45,6 +45,7 @@ function ChatItemSection(props) {
       setFeedback(dto)
       context.setSnack('Thank you! Your feedback helps make Gemini better for everyone')
     } catch (e) {
+      if(e.name == UNAUTHORIZED) return
       console.error(e);
       context.setSnack(config.errorMessage)
     }
@@ -58,6 +59,7 @@ function ChatItemSection(props) {
       setNegativeFeedbackToggle(false)
       context.setSnack('Thank you for helping improve Gemini')
     } catch (e) {
+      if(e.name == UNAUTHORIZED) return
       console.error(e);
       context.setSnack(config.errorMessage)
     }

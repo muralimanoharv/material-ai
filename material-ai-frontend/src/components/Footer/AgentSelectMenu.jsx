@@ -1,16 +1,15 @@
 import * as React from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { Box, Button, ListItemIcon, Tooltip, Typography, useTheme } from '@mui/material';
+import { Box, Button, Tooltip, Typography, useTheme } from '@mui/material';
 import { AppContext } from '../../context';
 import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
-import SupportAgentOutlinedIcon from '@mui/icons-material/SupportAgentOutlined';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { menuNeedsLogin } from '../../hoc';
 
-export default function AgentSelectMenu(props) {
+export default function AgentSelectMenu() {
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const theme = useTheme()
-    const { setSnack, agents } = React.useContext(AppContext)
+    const { agents } = React.useContext(AppContext)
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -55,14 +54,17 @@ export default function AgentSelectMenu(props) {
                     },
                 }}
             >
-                <Box sx={{ width: 200 }}>
-                    {agents.map(agent => <AgentItem key={agent} agent={agent} />)}
-
-                </Box>
+                <AgentSelectMenuBody agents={agents}    />
             </Menu>
         </div>
     );
 }
+
+const AgentSelectMenuBody = menuNeedsLogin((props) => {
+    return <Box sx={{ width: 200 }}>
+        {props.agents.map(agent => <AgentItem key={agent} agent={agent} />)}
+    </Box>
+}, 'Sign in to select agents')
 
 function AgentItem({ agent }) {
     const { selectedAgent, setSelectedAgent } = React.useContext(AppContext)

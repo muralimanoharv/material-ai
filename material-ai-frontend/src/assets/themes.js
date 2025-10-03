@@ -5,7 +5,7 @@ export const CHAT_SECTION_WIDTH = '760px';
 const lightPalette = {
     mode: 'light',
     primary: {
-        main: '#0842a0',
+        main: '#1a73e8',
     },
     background: {
         default: '#ffffff',
