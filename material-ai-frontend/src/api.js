@@ -156,7 +156,7 @@ export async function sign_out(context) {
         },
         credentials: 'include',
     })
-    handle_response(response, context)
+    return handle_response(response, context)
 }
 
 /**
@@ -211,13 +211,30 @@ export function isValidJson(str) {
 }
 
 function handle_response(respone, context) {
-    if(respone.status != 401) return
-    context.setUser()
-    throw new Unauthorized()
+    if(respone.status == 200) return
+    if(respone.status == 401) {
+        context.setUser()
+        throw new Unauthorized()
+    }
+    throw new HttpError(respone.status)
+    
+    
 }
 
 export const UNAUTHORIZED = 'Unauthorized'
 export const NOTFOUND = 'NotFound'
+export const HTTPERROR = 'HttpError'
+
+
+class HttpError extends Error {
+  constructor(status) {
+    super(`Weird error has occured with status code ${status}`);
+    this.name = HTTPERROR;
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, HttpError);
+    }
+  }
+}
 
 class Unauthorized extends Error {
   constructor() {

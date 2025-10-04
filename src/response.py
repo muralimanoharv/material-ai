@@ -1,6 +1,6 @@
 import pydantic
-from .internal import UserDetail
 from typing import Any
+from .oauth import OAuthUserDetail
 
 
 class UserSuccessResponse(pydantic.BaseModel):
@@ -9,7 +9,7 @@ class UserSuccessResponse(pydantic.BaseModel):
     Attributes:
         user_response: Contains details about the logged-in user.
     """
-    user_response: UserDetail
+    user_response: OAuthUserDetail
 
 
 class StatusCodeAndDetail(pydantic.BaseModel):

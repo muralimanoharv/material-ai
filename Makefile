@@ -13,7 +13,7 @@ build-ui:
 	@echo "UI build complete.✅"
 
 run: build-ui
-	uv run uvicorn src.main:get_app --host 0.0.0.0 --port 8000 --reload
+	uv run uvicorn --host 0.0.0.0 --port 8000 --factory src.app:get_app --reload
 
 debug: build-ui
 	uv run python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m uvicorn src.main:get_app --host 0.0.0.0 --port 8000 --reload

@@ -1,119 +1,90 @@
-import requests
-import secrets
-from fastapi import Response
+from fastapi import Response, HTTPException
+from fastapi.responses import RedirectResponse
 from typing import Tuple
 from .config import get_config
 from .response import UserSuccessResponse
-from .internal import UserDetail
-from .exec import UserResponseError, AuthorizationError
-
-def get_user(access_token: str) -> UserDetail:
-    user_info_url = "https://www.googleapis.com/oauth2/v3/userinfo"
-    user_info_response = requests.get(
-                user_info_url, 
-                headers= {
-                    "Authorization": f"Bearer {access_token}"
-                }
-    )
-    user_info = user_info_response.json()
-    return UserDetail(**user_info)
+from .oauth import get_oauth, OAuthErrorResponse, OAuthSuccessResponse
 
 
-def set_oauth_token_cookies(response: Response, token_data):
+def _set_oauth_token_cookies(response: Response, oauth_response: OAuthSuccessResponse):
     response.set_cookie(
         key="access_token",
-        value=token_data.get('access_token'),
+        value=oauth_response.access_token,
         httponly=True,
         secure=False ,
-        expires=token_data.get('expires_in'), 
+        expires=oauth_response.expires_in, 
         samesite="lax",
     )
     response.set_cookie(
         key="refresh_token",
-        value=token_data.get('refresh_token'),
+        value=oauth_response.refresh_token,
         httponly=True,
         secure=False , 
         samesite="lax",
     )
     response.set_cookie(
         key="user_info",
-        value=token_data.get('user_info'),
+        value=oauth_response.user_detail.model_dump_json(),
         httponly=True,
         secure=False,
-        expires=token_data.get('expires_in'),  
+        expires=oauth_response.expires_in,  
         samesite="lax",
     )
 
 
-def delete_oauth_token_cookies(response: Response):
+def _remove_cookies(response: Response):
     response.delete_cookie("access_token")
     response.delete_cookie("refresh_token")
     response.delete_cookie("user_info")
 
 
-def do_oauth_login() -> Tuple[str, str]:
-    state = secrets.token_urlsafe(16)
-    # Construct authorization URL
-    scope = "openid email profile"
-    config = get_config()
-    auth_url = (
-        f"https://accounts.google.com/o/oauth2/v2/auth?"
-        f"response_type=code&"
-        f"client_id={config.sso.client_id}&"
-        f"redirect_uri={config.sso.redirect_uri}&"
-        f"scope={scope}&"
-        f"state={state}&"
-        f"access_type=offline&"
-        f"prompt=consent"
-    )
-    return (state, auth_url)
-
-
-def get_user_details(response: Response, 
-                     refresh_token: str) -> UserSuccessResponse | UserResponseError:
-    
-    config = get_config()
-    token_url = "https://oauth2.googleapis.com/token"
-    token_payload = {
-        "client_id": config.sso.client_id,
-        "client_secret": config.sso.client_secret,
-        "refresh_token": refresh_token,
-        "grant_type": "refresh_token",
-    }
-    token_response = requests.post(token_url, data=token_payload)
-    token_data = token_response.json()
-
-    if "error" in token_data:
-        return UserResponseError(status_code=400, detail=token_data.get("error_description"))
-    
-    access_token = token_data.get('access_token')
-    user_detail = get_user(access_token)
-
-    token_data["user_info"] = user_detail.model_dump_json()
-    token_data["refresh_token"] = refresh_token
-
-    set_oauth_token_cookies(response, token_data)
-    return UserSuccessResponse(user_response=user_detail)
-
-def on_callback(response: Response, code: str) -> AuthorizationError:
-    config = get_config()
-    token_url = "https://oauth2.googleapis.com/token"
-    token_payload = {
-        "code": code,
-        "client_id": config.sso.client_id,
-        "client_secret": config.sso.client_secret,
-        "redirect_uri": config.sso.redirect_uri,
-        "grant_type": "authorization_code",
-    }
-
-    token_response = requests.post(token_url, data=token_payload)
-    token_data = token_response.json()
-    if "error" in token_data:
-        return AuthorizationError(status_code=400, detail=token_data.get("error_description"))
-    access_token = token_data.get("access_token")
-    user_info = get_user(access_token)
-    token_data["user_info"] = user_info.model_dump_json()
-    set_oauth_token_cookies(response, token_data)
+async def remove_token(response: Response, refresh_token: str) -> Response:
+    if refresh_token == None:
+        _remove_cookies(response)
+        return
+    auth = get_oauth()
+    oauth_response = await auth.sso_revoke_refresh_token(refresh_token)
+    if isinstance(oauth_response, OAuthErrorResponse):
+        raise HTTPException(status_code=500)
+    _remove_cookies(response)
     return response
 
+
+
+def get_redirection_url() -> Tuple[str, str]:
+    config = get_config()
+    auth = get_oauth()
+    response = auth.sso_get_redirection_url(sso=config.sso)
+    return (response.state, response.redirection_url)
+
+
+async def get_user_details(response: Response, refresh_token: str) -> UserSuccessResponse:
+    
+    config = get_config()
+    auth = get_oauth()
+    oauth_response = await auth.sso_get_new_access_token(config.sso, refresh_token)
+
+    if isinstance(oauth_response, OAuthErrorResponse):
+        raise HTTPException(status_code=500)
+    
+    oauth_success_response: OAuthSuccessResponse = oauth_response
+    
+    _set_oauth_token_cookies(response, oauth_success_response)
+
+    return UserSuccessResponse(user_response=oauth_success_response.user_detail)
+
+async def on_callback(authorization_code: str) -> Response:
+    config = get_config()
+    auth = get_oauth()
+
+    oauth_response = await auth.sso_get_access_token(config.sso, authorization_code)
+
+    if isinstance(oauth_response, OAuthErrorResponse):
+        raise HTTPException(status_code=500)  
+        
+    response = RedirectResponse(url="/", status_code=302)
+
+    _set_oauth_token_cookies(response, oauth_response)
+
+    return response
 

@@ -1,5 +1,7 @@
+
 import pydantic
 from typing import Any
+
 
 class StatusCodeAndDetail(pydantic.BaseModel):
     """Represents a model for status codes and corresponding details.
@@ -16,7 +18,14 @@ class StatusCodeAndDetail(pydantic.BaseModel):
     status_code: int
     detail: str | dict[Any, Any]
 
-class UserDetail(pydantic.BaseModel):
+class SSOConfig(pydantic.BaseModel):
+    client_id: str
+    client_secret: str
+    redirect_uri: str
+    session_secret_key: str
+
+
+class OAuthUserDetail(pydantic.BaseModel):
     sub: str
     name: str
     given_name: str
@@ -24,3 +33,20 @@ class UserDetail(pydantic.BaseModel):
     picture: str
     email: str
     email_verified: bool
+
+
+class OAuthSuccessResponse(pydantic.BaseModel):
+    access_token: str
+    refresh_token: str
+    user_detail: OAuthUserDetail
+    expires_in: int
+
+
+class OAuthErrorResponse(StatusCodeAndDetail):
+    """Response for a failed user login, including a status code and detail."""
+    pass
+
+
+class OAuthRedirectionResponse(pydantic.BaseModel):
+    redirection_url: str
+    state: str

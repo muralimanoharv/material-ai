@@ -10,7 +10,7 @@ export default function SignoutButton() {
     return <Button
         onClick={async () => {
             try {
-                await sign_out(context)
+                await sign_out()
                 setUser()
             } catch (e) {
                 if(e.name == UNAUTHORIZED) return

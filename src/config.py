@@ -9,16 +9,10 @@ import pathlib
 from .exec import ConfigError
 from typing import Any
 from dotenv import load_dotenv
-
+from .oauth import SSOConfig
 
 load_dotenv()
 
-
-class SSOConfig(pydantic.BaseModel):
-    client_id: str
-    client_secret: str
-    redirect_uri: str
-    session_secret_key: str
 
 class General(pydantic.BaseModel):
     debug: bool

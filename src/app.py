@@ -8,9 +8,11 @@ from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from .config import get_config
 from fastapi.staticfiles import StaticFiles
-from .exec import ConfigError
+from .exec import ConfigError, UnauthorizedException
 import time
-from .auth import delete_oauth_token_cookies
+import http.cookies
+from .auth import _remove_cookies
+from .oauth import get_oauth, OAuthErrorResponse
 from . import __app_name__, __version__
 
 _lock = threading.Lock()
@@ -20,6 +22,12 @@ _lock = threading.Lock()
 
 STATIC_DIR = os.path.join("material-ai-frontend", "dist")
 AGENT_DIR = os.path.dirname(os.path.abspath(__file__))
+ALLOWED_ORIGINS = [
+    "http://localhost",
+    "http://localhost:5173",
+    "http://127.0.0.1",
+    "http://127.0.0.1:5173"
+]
 
 class AddXAppHeaderMiddleware(BaseHTTPMiddleware):
     """Adds the X-App header, with app name and version, to all responses."""
@@ -45,28 +53,53 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request, call_next):
         route = request.url.path
-        EXCLUDED_PATHS = ["/", "/login", "/auth"]
+        EXCLUDED_PATHS = ["/", "/login", "/auth", "/icon.svg", '/.well-known/appspecific/com.chrome.devtools.json']
         EXCLUDED_PREFIXES = ["/assets/"]
         is_excluded_path = (
             route in EXCLUDED_PATHS or
             any(route.startswith(prefix) for prefix in EXCLUDED_PREFIXES)
         )
-        cookies_header = request.headers.get("cookie")
-        if not is_excluded_path:
-           
-            if not cookies_header:
-                return Response(status_code=401)
-            if not ("refresh_token=" in cookies_header):
-                return Response(status_code=401)
-            
-            if route != "/user":
-                if not ("access_token=" in cookies_header):
-                    return Response(status_code=401)
-                if not ("user_info=" in cookies_header):
-                    return Response(status_code=401)
+
+        if is_excluded_path:
+            return await call_next(request)
         
-        response = await call_next(request)
-        return response
+        cookies_header = request.headers.get("cookie")
+
+        try:
+            if not cookies_header:
+                raise UnauthorizedException()
+            
+            cookies = http.cookies.SimpleCookie()
+            cookies.load(cookies_header)
+
+            if cookies.get('refresh_token') == None:
+                raise UnauthorizedException()
+            
+            if route == "/user":
+                return await call_next(request) 
+
+            if cookies.get("access_token") == None:
+                raise UnauthorizedException()
+            if cookies.get("user_info") == None:
+                raise UnauthorizedException()
+            
+            auth = get_oauth()
+
+            access_token_cookie = cookies.get("access_token")
+            oauth_response = await auth.sso_verify_access_token(access_token_cookie.value)
+
+            if isinstance(oauth_response, OAuthErrorResponse):
+                raise UnauthorizedException()
+
+            if not oauth_response:
+                raise UnauthorizedException()
+                
+            response = await call_next(request)
+            return response
+        except UnauthorizedException as e:
+            response = Response(status_code=401)
+            _remove_cookies(response)
+            return response
 
 
 def _setup_app(app: FastAPI) -> None:
@@ -89,20 +122,6 @@ def _setup_app(app: FastAPI) -> None:
         raise RuntimeError('Bad configuration') from e  # yes, really
 
 
-    if config.general.debug:
-        _logger.debug('App running in DEBUG mode')
-        app.add_middleware(
-            CORSMiddleware,
-            allow_origins=[
-                "http://localhost",
-                "http://localhost:5173",
-                "http://127.0.0.1",
-                "http://127.0.0.1:5173"
-            ],           
-            allow_credentials=True,           
-            allow_methods=["*"],              
-            allow_headers=["*"],              
-        )
 
     # Custom header middleware
     app.add_middleware(
@@ -116,9 +135,20 @@ def _setup_app(app: FastAPI) -> None:
     app.add_middleware(SessionMiddleware, secret_key=config.sso.session_secret_key)
     app.add_exception_handler(HTTPException, http_exception_cookie_clearer)
 
+
     from .api import router as core_router
     app.include_router(core_router)
     app.mount("/", StaticFiles(directory=STATIC_DIR), name="static")
+
+    if config.general.debug:
+        _logger.debug('App running in DEBUG mode')
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=ALLOWED_ORIGINS,           
+            allow_credentials=True,           
+            allow_methods=["*"],              
+            allow_headers=["*"],              
+        )
 
 
 
@@ -131,10 +161,11 @@ def get_app():
     global _app_instance
     with _lock:
         if _app_instance is None:
+            config = get_config()
             app = get_fast_api_app(
                     agent_dir=AGENT_DIR,
                     web=False,
-                    allow_origins=[]
+                    allow_origins=ALLOWED_ORIGINS if config.general.debug else []
             )
             _setup_app(app)
             _app_instance = app
@@ -153,7 +184,7 @@ async def http_exception_cookie_clearer(request: Request, exc: HTTPException):
         response = Response(
             status_code=401,
         )
-        delete_oauth_token_cookies(response)
+        _remove_cookies(response)
         return response
 
     # For all other HTTPExceptions, fall back to the default behavior

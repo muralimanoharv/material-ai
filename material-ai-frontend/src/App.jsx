@@ -239,8 +239,8 @@ function App() {
         setShowHeading(true)
         return;
       }
-      setUser(user_info.user_response)
-      const user = user_info;
+      const user = user_info.user_response;
+      setUser(user)
       const agents = await fetch_agents(appContext)()
       const selectedAgent = agents[0]
       setAgents(agents)
