@@ -133,7 +133,7 @@ If you don't have `uv`, you can install it quickly. On macOS and Linux, run `cur
     make debug
     ```
 
-    The application should now be running on `http://127.0.0.1:8000` and debug port running on `http://127.0.0.1:5676`.
+    The application should now be running on `http://127.0.0.1:8000` and debug port running on `http://127.0.0.1:5678`.
 
     Attach python remote debugger using vscode debug tools
 
