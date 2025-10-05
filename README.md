@@ -24,6 +24,7 @@ This allows your developers to bypass these hurdles and focus exclusively on wha
 
 * **Enterprise-Ready Authentication 🔐:** Material AI comes with a built-in, configurable authentication module that seamlessly integrates with customer infrastructure and simplifies the process of setting up SSO.
 * **A Rich, Gemini-like User Interface ✨:** Material AI delivers a modern, intuitive, and production-ready UI inspired by the Google Gemini app, providing a professional and engaging front-end for your agents.
+* **User Interface Customization🎨:** Customize User Interface seamlessly as per customer's requirement.
 * **Extensible Custom Functionality 🛠️:** Our framework introduces an extensible backend layer, allowing you to easily add custom business logic and integrate with other internal or third-party APIs.
 * **Robust Session Management & Authorization 👤:** Material AI includes a sophisticated system for managing user sessions and a granular authorization layer to define roles and permissions, ensuring only authorized users can interact with the application.
 
@@ -84,7 +85,7 @@ If you don't have `uv`, you can install it quickly. On macOS and Linux, run `cur
     # Single Sign-On (SSO) Configuration
     SSO_CLIENT_ID="YOUR_SSO_CLIENT_ID"
     SSO_CLIENT_SECRET="YOUR_SSO_CLIENT_SECRET"
-    SSO_REDIRECT_URI="http://127.0.0.1:8000/auth"
+    SSO_REDIRECT_URI="http://localhost:8000/auth"
 
     # Session Management
     SSO_SESSION_SECRET_KEY="GENERATE_A_STRONG_RANDOM_SECRET_KEY"
@@ -236,6 +237,41 @@ def get_oauth() -> IOAuthService:
 ```
 
 Once this change is made, the entire application will use your custom SSO provider for all authentication workflows.
+
+---
+
+## 🎨 Customizing the User Interface
+
+Material AI's front end is designed to be easily customized and white-labeled to meet specific customer requirements. You can adjust core application settings and visual themes by modifying two key files.
+
+### 1. General Application Configuration
+
+For high-level UI customizations, you can modify the configuration object in the following file:
+`material-ai-frontend/src/assets/config.js`
+
+This file allows you to easily change key aspects of the user experience. A high-level overview of what you can customize includes:
+
+* **Application Title & Text:** Update the main `title` of the application, the initial `greeting` message on the chat screen, and other default text strings.
+* **AI Model Selection:** Define the list of available AI `models` that users can choose from, including their display names and descriptive taglines.
+* **User Feedback System:** Configure the `feedback` options, such as the categories presented to users when they provide a negative rating.
+
+### 2. Customizing Themes (Light & Dark Mode)
+
+To align the application's look and feel with customer branding, you can customize the color palettes in this file:
+`material-ai-frontend/src/assets/themes.js`
+
+This file defines the `lightPalette` and `darkPalette` used for the application's light and dark modes. You can easily change the color values for various UI elements, including:
+
+* Primary colors (for buttons and accents)
+* Background and paper colors
+* Text colors for different headings and paragraphs
+
+This allows you to create a completely bespoke visual experience based on customer UX preferences.
+
+### ✨ Pro Tip: Generating Themes with AI
+Struggling to come up with the perfect color scheme? You can **use Gemini to create beautiful color palettes** for the application.
+
+For example, try a prompt like: *"Create a professional color palette for a web application's light and dark theme. The primary color should be a shade of teal."* You can then use the suggested hex codes in your `themes.js` file.
 
 ---
 ## 🐞 Reporting Issues and Feature Requests
