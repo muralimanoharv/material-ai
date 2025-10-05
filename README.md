@@ -104,12 +104,38 @@ If you don't have `uv`, you can install it quickly. On macOS and Linux, run `cur
 
 5.  **Debug the application:**
 
+    In order to debug you need to first create vscode debug config under `.vscode/launch.json`
+    ```json
+    {
+        "version": "0.2.0",
+        "configurations": [
+        
+            {
+                "name": "Python Debugger: Remote Attach",
+                "type": "debugpy",
+                "request": "attach",
+                "connect": {
+                    "host": "localhost",
+                    "port": 5678
+                },
+                "pathMappings": [
+                    {
+                        "localRoot": "${workspaceFolder}",
+                        "remoteRoot": "."
+                    }
+                ]
+            }
+        ]
+    }
+    ```
+
     ```bash
     make debug
     ```
 
-    The application should now be running on `http://127.0.0.1:8000`.
+    The application should now be running on `http://127.0.0.1:8000` and debug port running on `http://127.0.0.1:5676`.
 
+    Attach python remote debugger using vscode debug tools
 
 -----
 
