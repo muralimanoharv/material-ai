@@ -1,12 +1,21 @@
 import { useState, useEffect } from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { AppContext } from './context.jsx'
-import { create_session, send_message, fetch_sessions, fetch_session, fetch_agents, fetch_user, UNAUTHORIZED, NOTFOUND } from './api.js'
+import {
+  create_session,
+  send_message,
+  fetch_sessions,
+  fetch_session,
+  fetch_agents,
+  fetch_user,
+  UNAUTHORIZED,
+  NOTFOUND,
+} from './api.js'
 import Layout from './components/Layout/Layout.jsx'
 import { config } from './assets/config.js'
 import { Snackbar } from '@mui/material'
-import ChatPage from './components/pages/ChatPage.jsx';
+import ChatPage from './components/pages/ChatPage.jsx'
 import './App.css'
 
 function App() {
@@ -24,49 +33,48 @@ function App() {
   const [files, setFiles] = useState([])
   const [showHeading, setShowHeading] = useState(false)
   const [controller, setController] = useState(undefined)
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const isValidSession = () => !!session
 
   const cancelApi = async () => {
     return new Promise((resolve) => {
       if (!controller) {
-        resolve();
-        return;
+        resolve()
+        return
       }
       add_history({
         role: 'model',
         id: `${new Date().getTime()}`,
         prompt,
         cancelled: true,
-        parts: [{ text: 'You stopped this response' }]
+        parts: [{ text: 'You stopped this response' }],
       })
       controller.abort()
       setTimeout(() => {
         resolve()
       }, 100)
     })
-
   }
 
   const createNewSession = async () => {
-    const session = await create_session(appContext)();
-    const sessionId = session.session_id;
-    setSession(sessionId);
+    const session = await create_session(appContext)()
+    const sessionId = session.session_id
+    setSession(sessionId)
     return sessionId
   }
 
   const createParts = ({ prompt, files }) => {
-    const parts = [{ text: prompt }];
-    if (files?.length) return;
+    const parts = [{ text: prompt }]
+    if (files?.length) return
 
     const fileParts = files.map((file) => ({
       inline_data: {
-        ...file.inlineData
-      }
-    }));
-    const fileNames = files.map((file) => file.name);
+        ...file.inlineData,
+      },
+    }))
+    const fileNames = files.map((file) => file.name)
     parts.push(...fileParts)
     parts.push({ text: JSON.stringify({ fileNames }) })
 
@@ -75,7 +83,7 @@ function App() {
 
   const send = async (prompt, options = { submittedFiles: [] }) => {
     if (!prompt) return
-    let session_id = session;
+    let session_id = session
     const isNewSession = !isValidSession()
     const id = `${new Date().getTime()}`
     try {
@@ -86,7 +94,7 @@ function App() {
       }
       // Cancel any pending API request before making new request
       await cancelApi()
-      const controller = new AbortController();
+      const controller = new AbortController()
       setController(controller)
 
       const parts = createParts({ prompt, files: options.submittedFiles })
@@ -99,9 +107,8 @@ function App() {
         id,
         prompt,
         parts,
-        loading: true
+        loading: true,
       })
-
 
       setPrompt('')
       setFiles([])
@@ -109,12 +116,12 @@ function App() {
       const messages = await send_message(appContext)({
         session_id,
         parts,
-        controller
+        controller,
       })
       // Hide loading indicator
       update_history(id, { loading: false })
 
-      // Update history      
+      // Update history
       for (let message of messages) {
         add_history({
           ...message.content,
@@ -122,22 +129,22 @@ function App() {
           id: message.id,
           prompt,
           actions: {
-            ...message.actions
-          }
+            ...message.actions,
+          },
         })
       }
 
       // Id new session was created we update path param
       if (isNewSession) {
-        navigate(`/${session_id}`);
+        navigate(`/${session_id}`)
       }
     } catch (e) {
       // If request was aborted or cancelled by user
       if (e.name === 'AbortError') {
         update_history(id, { loading: false })
-        return;
+        return
       }
-      // If the request was not authorized 
+      // If the request was not authorized
       if (e.name === UNAUTHORIZED) {
         update_history(id, { loading: false })
         setHistory([])
@@ -152,7 +159,7 @@ function App() {
       setController(undefined)
       setPromptLoading(false)
       if (isNewSession) {
-        setSessions(prevSessions => {
+        setSessions((prevSessions) => {
           return [{ id: session_id }, ...prevSessions]
         })
       }
@@ -160,26 +167,25 @@ function App() {
   }
 
   const add_history = (newHistory) => {
-    setHistory(prevHistory => {
+    setHistory((prevHistory) => {
       if (!prevHistory || !prevHistory.length) return [newHistory]
-      return [
-        ...prevHistory,
-        newHistory
-      ]
+      return [...prevHistory, newHistory]
     })
   }
   const delete_history = (id) => {
-    setHistory(prevHistory => {
-      return [...prevHistory.filter(history => history.id !== id)]
+    setHistory((prevHistory) => {
+      return [...prevHistory.filter((history) => history.id !== id)]
     })
   }
 
   const update_history = (id, history) => {
-    setHistory(prevHistory => {
-      return [...prevHistory.map((hist) => {
-        if (hist.id !== id) return hist
-        return { ...hist, ...history }
-      })]
+    setHistory((prevHistory) => {
+      return [
+        ...prevHistory.map((hist) => {
+          if (hist.id !== id) return hist
+          return { ...hist, ...history }
+        }),
+      ]
     })
   }
   const clear_history = () => {
@@ -204,7 +210,7 @@ function App() {
       const sessionDto = await fetch_session(appContext)({
         session_id: sessionId,
         selected_agent: selectedAgent,
-        user: user?.email
+        user: user?.email,
       })
       setShowHeading(false)
       let history = []
@@ -219,8 +225,8 @@ function App() {
             id: event.id,
             prompt: prevPrompt,
             actions: {
-              ...event.actions
-            }
+              ...event.actions,
+            },
           })
         }
       }
@@ -231,7 +237,7 @@ function App() {
       if (e.name == UNAUTHORIZED) return
       if (e.name == NOTFOUND) {
         on_new_chat()
-        return;
+        return
       }
       console.error(e)
       setSnack(config.errorMessage)
@@ -240,20 +246,39 @@ function App() {
         setLoading(false)
       }, 500)
     }
-
   }
 
   const appContext = {
-    session, setSession, user, setUser,
-    prompt, setPrompt, isValidSession,
-    send, loading, setLoading, currentModel,
-    setCurrentModel, setSnack, files, setFiles,
-    cancelApi, history, add_history, delete_history, sessions,
-    clear_history, agents, selectedAgent, setSelectedAgent,
-    promptLoading, getSession, showHeading,
-    on_new_chat, input_focus
+    session,
+    setSession,
+    user,
+    setUser,
+    prompt,
+    setPrompt,
+    isValidSession,
+    send,
+    loading,
+    setLoading,
+    currentModel,
+    setCurrentModel,
+    setSnack,
+    files,
+    setFiles,
+    cancelApi,
+    history,
+    add_history,
+    delete_history,
+    sessions,
+    clear_history,
+    agents,
+    selectedAgent,
+    setSelectedAgent,
+    promptLoading,
+    getSession,
+    showHeading,
+    on_new_chat,
+    input_focus,
   }
-
 
   const onAppLoad = async () => {
     try {
@@ -261,19 +286,21 @@ function App() {
       const user_info = await fetch_user(appContext)()
       if (!user_info) {
         setShowHeading(true)
-        return;
+        return
       }
-      const user = user_info.user_response;
+      const user = user_info.user_response
       setUser(user)
       const agents = await fetch_agents(appContext)()
       const selectedAgent = agents[0]
       setAgents(agents)
       setSelectedAgent(selectedAgent)
-      const sessions = await fetch_sessions({ ...appContext, user })({ selectedAgent })
+      const sessions = await fetch_sessions({ ...appContext, user })({
+        selectedAgent,
+      })
       setSessions([...sessions].reverse())
       if (location.pathname === '/') {
         setShowHeading(true)
-        return;
+        return
       }
       let sessionId = location.pathname.substring(1)
       await getSession({ sessionId, selectedAgent, user })
@@ -281,9 +308,9 @@ function App() {
     } catch (e) {
       setShowHeading(true)
       if (e.name == UNAUTHORIZED) {
-        navigate("/")
+        navigate('/')
         return
-      };
+      }
       console.error(e)
       setSnack(config.errorMessage)
     } finally {
@@ -295,8 +322,7 @@ function App() {
 
   useEffect(() => {
     onAppLoad()
-  }, []);
-
+  }, [])
 
   return (
     <>

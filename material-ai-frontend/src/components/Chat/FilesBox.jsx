@@ -1,12 +1,10 @@
-import { Box } from "@mui/material";
-import FileBox from "./FileBox";
-
-
-
-
+import { Box } from '@mui/material'
+import FileBox from './FileBox'
 
 export default function FilesBox(props) {
-    return <Box sx={{
+  return (
+    <Box
+      sx={{
         display: 'flex',
         flexDirection: 'row',
         gap: '10px',
@@ -15,16 +13,12 @@ export default function FilesBox(props) {
         width: '100%',
         alignItems: 'center',
         flexWrap: 'wrap',
-        paddingLeft: '60px'
-    }}>
-        {
-            props.files.map(
-                (file) =>
-                    <FileBox
-                        key={file.name}
-                        file={file}
-                    />
-            )
-        }
+        paddingLeft: '60px',
+      }}
+    >
+      {props.files.map((file) => (
+        <FileBox key={file.name} file={file} />
+      ))}
     </Box>
+  )
 }

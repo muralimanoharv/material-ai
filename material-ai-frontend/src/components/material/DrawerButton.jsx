@@ -1,78 +1,79 @@
+import ListItem from '@mui/material/ListItem'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import { List, ListItemText, Tooltip, Typography } from '@mui/material'
+import { useContext } from 'react'
+import { LayoutContext } from '../../context'
 
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import { List, ListItemText, Tooltip, Typography } from "@mui/material";
-import { useContext } from 'react';
-import { LayoutContext } from '../../context';
-
-export default function DrawerButton({ icon: Icon, title, onClick, tooltip = '', disabled = false }) {
-    const { isDrawerOpen } = useContext(LayoutContext)
-    const open = isDrawerOpen()
-    return <List>
-
-        <ListItem disablePadding
-            sx={
-                { display: 'block' }
-            }>
-            <ListItemButton
-                onClick={onClick}
-                disableRipple
-                disabled={disabled}
-                sx={[
-                    {
-                        minHeight: 48,
-                        px: 2.5,
+export default function DrawerButton({
+  icon: Icon,
+  title,
+  onClick,
+  tooltip = '',
+  disabled = false,
+}) {
+  const { isDrawerOpen } = useContext(LayoutContext)
+  const open = isDrawerOpen()
+  return (
+    <List>
+      <ListItem disablePadding sx={{ display: 'block' }}>
+        <ListItemButton
+          onClick={onClick}
+          disableRipple
+          disabled={disabled}
+          sx={[
+            {
+              minHeight: 48,
+              px: 2.5,
+            },
+            open
+              ? {
+                  justifyContent: 'initial',
+                }
+              : {
+                  justifyContent: 'center',
+                },
+          ]}
+        >
+          <Tooltip title={tooltip}>
+            <ListItemIcon
+              sx={[
+                {
+                  minWidth: 0,
+                  justifyContent: 'center',
+                },
+                open
+                  ? {
+                      mr: 3,
+                    }
+                  : {
+                      mr: 'auto',
                     },
-                    open
-                        ? {
-                            justifyContent: 'initial',
-                        }
-                        : {
-                            justifyContent: 'center',
-                        },
-                ]}
+              ]}
             >
-                <Tooltip title={tooltip}>
-                    <ListItemIcon
-                        sx={[
-                            {
-                                minWidth: 0,
-                                justifyContent: 'center',
-                            },
-                            open
-                                ? {
-                                    mr: 3,
-                                }
-                                : {
-                                    mr: 'auto',
-                                },
-                        ]}
-                    >
-                        {Icon}
-                    </ListItemIcon>
-                </Tooltip>
+              {Icon}
+            </ListItemIcon>
+          </Tooltip>
 
-                <ListItemText>
-                    <Typography
-                        fontWeight={300}
-                        variant="h5"
-                        sx={[
-                            open
-                                ? {
-                                    opacity: 1,
-                                }
-                                : {
-                                    opacity: 0,
-                                },
-                        ]}
-                    >
-                        {title}
-                    </Typography>
-
-                </ListItemText>
-
-            </ListItemButton>
-        </ListItem>
+          <ListItemText>
+            <Typography
+              fontWeight={300}
+              variant="h5"
+              sx={[
+                open
+                  ? {
+                      opacity: 1,
+                    }
+                  : {
+                      opacity: 0,
+                    },
+              ]}
+            >
+              {title}
+            </Typography>
+          </ListItemText>
+        </ListItemButton>
+      </ListItem>
     </List>
+  )
 }

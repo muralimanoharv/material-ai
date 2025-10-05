@@ -1,13 +1,9 @@
-
-
-
-import { useMediaQuery, useTheme } from '@mui/material';
-
+import { useMediaQuery, useTheme } from '@mui/material'
 
 export const useMobileHook = () => {
-  const theme = useTheme();
+  const theme = useTheme()
 
-  const isMobile = useMediaQuery(theme.app.isMobileQuery(theme)); 
+  const isMobile = useMediaQuery(theme.app.isMobileQuery(theme))
 
-  return isMobile;
-};
+  return isMobile
+}

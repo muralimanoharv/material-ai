@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
-
 p {
   margin: 0;
   padding: 0;
@@ -23,45 +22,44 @@ body {
 
 @keyframes slideUpFadeIn {
   from {
-    transform: translateY(100px); 
+    transform: translateY(100px);
     opacity: 0;
   }
   to {
-    transform: translateY(0); 
+    transform: translateY(0);
     opacity: 1;
   }
 }
 
 .animated-text {
-  animation: slideUpFadeIn 1s ease-out forwards; 
+  animation: slideUpFadeIn 1s ease-out forwards;
   animation-name: slideUpFadeIn;
   animation-duration: 1s;
-  animation-timing-function: ease-out; 
-  animation-fill-mode: forwards; 
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
 }
-
 
 .fade-in-animation {
   animation-name: fadeIn;
-  animation-duration: 0.2s; 
+  animation-duration: 0.2s;
   animation-timing-function: ease-in;
-  animation-fill-mode: forwards; 
+  animation-fill-mode: forwards;
 }
 
 .tagline-text {
-  opacity: 0; 
+  opacity: 0;
   animation-name: fadeIn;
-  animation-duration: 0.2s; 
+  animation-duration: 0.2s;
   animation-timing-function: ease-in;
-  animation-fill-mode: forwards; 
-  animation-delay: 1s; 
+  animation-fill-mode: forwards;
+  animation-delay: 1s;
 }
 
 .session-history {
-    transition: opacity 0.5s ease-in-out;
+  transition: opacity 0.5s ease-in-out;
 }
 
 .chat-item-box-model .react-markdown > * {
   animation: fadeIn 1s;
-  animation-fill-mode: forwards; 
+  animation-fill-mode: forwards;
 }
