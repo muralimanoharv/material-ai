@@ -1,6 +1,5 @@
 import { HOST } from "./assets/config";
 
-
 export function create_session(context) {
 
     return async () => {
@@ -67,7 +66,7 @@ export function fetch_session(context) {
             credentials: 'include',
         })
         handle_response(response, context)
-        if(response.status == 404) {
+        if (response.status == 404) {
             throw new NotFound()
         }
         let body = await response.json();
@@ -159,58 +158,8 @@ export async function sign_out(context) {
     return handle_response(response, context)
 }
 
-/**
- * Converts a File object to a base64 encoded string.
- * @param {File} file The file to convert.
- * @returns {Promise<string>} A promise that resolves with the base64 string.
- */
-export function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-            // Get just the base64 content
-            const encoded = reader.result.toString().split(',')[1];
 
-            // Resolve with an object containing both data and type
-            resolve({ data: encoded, type: file.type, name: file.name });
-        };
-        reader.onerror = error => reject(error);
-    });
-}
-
-export function formatBase64Data(data, mimeType) {
-    return `data:${mimeType};base64,${fixBase64String(data)}`;
-}
-
-export function fixBase64String(base64) {
-    // Replace URL-safe characters if they exist
-    base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
-
-    // Fix base64 padding
-    while (base64.length % 4 !== 0) {
-        base64 += '=';
-    }
-
-    return base64;
-}
-
-
-/**
- * Checks if a string is a valid JSON string.
- * @param {string} str The string to check.
- * @returns {boolean} True if the string is valid JSON, otherwise false.
- */
-export function isValidJson(str) {
-    try {
-        JSON.parse(str);
-    } catch (e) {
-        return false;
-    }
-    return true;
-}
-
-function handle_response(respone, context) {
+export function handle_response(respone, context) {
     if(respone.status == 200) return
     if(respone.status == 401) {
         context.setUser()
@@ -218,8 +167,8 @@ function handle_response(respone, context) {
     }
     throw new HttpError(respone.status)
     
-    
 }
+
 
 export const UNAUTHORIZED = 'Unauthorized'
 export const NOTFOUND = 'NotFound'
@@ -227,31 +176,31 @@ export const HTTPERROR = 'HttpError'
 
 
 class HttpError extends Error {
-  constructor(status) {
-    super(`Weird error has occured with status code ${status}`);
-    this.name = HTTPERROR;
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, HttpError);
+    constructor(status) {
+        super(`Weird error has occured with status code ${status}`);
+        this.name = HTTPERROR;
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, HttpError);
+        }
     }
-  }
 }
 
 class Unauthorized extends Error {
-  constructor() {
-    super('Unauthorized to access API');
-    this.name = UNAUTHORIZED;
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, Unauthorized);
+    constructor() {
+        super('Unauthorized to access API');
+        this.name = UNAUTHORIZED;
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, Unauthorized);
+        }
     }
-  }
 }
 
 class NotFound extends Error {
-  constructor() {
-    super('Unauthorized to access API');
-    this.name = NOTFOUND;
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, Unauthorized);
+    constructor() {
+        super('Unauthorized to access API');
+        this.name = NOTFOUND;
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, Unauthorized);
+        }
     }
-  }
 }

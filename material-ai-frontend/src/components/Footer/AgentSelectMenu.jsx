@@ -43,7 +43,7 @@ export default function AgentSelectMenu() {
                 id="agent-menu"
                 anchorEl={anchorEl}
                 anchorOrigin={{
-                    vertical: -70,
+                    vertical: -110,
                     horizontal: 'left',
                 }}
                 open={open}
@@ -54,14 +54,24 @@ export default function AgentSelectMenu() {
                     },
                 }}
             >
-                <AgentSelectMenuBody agents={agents}    />
+                <Box sx={{ width: 320 }}>
+                    <Typography
+                        sx={{
+                            padding: '8px 16px'
+                        }}
+                        variant='h4'>
+                        Choose your agent
+                    </Typography>
+                </Box>
+
+                <AgentSelectMenuBody agents={agents} />
             </Menu>
         </div>
     );
 }
 
 const AgentSelectMenuBody = menuNeedsLogin((props) => {
-    return <Box sx={{ width: 200 }}>
+    return <Box sx={{ width: 300 }}>
         {props.agents.map(agent => <AgentItem key={agent} agent={agent} />)}
     </Box>
 }, 'Sign in to select agents')
@@ -79,6 +89,7 @@ function AgentItem({ agent }) {
         }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', textTransform: 'capitalize' }}>
                 <Typography variant='h5'>{agent.replaceAll('_', ' ')}</Typography>
+                <Typography variant='h6'>{agent}</Typography>
             </Box>
             {
                 selectedAgent == agent ?

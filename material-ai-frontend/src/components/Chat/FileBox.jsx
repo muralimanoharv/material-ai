@@ -1,7 +1,8 @@
 import { useTheme } from "@emotion/react";
 import { Box, IconButton, Tooltip, Typography } from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
-import { fetch_artifact, formatBase64Data, UNAUTHORIZED } from "../../api";
+import { fetch_artifact, UNAUTHORIZED } from "../../api";
+import { formatBase64Data } from "../../utils";
 import { useContext } from "react";
 import { AppContext } from "../../context";
 import { config } from "../../assets/config";
@@ -33,7 +34,7 @@ export default function FileBox(props) {
             window.open(blobUrl, '_blank');
 
         } catch (e) {
-            if(e.name == UNAUTHORIZED) return
+            if (e.name == UNAUTHORIZED) return
             console.error(e)
             context.setSnack(config.errorMessage)
         }

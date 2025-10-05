@@ -2,14 +2,12 @@ import { useState, useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from './context.jsx'
-// import { INPUT_JSON, translate } from './translator.jsx'
-import { create_session, send_message, fileToBase64, fetch_sessions, fetch_session, fetch_agents, fetch_user, UNAUTHORIZED, NOTFOUND } from './api.js'
+import { create_session, send_message, fetch_sessions, fetch_session, fetch_agents, fetch_user, UNAUTHORIZED, NOTFOUND } from './api.js'
 import Layout from './components/Layout/Layout.jsx'
 import { config } from './assets/config.js'
 import { Snackbar } from '@mui/material'
 import ChatPage from './components/pages/ChatPage.jsx';
 import './App.css'
-import LoginPage from './components/pages/LoginPage.jsx';
 
 function App() {
   const [session, setSession] = useState()
@@ -52,34 +50,50 @@ function App() {
 
   }
 
+  const createNewSession = async () => {
+    const session = await create_session(appContext)();
+    const sessionId = session.session_id;
+    setSession(sessionId);
+    return sessionId
+  }
+
+  const createParts =  ({ prompt, files }) => {
+    const parts = [{ text: prompt }];
+    if (files?.length) return;
+
+    const fileParts = files.map((file) => ({
+      inline_data: {
+        ...file.inlineData
+      }
+    }));
+    const fileNames = files.map((file) => file.name);
+    parts.push(...fileParts)
+    parts.push({ text: JSON.stringify({ fileNames }) })
+
+    return parts
+  }
+
   const send = async (prompt, options = { submittedFiles: [] }) => {
     if (!prompt) return
     let session_id = session;
-    let is_new_session = false
+    const isNewSession = !isValidSession()
     const id = `${new Date().getTime()}`
     try {
       setPromptLoading(true)
-      if (!isValidSession()) {
-        session_id = (await create_session(appContext)()).session_id
-        setSession(session_id)
-        is_new_session = true;
+      // If user has no session, we then create a session for him
+      if (isNewSession) {
+        session_id = await createNewSession()
       }
+      // Cancel any pending API request before making new request
       await cancelApi()
       const controller = new AbortController();
       setController(controller)
-      const parts = [{ text: prompt }]
-      if (options.submittedFiles?.length) {
-        let submittedFiles = options.submittedFiles;
-        const fileParts = submittedFiles.map((file) => ({
-          inline_data: {
-            ...file.inlineData
-          }
-        }));
-        const fileNames = submittedFiles.map((file) => file.name);
-        parts.push(...fileParts)
-        parts.push({ text: JSON.stringify({ fileNames }) })
-      }
+
+      const parts = createParts({ prompt, files: options.submittedFiles })
+
       setShowHeading(false)
+
+      // Add user history with loading indicator
       add_history({
         role: 'user',
         id,
@@ -92,13 +106,15 @@ function App() {
       setPrompt('')
       setFiles([])
 
-      const messages = await send_message(appContext)(
-        {
-          session_id,
-          parts,
-          controller
-        })
+      const messages = await send_message(appContext)({
+        session_id,
+        parts,
+        controller
+      })
+      // Hide loading indicator
       update_history(id, { loading: false })
+
+      // Update history      
       for (let message of messages) {
         add_history({
           ...message.content,
@@ -110,14 +126,19 @@ function App() {
           }
         })
       }
-      if (is_new_session) {
+
+      // Id new session was created we update path param
+      if (isNewSession) {
         navigate(`/${session_id}`);
       }
     } catch (e) {
+      // If request was aborted or cancelled by user
       if (e.name === 'AbortError') {
+        update_history(id, { loading: false })
         return;
       }
-      if(e.name === UNAUTHORIZED) {
+      // If the request was not authorized 
+      if (e.name === UNAUTHORIZED) {
         update_history(id, { loading: false })
         setHistory([])
         setShowHeading(true)
@@ -130,7 +151,7 @@ function App() {
     } finally {
       setController(undefined)
       setPromptLoading(false)
-      if (is_new_session) {
+      if (isNewSession) {
         setSessions(prevSessions => {
           return [{ id: session_id }, ...prevSessions]
         })
@@ -204,8 +225,8 @@ function App() {
       setHistory(history)
       input_focus()
     } catch (e) {
-      if(e.name == UNAUTHORIZED) return
-      if(e.name == NOTFOUND) {
+      if (e.name == UNAUTHORIZED) return
+      if (e.name == NOTFOUND) {
         on_new_chat()
         return;
       }
@@ -235,7 +256,7 @@ function App() {
     try {
       setLoading(true)
       const user_info = await fetch_user(appContext)()
-      if(!user_info) {
+      if (!user_info) {
         setShowHeading(true)
         return;
       }
@@ -256,7 +277,7 @@ function App() {
       setSession(sessionId)
     } catch (e) {
       setShowHeading(true)
-      if(e.name == UNAUTHORIZED) {
+      if (e.name == UNAUTHORIZED) {
         navigate("/")
         return
       };
@@ -279,7 +300,6 @@ function App() {
       <AppContext.Provider value={appContext}>
         <Layout history={history}>
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
             <Route path="/:sessionId" element={<ChatPage />} />
             <Route path="/" element={<ChatPage />} />
           </Routes>

@@ -1,10 +1,10 @@
 import * as React from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { Box, IconButton, ListItemIcon, Tooltip, Typography, useTheme } from '@mui/material';
+import { Box, IconButton, ListItemIcon, Tooltip, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { AppContext } from '../../context';
-import { fileToBase64 } from '../../api';
+import { fileToBase64 } from '../../utils';
 import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
 import { menuNeedsLogin } from '../../hoc';
 
@@ -91,7 +91,7 @@ function FileSelectMenu(props) {
                 id="file-menu"
                 anchorEl={anchorEl}
                 anchorOrigin={{
-                    vertical: -70,
+                    vertical: -50,
                     horizontal: 'left',
                 }}
 

@@ -3,7 +3,8 @@ import { Box } from "@mui/material"
 import { ChatItemContext, AppContext } from "../../context"
 import ChatItem from "./ChatItem"
 import { CHAT_SECTION_WIDTH } from "../../assets/themes"
-import { isValidJson, send_feedback, UNAUTHORIZED } from "../../api"
+import { send_feedback, UNAUTHORIZED } from "../../api"
+import { isValidJson } from "../../utils"
 import { config } from "../../assets/config"
 
 export default function ChatSection() {

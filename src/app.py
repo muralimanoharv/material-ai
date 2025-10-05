@@ -21,7 +21,7 @@ _app_instance: FastAPI | None = None
 _lock = threading.Lock()
 
 STATIC_DIR = os.path.join("material-ai-frontend", "dist")
-AGENT_DIR = os.path.dirname(os.path.abspath(__file__))
+AGENT_DIR = f"{os.path.dirname(os.path.abspath(__file__))}/agents"
 ALLOWED_ORIGINS = [
     "http://localhost",
     "http://localhost:5173",
