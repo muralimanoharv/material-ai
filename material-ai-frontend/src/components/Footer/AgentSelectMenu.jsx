@@ -97,10 +97,11 @@ function AgentItem({ agent }) {
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            textTransform: 'capitalize',
           }}
         >
-          <Typography variant="h5">{agent.replaceAll('_', ' ')}</Typography>
+          <Typography textTransform="capitalize" variant="h5">
+            {agent.replaceAll('_', ' ')}
+          </Typography>
           <Typography variant="h6">{agent}</Typography>
         </Box>
         {selectedAgent == agent ? (
