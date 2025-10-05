@@ -70,6 +70,8 @@ If you don't have `uv`, you can install it quickly. On macOS and Linux, run `cur
     ```
 
 4.  **Set up environment variables:**
+    By default, the application is configured to use **Google OAuth** for SSO. Before running the app, you will need to set up an **OAuth 2.0 Client ID** in the [Google Cloud Console](https://console.cloud.google.com/apis/credentials) to get your credentials.
+
     Create a file named `.env` in the root of the project by copying the example file:
 
     ```bash
@@ -164,6 +166,78 @@ Once you save this file, the next time you run the application, a new "Greeting 
 
 ---
 
+Excellent. This is a critical section for developers looking to adapt your project. Here is the "Configuring SSO" section for your README, written based on the details you provided.
+
+-----
+
+## 🔐 Configuring Single Sign-On (SSO)
+
+Material AI is built to be flexible, allowing you to use the default Google SSO for quick setups or integrate a custom SSO provider for specific customer needs.
+
+### Default Configuration (Google OAuth)
+
+By default, Material AI uses **Google OAuth 2.0** for authentication. For most use cases, especially local development, you simply need to update your `.env` file with the correct Google OAuth credentials.
+
+The source code for this default implementation is available for reference in `src/oauth/google_oauth.py`.
+
+### Adding a Custom SSO Provider
+
+For customer deployments that require integration with a different identity provider (e.g., Azure AD, Okta), Material AI provides a streamlined, one-time setup process. This is designed to be easy for developers.
+
+Follow these two steps to add a new SSO provider:
+
+#### 1\. Implement the `IOAuthService` Interface
+
+First, create a new class for your SSO provider (e.g., `AzureOAuthService`). This class **must** implement the `IOAuthService` interface to ensure it's compatible with the application's authentication flow.
+
+You can find the interface definition, which outlines all the required methods you need to implement, in the following file:
+`src/oauth/interface.py`
+
+Here is a basic skeleton for what your custom service class would look like:
+
+```python
+# src/oauth/azure_oauth.py
+
+from .interface import IOAuthService
+
+class AzureOAuthService(IOAuthService):
+    """
+    Custom SSO implementation for Azure Active Directory.
+    """
+    # You must implement all methods defined in the IOAuthService interface,
+    # such as sso_get_redirection_url(), sso_get_access_token(), sso_get_new_access_token(), etc.
+    ...
+
+```
+
+#### 2\. Register Your New Service
+
+Next, you need to tell Material AI to use your new service. Open the file `src/oauth/oauth.py` and modify the `get_oauth()` function to instantiate your custom class instead of the default `GoogleOAuthService`.
+
+```python
+# src/oauth/oauth.py
+from .google_oauth import GoogleOAuthService
+# Import your new custom service here
+from .azure_oauth import AzureOAuthService 
+
+def get_oauth() -> IOAuthService:
+    global _oauth_instance
+    with _lock:
+        if _oauth_instance is None:
+            # Replace the default service with your new implementation
+            
+            # --- BEFORE ---
+            # _oauth_instance = GoogleOAuthService()
+            
+            # --- AFTER ---
+            _oauth_instance = AzureOAuthService()
+            
+        return _oauth_instance
+```
+
+Once this change is made, the entire application will use your custom SSO provider for all authentication workflows.
+
+---
 ## 🐞 Reporting Issues and Feature Requests
 
 We welcome your contributions! If you encounter a bug or have an idea for a new feature, the best way to let us know is by opening an issue on our GitHub repository.
