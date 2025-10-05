@@ -1,5 +1,3 @@
-
-
 import configparser
 import os
 import threading
@@ -16,6 +14,7 @@ load_dotenv()
 
 class General(pydantic.BaseModel):
     debug: bool
+
 
 class Config(pydantic.BaseModel):
     sso: SSOConfig
@@ -42,9 +41,9 @@ def get_config() -> Config:
     global _config_instance
     with _lock:
         if _config_instance is None:
-            config_path_from_env = os.environ.get('CONFIG_PATH')
+            config_path_from_env = os.environ.get("CONFIG_PATH")
             if not config_path_from_env:
-                msg = 'Environment variable CONFIG_PATH not set'
+                msg = "Environment variable CONFIG_PATH not set"
                 _logger.error(msg)
                 raise ConfigError(msg)
 
@@ -77,29 +76,32 @@ def _configure(path: pathlib.Path) -> Config:
     """
     config_parser = configparser.ConfigParser()
     if not path.is_file():
-        raise FileNotFoundError(f'config file {path} is not a valid file or does not exist.')
+        raise FileNotFoundError(
+            f"config file {path} is not a valid file or does not exist."
+        )
     config_parser.read(path)
     sso = SSOConfig(
-        client_id=get_config_value(config_parser, 'SSO', 'client_id'),
-        client_secret=get_config_value(config_parser, 'SSO', 'client_secret'),
-        redirect_uri=get_config_value(config_parser, 'SSO', 'redirect_uri'),
-        session_secret_key=get_config_value(config_parser, 'SSO', 'session_secret_key')
+        client_id=get_config_value(config_parser, "SSO", "client_id"),
+        client_secret=get_config_value(config_parser, "SSO", "client_secret"),
+        redirect_uri=get_config_value(config_parser, "SSO", "redirect_uri"),
+        session_secret_key=get_config_value(config_parser, "SSO", "session_secret_key"),
     )
     general = General(
-        debug=get_config_value(config_parser, 'GENERAL', 'debug'),
+        debug=get_config_value(config_parser, "GENERAL", "debug"),
     )
-    return Config(
-        sso=sso,
-        general=general
-    )
-
+    return Config(sso=sso, general=general)
 
 
 # We use this sentinel object to detect if a default value was provided
 _sentinel = object()
 
-def get_config_value(config_parser: configparser.ConfigParser, section: str, parameter: str,
-                     default: Any = _sentinel) -> Any:
+
+def get_config_value(
+    config_parser: configparser.ConfigParser,
+    section: str,
+    parameter: str,
+    default: Any = _sentinel,
+) -> Any:
     """Get config value from the environment variable or config file.
 
     If a default value is not provided, the configuration is considered
@@ -130,7 +132,9 @@ def get_config_value(config_parser: configparser.ConfigParser, section: str, par
         try:
             return config_parser.get(section, parameter)
         except (configparser.NoOptionError, configparser.NoSectionError) as e:
-            raise ConfigError(f"Required configuration not found: [{section}] {parameter}") from e
+            raise ConfigError(
+                f"Required configuration not found: [{section}] {parameter}"
+            ) from e
     else:
         # Fallback to the config file
         return config_parser.get(section, parameter, fallback=default)

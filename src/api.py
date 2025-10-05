@@ -12,9 +12,13 @@ from .response import UserSuccessResponse
 _logger = logging.getLogger(__name__)
 router = APIRouter()
 
+
 @router.get("/")
 def root():
-    return FileResponse(path=os.path.join(STATIC_DIR, "index.html"), media_type='text/html')
+    return FileResponse(
+        path=os.path.join(STATIC_DIR, "index.html"), media_type="text/html"
+    )
+
 
 @router.post("/feedback")
 def feedback(feedback: FeedbackRequest):
@@ -26,7 +30,7 @@ def feedback(feedback: FeedbackRequest):
 async def logout(refresh_token: str | None = Cookie(None)):
     response = Response(status_code=200)
     await remove_token(response, refresh_token)
-    return response 
+    return response
 
 
 @router.get("/login")
@@ -40,25 +44,30 @@ async def login(request: Request):
     return RedirectResponse(url=redirect_url)
 
 
+@router.get(
+    "/user",
+)
+async def user(
+    response: Response,
+    user_info: str | None = Cookie(None),
+    refresh_token: str | None = Cookie(None),
+):
 
-@router.get("/user",)
-async def user(response: Response, 
-               user_info: str | None = Cookie(None), 
-               refresh_token: str | None = Cookie(None)):
-    
     if refresh_token == None:
         return Response(status_code=401)
-    
+
     if user_info != None:
-        return UserSuccessResponse(user_response=OAuthUserDetail(**json.loads(user_info)))
-    
+        return UserSuccessResponse(
+            user_response=OAuthUserDetail(**json.loads(user_info))
+        )
+
     # Token has expired we need to regenerate token
     return await get_user_details(response, refresh_token)
-    
 
 
-
-@router.get("/auth",)
+@router.get(
+    "/auth",
+)
 async def callback(request: Request, code: str, state: str):
     """
     Handles the callback from OAuth2.0 after user authentication.
@@ -66,8 +75,5 @@ async def callback(request: Request, code: str, state: str):
     stored_state = request.session.get("oauth_state")
     if not stored_state or stored_state != state:
         return Response(status_code=403)
-    
-    
+
     return await on_callback(code)
-
-

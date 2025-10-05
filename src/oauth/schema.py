@@ -1,4 +1,3 @@
-
 import pydantic
 from typing import Any
 
@@ -15,8 +14,10 @@ class StatusCodeAndDetail(pydantic.BaseModel):
         detail (str | dict[Any, Any]): The detailed information associated with the status code. Can be a string
             or a dictionary containing additional contextual data.
     """
+
     status_code: int
     detail: str | dict[Any, Any]
+
 
 class SSOConfig(pydantic.BaseModel):
     client_id: str
@@ -44,6 +45,7 @@ class OAuthSuccessResponse(pydantic.BaseModel):
 
 class OAuthErrorResponse(StatusCodeAndDetail):
     """Response for a failed user login, including a status code and detail."""
+
     pass
 
 

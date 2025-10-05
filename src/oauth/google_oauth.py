@@ -24,13 +24,12 @@ class GoogleOAuthService(IOAuthService):
             f"access_type=offline&"
             f"prompt=consent"
         )
-        return OAuthRedirectionResponse(
-                redirection_url=redirection_url,
-                state=state
-        )
+        return OAuthRedirectionResponse(redirection_url=redirection_url, state=state)
 
     @handle_httpx_errors(url="https://oauth2.googleapis.com/token")
-    async def sso_get_access_token(self, sso: SSOConfig, authorization_code: str) -> OAuthSuccessResponse | OAuthErrorResponse:
+    async def sso_get_access_token(
+        self, sso: SSOConfig, authorization_code: str
+    ) -> OAuthSuccessResponse | OAuthErrorResponse:
         url = "https://oauth2.googleapis.com/token"
 
         token_payload = {
@@ -45,12 +44,14 @@ class GoogleOAuthService(IOAuthService):
         async with httpx.AsyncClient() as client:
             response = await client.post(url, data=token_payload)
             response.raise_for_status()
-    
+
         token_data = response.json()
         if "error" in token_data:
-            return OAuthErrorResponse(status_code=400, detail=token_data.get("error_description"))
+            return OAuthErrorResponse(
+                status_code=400, detail=token_data.get("error_description")
+            )
         access_token = token_data.get("access_token")
-        expires_in = token_data.get('expires_in')
+        expires_in = token_data.get("expires_in")
         refresh_token = token_data.get("refresh_token")
         user_detail = await self.sso_get_user_details(access_token)
         if isinstance(user_detail, OAuthErrorResponse):
@@ -60,11 +61,13 @@ class GoogleOAuthService(IOAuthService):
             access_token=access_token,
             refresh_token=refresh_token,
             user_detail=user_detail,
-            expires_in=expires_in
+            expires_in=expires_in,
         )
 
     @handle_httpx_errors(url="https://oauth2.googleapis.com/token")
-    async def sso_get_new_access_token(self, sso: SSOConfig, refresh_token: str) -> OAuthSuccessResponse | OAuthErrorResponse:
+    async def sso_get_new_access_token(
+        self, sso: SSOConfig, refresh_token: str
+    ) -> OAuthSuccessResponse | OAuthErrorResponse:
 
         url = "https://oauth2.googleapis.com/token"
         token_payload = {
@@ -79,63 +82,65 @@ class GoogleOAuthService(IOAuthService):
 
         token_data = response.json()
         if "error" in token_data:
-            return OAuthErrorResponse(status_code=400, detail=token_data.get("error_description"))
-        
-        access_token = token_data.get('access_token')
-        expires_in = token_data.get('expires_in')
+            return OAuthErrorResponse(
+                status_code=400, detail=token_data.get("error_description")
+            )
+
+        access_token = token_data.get("access_token")
+        expires_in = token_data.get("expires_in")
         user_detail = await self.sso_get_user_details(access_token)
 
         if isinstance(user_detail, OAuthErrorResponse):
             return user_detail
-        
+
         return OAuthSuccessResponse(
             access_token=access_token,
             refresh_token=refresh_token,
             user_detail=user_detail,
-            expires_in=expires_in
+            expires_in=expires_in,
         )
-        
-    
+
     @handle_httpx_errors(url="https://www.googleapis.com/oauth2/v3/userinfo")
-    async def sso_get_user_details(self, access_token: str) -> OAuthUserDetail | OAuthErrorResponse:
+    async def sso_get_user_details(
+        self, access_token: str
+    ) -> OAuthUserDetail | OAuthErrorResponse:
         url = "https://www.googleapis.com/oauth2/v3/userinfo"
 
-        headers= {
-            "Authorization": f"Bearer {access_token}"
-        }
+        headers = {"Authorization": f"Bearer {access_token}"}
 
         async with httpx.AsyncClient() as client:
-                response = await client.get(url, headers=headers)
-                response.raise_for_status()
+            response = await client.get(url, headers=headers)
+            response.raise_for_status()
 
         user_info = response.json()
         user_detail = OAuthUserDetail(**user_info)
 
         return user_detail
-    
+
     @handle_httpx_errors(url="https://oauth2.googleapis.com/revoke")
-    async def sso_revoke_refresh_token(self, refresh_token: str) -> None | OAuthErrorResponse:
+    async def sso_revoke_refresh_token(
+        self, refresh_token: str
+    ) -> None | OAuthErrorResponse:
         url = "https://oauth2.googleapis.com/revoke"
 
         params = {"token": refresh_token}
 
         async with httpx.AsyncClient() as client:
-                response = await client.post(url, params=params)
-                response.raise_for_status()
+            response = await client.post(url, params=params)
+            response.raise_for_status()
 
         _logger.info("INFO: Token successfully revoked.")
 
     @handle_httpx_errors(url="https://oauth2.googleapis.com/tokeninfo")
-    async def sso_verify_access_token(self, access_token: str) -> bool | OAuthErrorResponse:
+    async def sso_verify_access_token(
+        self, access_token: str
+    ) -> bool | OAuthErrorResponse:
         url = "https://oauth2.googleapis.com/tokeninfo"
 
         params = {"access_token": access_token}
 
         async with httpx.AsyncClient() as client:
-                response = await client.post(url, params=params)
-                response.raise_for_status()
-                
-        return response.status_code == 200
+            response = await client.post(url, params=params)
+            response.raise_for_status()
 
-        
-    
+        return response.status_code == 200

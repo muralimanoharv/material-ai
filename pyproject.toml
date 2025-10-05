@@ -12,5 +12,20 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "black>=25.9.0",
     "debugpy>=1.8.15",
 ]
+
+[tool.black]
+# Set the maximum line length. Black defaults to 88.
+line-length = 88 
+# Files to skip over
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.venv
+  | \.vscode
+  | dist
+)/
+'''

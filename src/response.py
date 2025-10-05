@@ -9,6 +9,7 @@ class UserSuccessResponse(pydantic.BaseModel):
     Attributes:
         user_response: Contains details about the logged-in user.
     """
+
     user_response: OAuthUserDetail
 
 
@@ -24,5 +25,6 @@ class StatusCodeAndDetail(pydantic.BaseModel):
         detail (str | dict[Any, Any]): The detailed information associated with the status code. Can be a string
             or a dictionary containing additional contextual data.
     """
+
     status_code: int
     detail: str | dict[Any, Any]
