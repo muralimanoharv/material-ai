@@ -3,7 +3,7 @@ import { HOST } from './assets/config'
 export function create_session(context) {
   return async () => {
     const response = await fetch(
-      `${HOST}/apps/${context.selectedAgent}/users/${context.user.email}/sessions`,
+      `${HOST}/apps/${context.selectedAgent}/users/${context.user.sub}/sessions`,
       {
         method: 'POST',
         credentials: 'include',
@@ -25,7 +25,7 @@ export function send_message(context) {
       credentials: 'include',
       body: JSON.stringify({
         app_name: context.selectedAgent,
-        user_id: context.user.email,
+        user_id: context.user.sub,
         session_id,
         new_message: {
           role: 'user',
@@ -44,7 +44,7 @@ export function send_message(context) {
 export function fetch_sessions(context) {
   return async ({ selectedAgent }) => {
     const response = await fetch(
-      `${HOST}/apps/${selectedAgent}/users/${context.user.email}/sessions`,
+      `${HOST}/apps/${selectedAgent}/users/${context.user.sub}/sessions`,
       {
         method: 'GET',
         headers: {
@@ -62,7 +62,7 @@ export function fetch_sessions(context) {
 export function fetch_session(context) {
   return async ({ session_id, selected_agent, user }) => {
     const response = await fetch(
-      `${HOST}/apps/${selected_agent ?? context.selectedAgent}/users/${user ?? context.user.email}/sessions/${session_id}`,
+      `${HOST}/apps/${selected_agent ?? context.selectedAgent}/users/${user ?? context.user.sub}/sessions/${session_id}`,
       {
         method: 'GET',
         headers: {
@@ -133,7 +133,7 @@ export function send_feedback(context) {
 export function fetch_artifact(context) {
   return async ({ artifact_name, version }) => {
     const response = await fetch(
-      `${HOST}/apps/${context.selectedAgent}/users/${context.user.email}/sessions/${context.session}/artifacts/${artifact_name}?version=${version}`,
+      `${HOST}/apps/${context.selectedAgent}/users/${context.user.sub}/sessions/${context.session}/artifacts/${artifact_name}?version=${version}`,
       {
         method: 'GET',
         headers: {
@@ -157,6 +157,27 @@ export async function sign_out(context) {
     credentials: 'include',
   })
   return handle_response(response, context)
+}
+
+export function delete_session(context) {
+  return async (session_id) => {
+    const response = await fetch(
+      `${HOST}/apps/${context.selectedAgent}/users/${context.user.sub}/sessions/${session_id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      },
+    )
+    handle_response(response, context)
+    if (response.status == 404) {
+      throw new NotFound()
+    }
+    let body = await response.json()
+    return body
+  }
 }
 
 export function handle_response(respone, context) {

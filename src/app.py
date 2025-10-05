@@ -13,6 +13,8 @@ import time
 import http.cookies
 from .auth import _remove_cookies
 from .oauth import get_oauth, OAuthErrorResponse
+from .logging import setup_structured_logging
+
 from . import __app_name__, __version__
 
 _lock = threading.Lock()
@@ -87,7 +89,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
             if cookies.get("access_token") == None:
                 raise UnauthorizedException()
-            if cookies.get("user_info") == None:
+            if cookies.get("user_details") == None:
                 raise UnauthorizedException()
 
             auth = get_oauth()
@@ -128,7 +130,16 @@ def _setup_app(app: FastAPI) -> None:
     try:
         config = get_config()
     except ConfigError as e:
-        raise RuntimeError("Bad configuration") from e  # yes, really
+        raise RuntimeError("Bad configuration") from e  # lol :P
+
+    json_logs_enabled = False if config.general.debug else True
+
+    # Setup logging
+    setup_structured_logging(
+        app_name=__app_name__,
+        enable_json_formatter=json_logs_enabled,
+        log_level=logging.DEBUG if config.general.debug else logging.INFO,
+    )
 
     # Custom header middleware
     app.add_middleware(
@@ -140,6 +151,7 @@ def _setup_app(app: FastAPI) -> None:
         app_version=__version__,
     )
     app.add_middleware(SessionMiddleware, secret_key=config.sso.session_secret_key)
+    # Custom exception handler
     app.add_exception_handler(HTTPException, http_exception_cookie_clearer)
 
     from .api import router as core_router
@@ -147,6 +159,7 @@ def _setup_app(app: FastAPI) -> None:
     app.include_router(core_router)
     app.mount("/", StaticFiles(directory=STATIC_DIR), name="static")
 
+    # Apply cors middleware in debug mode
     if config.general.debug:
         _logger.debug("App running in DEBUG mode")
         app.add_middleware(

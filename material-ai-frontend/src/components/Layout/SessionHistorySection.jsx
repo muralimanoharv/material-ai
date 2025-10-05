@@ -1,11 +1,18 @@
 import { useContext, useEffect, useState } from 'react'
 import { AppContext, LayoutContext } from '../../context'
-import { fetch_session, UNAUTHORIZED } from '../../api'
-import { Box, Tooltip, Typography, useTheme } from '@mui/material'
+import {
+  delete_session,
+  fetch_session,
+  NOTFOUND,
+  UNAUTHORIZED,
+} from '../../api'
+import { Box, IconButton, Tooltip, Typography, useTheme } from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
 import { drawerWidth } from '../material/MaterialDrawer'
 import { useNavigate } from 'react-router-dom'
 import { useMobileHook } from '../../hooks'
 import SigninButton from '../SigninButton'
+import { config } from '../../assets/config'
 
 export default function SessionHistorySection() {
   const context = useContext(AppContext)
@@ -13,11 +20,12 @@ export default function SessionHistorySection() {
   const theme = useTheme()
   return (
     <>
-      <Box display={'flex'} flexDirection="column" padding="0 16px" gap="10px">
+      <Box display={'flex'} flexDirection="column" padding="0 16px" gap="2px">
         <Typography
           display={isDrawerOpen() ? 'block' : 'none'}
           fontSize={'14px'}
           variant="h6"
+          pb={'8px'}
           className="fade-in-animation"
         >
           Recent
@@ -28,7 +36,7 @@ export default function SessionHistorySection() {
           ))
         ) : (
           <Box
-            width={isDrawerOpen() ? drawerWidth - 35 : 0}
+            width={isDrawerOpen() ? 'auto' : 0}
             display={isDrawerOpen() ? 'flex' : 'none'}
             className="fade-in-animation"
             sx={{
@@ -91,47 +99,88 @@ function SessionItem(props) {
     }
   }
 
+  const isSelected = context.session === session.id
+
+  const deleteSession = async () => {
+    try {
+      await delete_session(context)(session.id)
+      context.setSessions((prevSessions) => {
+        return [
+          ...prevSessions.filter(
+            (prevSession) => prevSession.id !== session.id,
+          ),
+        ]
+      })
+      if (isSelected) context.on_new_chat()
+    } catch (e) {
+      if (e.name == UNAUTHORIZED) return
+      if (e.name == NOTFOUND) {
+        context.on_new_chat()
+        return
+      }
+      console.error(e)
+      context.setSnack(config.errorMessage)
+    }
+  }
+
   useEffect(() => {
     fetchSession()
   }, [])
 
   return (
-    <Tooltip placement="right" title={title}>
-      <Box
-        className="session-history"
-        onClick={async () => {
-          await context.getSession({ sessionId: session.id })
-          await navigate(`/${session.id}`)
-          context.setSession(session.id)
-          if (isMobile) setOpen(false)
-        }}
-        key={session.id}
-        height={isDrawerOpen() ? 'auto' : 0}
-        width={isDrawerOpen() ? drawerWidth - 35 : 0}
-        sx={{
-          opacity: isDrawerOpen() ? '1' : '0',
-          cursor: 'pointer',
-          padding: '8px 8px 8px 12px',
-          borderRadius: '16px',
-          backgroundColor: isDrawerOpen()
-            ? context.session === session.id
-              ? theme.palette.background.history
-              : undefined
-            : undefined,
-          '&:hover': {
-            backgroundColor:
-              context.session === session.id
-                ? theme.palette.background.history
-                : theme.palette.background.cardHover,
+    <Box
+      className="session-history"
+      key={session.id}
+      height={isDrawerOpen() ? 'auto' : 0}
+      width={isDrawerOpen() ? drawerWidth - 35 : 0}
+      sx={{
+        opacity: isDrawerOpen() ? '1' : '0',
+        cursor: 'pointer',
+        padding: '8px 8px 8px 12px',
+        borderRadius: '16px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: isDrawerOpen()
+          ? isSelected
+            ? theme.palette.background.history
+            : undefined
+          : undefined,
+        '&:hover': {
+          backgroundColor: isSelected
+            ? theme.palette.background.history
+            : theme.palette.background.cardHover,
+          '.session-trash-button': {
+            opacity: 1,
+          },
+        },
+      }}
+    >
+      <Tooltip
+        placement="right"
+        title={title}
+        slotProps={{
+          popper: {
+            modifiers: [
+              {
+                name: 'offset',
+                options: {
+                  offset: [0, 24],
+                },
+              },
+            ],
           },
         }}
       >
         <Typography
-          color={
-            context.session === session.id
-              ? theme.palette.text.selected
-              : undefined
-          }
+          sx={{ flexGrow: 1 }}
+          onClick={async () => {
+            await context.getSession({ sessionId: session.id })
+            await navigate(`/${session.id}`)
+            context.setSession(session.id)
+            if (isMobile) setOpen(false)
+          }}
+          color={isSelected ? theme.palette.text.selected : undefined}
           fontWeight={500}
           fontSize={'14px'}
           lineHeight={'20px'}
@@ -140,7 +189,22 @@ function SessionItem(props) {
         >
           {title}
         </Typography>
-      </Box>
-    </Tooltip>
+      </Tooltip>
+      <IconButton
+        onClick={deleteSession}
+        className="session-trash-button session-history"
+        sx={{
+          opacity: '0',
+          padding: '4px',
+          '&:hover': {
+            background: isSelected
+              ? theme.palette.background.default
+              : undefined,
+          },
+        }}
+      >
+        <DeleteIcon fontSize="small" />
+      </IconButton>
+    </Box>
   )
 }

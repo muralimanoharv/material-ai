@@ -112,8 +112,8 @@ class GoogleOAuthService(IOAuthService):
             response = await client.get(url, headers=headers)
             response.raise_for_status()
 
-        user_info = response.json()
-        user_detail = OAuthUserDetail(**user_info)
+        user_details = response.json()
+        user_detail = OAuthUserDetail(**user_details)
 
         return user_detail
 

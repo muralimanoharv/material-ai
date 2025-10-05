@@ -20,6 +20,8 @@ class StatusCodeAndDetail(pydantic.BaseModel):
 
 
 class SSOConfig(pydantic.BaseModel):
+    """Captures all environment variables for sso."""
+
     client_id: str
     client_secret: str
     redirect_uri: str
@@ -27,6 +29,8 @@ class SSOConfig(pydantic.BaseModel):
 
 
 class OAuthUserDetail(pydantic.BaseModel):
+    """A typical user properties obtained from sso"""
+
     sub: str
     name: str
     given_name: str
@@ -37,6 +41,8 @@ class OAuthUserDetail(pydantic.BaseModel):
 
 
 class OAuthSuccessResponse(pydantic.BaseModel):
+    """A typical sso resposne to set cookies"""
+
     access_token: str
     refresh_token: str
     user_detail: OAuthUserDetail
@@ -50,5 +56,7 @@ class OAuthErrorResponse(StatusCodeAndDetail):
 
 
 class OAuthRedirectionResponse(pydantic.BaseModel):
+    """A typical sso resposne to redirect user for sso login"""
+
     redirection_url: str
     state: str

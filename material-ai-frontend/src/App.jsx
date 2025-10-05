@@ -11,6 +11,7 @@ import {
   fetch_user,
   UNAUTHORIZED,
   NOTFOUND,
+  delete_session,
 } from './api.js'
 import Layout from './components/Layout/Layout.jsx'
 import { config } from './assets/config.js'
@@ -140,13 +141,12 @@ function App() {
       }
     } catch (e) {
       // If request was aborted or cancelled by user
+      update_history(id, { loading: false })
       if (e.name === 'AbortError') {
-        update_history(id, { loading: false })
         return
       }
       // If the request was not authorized
       if (e.name === UNAUTHORIZED) {
-        update_history(id, { loading: false })
         setHistory([])
         setShowHeading(true)
         return
@@ -210,7 +210,7 @@ function App() {
       const sessionDto = await fetch_session(appContext)({
         session_id: sessionId,
         selected_agent: selectedAgent,
-        user: user?.email,
+        user: user?.sub,
       })
       setShowHeading(false)
       let history = []
@@ -269,6 +269,7 @@ function App() {
     add_history,
     delete_history,
     sessions,
+    setSessions,
     clear_history,
     agents,
     selectedAgent,
@@ -283,12 +284,12 @@ function App() {
   const onAppLoad = async () => {
     try {
       setLoading(true)
-      const user_info = await fetch_user(appContext)()
-      if (!user_info) {
+      const user_details = await fetch_user(appContext)()
+      if (!user_details) {
         setShowHeading(true)
         return
       }
-      const user = user_info.user_response
+      const user = user_details.user_response
       setUser(user)
       const agents = await fetch_agents(appContext)()
       const selectedAgent = agents[0]

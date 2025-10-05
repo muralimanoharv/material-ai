@@ -5,7 +5,13 @@ from fastapi.responses import FileResponse, RedirectResponse, HTMLResponse
 from .request import FeedbackRequest
 from .app import STATIC_DIR
 import json
-from .auth import remove_token, get_redirection_url, get_user_details, on_callback
+from .auth import (
+    remove_token,
+    get_redirection_url,
+    get_user_details,
+    on_callback,
+    verify_user_details,
+)
 from .oauth import OAuthUserDetail
 from .response import UserSuccessResponse
 
@@ -85,14 +91,14 @@ async def login(request: Request):
     "/user",
     summary="Get Authenticated User's Details",
     description="Retrieves user info from a cache cookie or refreshes it using a refresh token cookie.",
-    response_model=UserSuccessResponse,  # Sets the default 200 OK response model
+    response_model=UserSuccessResponse,
     responses={
         401: {"description": "Unauthorized. The refresh_token cookie is missing."},
     },
 )
 async def user(
     response: Response,
-    user_info: str | None = Cookie(
+    user_details: str | None = Cookie(
         None, description="Cached user details as a JSON string."
     ),
     refresh_token: str | None = Cookie(
@@ -105,9 +111,10 @@ async def user(
     if refresh_token is None:
         return Response(status_code=401)
 
-    if user_info is not None:
+    if user_details is not None:
+        user_details = verify_user_details(user_details)
         return UserSuccessResponse(
-            user_response=OAuthUserDetail(**json.loads(user_info))
+            user_response=OAuthUserDetail(**json.loads(user_details))
         )
 
     return await get_user_details(response, refresh_token)

@@ -4,10 +4,14 @@ from fastapi import HTTPException, status
 
 
 class ConfigError(Exception):
+    """We throw this for invaid configuration file."""
+
     pass
 
 
 class UnauthorizedException(HTTPException):
+    """We throw this any unauthorized request."""
+
     def __init__(
         self, detail: str = "Not authenticated or session expired", headers: dict = None
     ):
