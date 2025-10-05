@@ -33,6 +33,7 @@ export function isValidJson(str) {
     try {
         JSON.parse(str);
     } catch (e) {
+        console.debug(e)
         return false;
     }
     return true;

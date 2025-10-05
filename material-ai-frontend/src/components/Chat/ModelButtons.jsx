@@ -91,7 +91,7 @@ export default function ModelButtons(props) {
     className="actions-child actions-child-model"
     sx={{
       marginLeft: '60px',
-      opacity: !!feedback ? '1' : '0',
+      opacity: feedback ? '1' : '0',
       transition: 'opacity 0.5s ease'
     }}>
     {actions.map((action) => {

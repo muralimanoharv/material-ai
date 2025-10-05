@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { Box, Button, Tooltip, Typography, useTheme } from '@mui/material';
+import { Box, Button, Tooltip, Typography } from '@mui/material';
 import { AppContext } from '../../context';
 import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';

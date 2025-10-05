@@ -13,7 +13,7 @@ import { menuNeedsLogin } from '../../hoc';
 const FILE_OPTIONS = [
     {
         title: 'Upload files',
-        icon: AttachFileOutlinedIcon
+        icon: <AttachFileOutlinedIcon fontSize='small'/>
     },
 ]
 
@@ -116,7 +116,7 @@ const FileSelectMenuBody = menuNeedsLogin((props) => {
         {FILE_OPTIONS.map(({ title, icon: Icon }) => {
             return <MenuItem onClick={() => props.uploadFile()} key={title}>
                 <ListItemIcon>
-                    {<Icon fontSize='small' />}
+                    {Icon}
                 </ListItemIcon>
                 <Typography variant='h5'>{title}</Typography>
             </MenuItem>

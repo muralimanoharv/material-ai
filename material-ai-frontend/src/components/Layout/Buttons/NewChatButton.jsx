@@ -12,7 +12,7 @@ export default function NewChatButton() {
     return <DrawerButton
         disabled={promptLoading || !user}
         tooltip="New Chat (Ctrl+Shift+O)"
-        icon={AddCommentOutlinedIcon} title="New chat"
+        icon={<AddCommentOutlinedIcon fontSize="small"/>} title="New chat"
         onClick={() => {
             on_new_chat()
             if(isMobile) setOpen(false)

@@ -57,7 +57,7 @@ function App() {
     return sessionId
   }
 
-  const createParts =  ({ prompt, files }) => {
+  const createParts = ({ prompt, files }) => {
     const parts = [{ text: prompt }];
     if (files?.length) return;
 
@@ -209,19 +209,22 @@ function App() {
       setShowHeading(false)
       let history = []
       let prevPrompt = ''
-      for (let event of sessionDto?.events) {
-        if (event.content.role == 'user') {
-          prevPrompt = event?.content?.parts[0]?.text ?? prevPrompt
-        }
-        history.push({
-          ...event.content,
-          id: event.id,
-          prompt: prevPrompt,
-          actions: {
-            ...event.actions
+      if (sessionDto && sessionDto.events) {
+        for (let event of sessionDto.events) {
+          if (event.content.role == 'user') {
+            prevPrompt = event?.content?.parts[0]?.text ?? prevPrompt
           }
-        })
+          history.push({
+            ...event.content,
+            id: event.id,
+            prompt: prevPrompt,
+            actions: {
+              ...event.actions
+            }
+          })
+        }
       }
+
       setHistory(history)
       input_focus()
     } catch (e) {

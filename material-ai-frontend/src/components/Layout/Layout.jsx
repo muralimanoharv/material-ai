@@ -99,7 +99,7 @@ export default function Layout(props) {
 
 
 function FlexibleDrawer(props) {
-    const { isDrawerOpen, setOpen, open } = React.useContext(LayoutContext)
+    const { isDrawerOpen, setOpen } = React.useContext(LayoutContext)
     const isMobile = useMobileHook();
 
     if (isMobile) {

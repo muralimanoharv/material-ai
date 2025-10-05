@@ -49,7 +49,7 @@ export default function DrawerButton({ icon: Icon, title, onClick, tooltip = '',
                                 },
                         ]}
                     >
-                        <Icon fontSize="small" />
+                        {Icon}
                     </ListItemIcon>
                 </Tooltip>
 

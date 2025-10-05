@@ -6,8 +6,8 @@ import DrawerButton from "../../material/DrawerButton";
 
 
 export default function SettingsButton() {
-    const { open, setOpen, setSettingsDrawerOpen } = useContext(LayoutContext)
-    return <DrawerButton tooltip="Settings" icon={SettingsIcon} title="Settings & help" onClick={() => {
+    const { setOpen, setSettingsDrawerOpen } = useContext(LayoutContext)
+    return <DrawerButton tooltip="Settings" icon={<SettingsIcon fontSize="small"/>} title="Settings & help" onClick={() => {
         setOpen(false)
         setSettingsDrawerOpen(true)
     }} />

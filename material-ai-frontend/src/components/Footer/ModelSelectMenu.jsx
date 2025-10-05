@@ -7,7 +7,6 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { AppContext } from '../../context';
 import { config } from '../../assets/config';
-import { menuNeedsLogin } from '../../hoc';
 
 export default function ModelSelectMenu() {
     const { currentModel, user } = React.useContext(AppContext)

@@ -107,7 +107,7 @@ export function fetch_user(context) {
 
 
 
-export function send_feedback() {
+export function send_feedback(context) {
 
     return async ({ feedback_category, feedback_text, id }) => {
         const response = await fetch(`${HOST}/feedback`, {
