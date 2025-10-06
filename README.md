@@ -74,6 +74,8 @@ If you don't have `uv`, you can install it quickly. On macOS and Linux, run `cur
 4.  **Set up environment variables:**
     By default, the application is configured to use **Google OAuth** for SSO. Before running the app, you will need to set up an **OAuth 2.0 Client ID** in the [Google Cloud Console](https://console.cloud.google.com/apis/credentials) to get your credentials.
 
+    You will also need GEMINI API KEY Go to https://aistudio.google.com/apikey to generate API KEY
+
     Create a file named `.env` in the root of the project by copying the example file:
 
     ```bash
@@ -86,6 +88,10 @@ If you don't have `uv`, you can install it quickly. On macOS and Linux, run `cur
     # Single Sign-On (SSO) Configuration
     SSO_CLIENT_ID="YOUR_SSO_CLIENT_ID"
     SSO_CLIENT_SECRET="YOUR_SSO_CLIENT_SECRET"
+    
+    # WARNING: This configuration is for local development ONLY.
+    # For production, this MUST be updated to a public, HTTPS-enabled URL.
+    # SSO redirects over non-secure (http) connections are a security risk.
     SSO_REDIRECT_URI="http://localhost:8000/auth"
 
     # Session Management
@@ -93,6 +99,15 @@ If you don't have `uv`, you can install it quickly. On macOS and Linux, run `cur
 
     # Application Configuration
     CONFIG_PATH="config.ini"
+
+    # Google Configuration
+    GOOGLE_GENAI_USE_VERTEXAI=FALSE
+    GOOGLE_API_KEY="YOUR_GEMINI_API_KEY"
+
+    # WARNING: This configuration uses a local file-based database suitable only for development.
+    # DO NOT use this in a production environment. Use a managed database instead.
+    ADK_SESSION_DB_URL="sqlite:///./my_agent_data.db"
+
     ```
 
 5.  **Run the application:**
@@ -154,12 +169,13 @@ Material AI automatically scans this directory on startup. Any valid agent defin
 
 Here is a simple example of what an agent file might look like. You could save this as `src/agents/greeting_agent/agent.py`:
 
-Make sure to provide necessary environment variables for ADK under `src/agents/greeting_agent/.env`
+Make sure to provide necessary environment variables for ADK
 
 ```ini
 GOOGLE_GENAI_USE_VERTEXAI=FALSE/TRUE
-GOOGLE_API_KEY=
+GOOGLE_API_KEY="YOUR_GEMINI_API_KEY"
 ```
+Go to https://aistudio.google.com/apikey to generate API KEY
 
 ```python
 # src/agents/greeting_agent/agent.py

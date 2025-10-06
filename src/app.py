@@ -1,6 +1,7 @@
 import threading
 import logging
 import os
+import json
 from fastapi import FastAPI, Request, HTTPException, Response
 from google.adk.cli.fast_api import get_fast_api_app
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -99,17 +100,41 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 access_token_cookie.value
             )
 
-            if isinstance(oauth_response, OAuthErrorResponse):
-                raise UnauthorizedException()
-
             if not oauth_response:
                 raise UnauthorizedException()
 
-            response = await call_next(request)
-            return response
+            if isinstance(oauth_response, OAuthErrorResponse):
+                raise UnauthorizedException()
+            
+            uid = str(oauth_response)
+            
+            # If we want to cross check if given user can call this API
+            # We dont want other actors to modify user session
+            if "users" in route:
+                user_id = extract_user_id_from_path(route)
+                if user_id and user_id != uid:
+                    raise UnauthorizedException()
+            
+            if route == "/run":
+                body_bytes = await request.body()
+                async def receive():
+                    return {"type": "http.request", "body": body_bytes}
+                json_payload = json.loads(body_bytes.decode('utf-8'))
+                if "user_id" in json_payload and json_payload["user_id"] != uid:
+                    raise UnauthorizedException()
+                new_request = Request(request.scope, receive)
+                return await call_next(new_request)
+                
+            return await call_next(request)
         except UnauthorizedException as e:
             response = Response(status_code=401)
             _remove_cookies(response)
+            return response
+        except Exception as e:
+            _logger.error(
+                    f"ERROR: Error decoding JSON response from {route}: {e}", exc_info=e
+            )
+            response = Response(status_code=500)
             return response
 
 
@@ -184,6 +209,7 @@ def get_app():
                 agent_dir=AGENT_DIR,
                 web=False,
                 allow_origins=ALLOWED_ORIGINS if config.general.debug else [],
+                session_db_url=config.adk.session_db_url
             )
             _setup_app(app)
             _app_instance = app
@@ -209,3 +235,27 @@ async def http_exception_cookie_clearer(request: Request, exc: HTTPException):
     return Response(
         status_code=exc.status_code,
     )
+
+def extract_user_id_from_path(path: str) -> str | None:
+    """
+    If the segment '/users/' exists in a URL path, this function extracts
+    the very next segment, which is assumed to be the user ID.
+
+    Args:
+        path: The URL path string (e.g., "/apps/my-app/users/12312321/sessions").
+
+    Returns:
+        The user ID as a string if found, otherwise None.
+    """
+    try:
+        parts = path.strip('/').split('/')
+
+        users_index = parts.index('users')
+        
+        if users_index + 1 < len(parts):
+            return parts[users_index + 1]
+        
+        return None
+
+    except ValueError:
+        return None

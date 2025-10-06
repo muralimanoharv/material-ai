@@ -12,13 +12,22 @@ from .oauth import SSOConfig
 load_dotenv()
 
 
-class General(pydantic.BaseModel):
+class GeneralConfig(pydantic.BaseModel):
     debug: bool
+
+class ADKConfig(pydantic.BaseModel):
+    session_db_url: str
+
+class GoogleConfig(pydantic.BaseModel):
+    genai_use_vertexai: str
+    api_key:str
 
 
 class Config(pydantic.BaseModel):
     sso: SSOConfig
-    general: General
+    general: GeneralConfig
+    adk: ADKConfig
+    google: GoogleConfig
 
 
 _logger = logging.getLogger(__name__)
@@ -86,10 +95,17 @@ def _configure(path: pathlib.Path) -> Config:
         redirect_uri=get_config_value(config_parser, "SSO", "redirect_uri"),
         session_secret_key=get_config_value(config_parser, "SSO", "session_secret_key"),
     )
-    general = General(
+    general = GeneralConfig(
         debug=get_config_value(config_parser, "GENERAL", "debug"),
     )
-    return Config(sso=sso, general=general)
+    adk = ADKConfig(
+        session_db_url=get_config_value(config_parser, "ADK", "session_db_url"),
+    )
+    google = GoogleConfig(
+        genai_use_vertexai=get_config_value(config_parser, "GOOGLE", "genai_use_vertexai"),
+        api_key=get_config_value(config_parser, "GOOGLE", "api_key")
+    )
+    return Config(sso=sso, general=general, adk=adk, google=google)
 
 
 # We use this sentinel object to detect if a default value was provided

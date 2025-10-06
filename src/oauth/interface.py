@@ -107,7 +107,7 @@ class IOAuthService(ABC):
     @abstractmethod
     async def sso_verify_access_token(
         self, access_token: str
-    ) -> bool | OAuthErrorResponse:
+    ) -> str | OAuthErrorResponse:
         """Verifies the validity of an access token.
 
         Checks with the OAuth provider to confirm if the token is active
@@ -117,7 +117,7 @@ class IOAuthService(ABC):
             access_token: The access token to verify.
 
         Returns:
-            True if the token is valid, False if it's invalid, or an
+            String uid if the token is valid, None if it's invalid, or an
             OAuthErrorResponse if an error occurs during verification.
         """
         pass
