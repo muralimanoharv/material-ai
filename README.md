@@ -378,6 +378,24 @@ Struggling to come up with the perfect color scheme? You can **use Gemini to cre
 For example, try a prompt like: *"Create a professional color palette for a web application's light and dark theme. The primary color should be a shade of teal."* You can then use the suggested hex codes in your `themes.js` file.
 
 ---
+
+## Deployment 🚀
+
+This project is deployed using a `Makefile` command that automates the build and deployment process.
+
+### 1\. Configure Your Environment
+
+First, you need to create a configuration file from the provided template under `setup.sh`.
+
+### 2\. Deploy the Application
+
+Once your `.env` file is configured, run the following command to build and deploy the application:
+
+```bash
+make deploy
+```
+
+---
 ## 🐞 Reporting Issues and Feature Requests
 
 We welcome your contributions! If you encounter a bug or have an idea for a new feature, the best way to let us know is by opening an issue on our GitHub repository.

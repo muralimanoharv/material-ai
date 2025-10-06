@@ -1,0 +1,15 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  env:
+    - 'DOCKER_BUILDKIT=1'
+  args: [
+    'build',
+    '--tag=us-central1-docker.pkg.dev/${_GCR_PROJECT_ID}/${_IMAGE_REPO}/${_IMAGE_NAME}:${_VERSION}',
+    '.'
+    ]
+substitutions:
+  _GCR_PROJECT_ID: 'project_id'
+  _IMAGE_REPO: 'image_repo_name'
+  _IMAGE_NAME: 'image_name'
+  _VERSION: 'latest'
+images: 'us-central1-docker.pkg.dev/${_GCR_PROJECT_ID}/${_IMAGE_REPO}/${_IMAGE_NAME}:${_VERSION}'

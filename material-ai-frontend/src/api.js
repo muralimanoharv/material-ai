@@ -180,7 +180,7 @@ export function handle_response(respone, context) {
     context.setUser()
     throw new Unauthorized()
   }
-  if(respone.status == 404) {
+  if (respone.status == 404) {
     throw new NotFound()
   }
   throw new HttpError(respone.status)

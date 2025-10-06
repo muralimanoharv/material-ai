@@ -13,7 +13,7 @@ services:
      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
      - ADK_SESSION_DB_URL=${ADK_SESSION_DB_URL}
     ports:
-      - "8000:8000"
+      - "8080:8080"
     volumes:
       - ./src:/app/src
       - ./config.ini:/app/config.ini

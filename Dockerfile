@@ -33,17 +33,18 @@ COPY src/ src/
 COPY config.ini .
 
 # Make port 8000 available to the world outside this container
-EXPOSE 8000
+EXPOSE 8080
 
 ENV PYTHONPATH="src"
 ENV GENERAL_DEBUG=false
+ENV CONFIG_PATH=config.ini
 # ENV SSO_CLIENT_ID=
 # ENV SSO_CLIENT_SECRET=
-ENV SSO_REDIRECT_URI=http://localhost:8000/auth
+# ENV SSO_REDIRECT_URI=
 # ENV SSO_SESSION_SECRET_KEY=
-ENV CONFIG_PATH=config.ini
-ENV GOOGLE_GENAI_USE_VERTEXAI=FALSE
+# ENV CONFIG_PATH=
+# ENV GOOGLE_GENAI_USE_VERTEXAI=
 # ENV GOOGLE_API_KEY=
-ENV ADK_SESSION_DB_URL=sqlite:///./my_agent_data.db
+# ENV ADK_SESSION_DB_URL=
 
 CMD ["make", "preview"]

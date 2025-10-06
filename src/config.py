@@ -15,12 +15,14 @@ load_dotenv()
 class GeneralConfig(pydantic.BaseModel):
     debug: bool
 
+
 class ADKConfig(pydantic.BaseModel):
     session_db_url: str
 
+
 class GoogleConfig(pydantic.BaseModel):
     genai_use_vertexai: str
-    api_key:str
+    api_key: str
 
 
 class Config(pydantic.BaseModel):
@@ -102,8 +104,10 @@ def _configure(path: pathlib.Path) -> Config:
         session_db_url=get_config_value(config_parser, "ADK", "session_db_url"),
     )
     google = GoogleConfig(
-        genai_use_vertexai=get_config_value(config_parser, "GOOGLE", "genai_use_vertexai"),
-        api_key=get_config_value(config_parser, "GOOGLE", "api_key")
+        genai_use_vertexai=get_config_value(
+            config_parser, "GOOGLE", "genai_use_vertexai"
+        ),
+        api_key=get_config_value(config_parser, "GOOGLE", "api_key"),
     )
     return Config(sso=sso, general=general, adk=adk, google=google)
 

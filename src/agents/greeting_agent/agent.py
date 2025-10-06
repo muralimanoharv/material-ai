@@ -1,8 +1,10 @@
 from google.adk.agents import Agent
 from src.oauth import oauth_user_details_context
 
+
 def say_hello():
     return {"description": "Hi, what can I do for you today?"}
+
 
 def who_am_i():
     user_details = oauth_user_details_context.get()

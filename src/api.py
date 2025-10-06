@@ -5,6 +5,7 @@ from fastapi.responses import FileResponse, RedirectResponse, HTMLResponse
 from .request import FeedbackRequest
 from .app import STATIC_DIR
 import json
+from .config import get_config
 from .auth import (
     remove_token,
     get_redirection_url,
@@ -142,3 +143,15 @@ async def callback(request: Request, code: str, state: str):
         return Response(status_code=403)
 
     return await on_callback(code)
+
+
+@router.get(
+    "/health",
+    summary="Tells about health of the service",
+)
+async def health():
+    """
+    Tells about health of the service
+    """
+    config = get_config()
+    return {"debug": config.general.debug}

@@ -142,9 +142,9 @@ class GoogleOAuthService(IOAuthService):
         async with httpx.AsyncClient() as client:
             response = await client.post(url, params=params)
             response.raise_for_status()
-        
+
         if response.status_code != 200:
             return None
         json_response = response.json()
 
-        return json_response.get('sub')
+        return json_response.get("sub")
