@@ -1,8 +1,12 @@
 from google.adk.agents import Agent
-
+from src.oauth import oauth_user_details_context
 
 def say_hello():
     return {"description": "Hi, what can I do for you today?"}
+
+def who_am_i():
+    user_details = oauth_user_details_context.get()
+    return user_details
 
 
 # Define the agent itself, giving it a name and description.
@@ -12,7 +16,7 @@ root_agent = Agent(
     model="gemini-2.0-flash",
     description="An agent that can greet users.",
     instruction="""
-    Use say_hello tool to greet user
+    Use say_hello tool to greet user, If user asks about himself use who_am_i tool
     """,
-    tools=[say_hello],
+    tools=[say_hello, who_am_i],
 )

@@ -88,7 +88,7 @@ If you don't have `uv`, you can install it quickly. On macOS and Linux, run `cur
     # Single Sign-On (SSO) Configuration
     SSO_CLIENT_ID="YOUR_SSO_CLIENT_ID"
     SSO_CLIENT_SECRET="YOUR_SSO_CLIENT_SECRET"
-    
+
     # WARNING: This configuration is for local development ONLY.
     # For production, this MUST be updated to a public, HTTPS-enabled URL.
     # SSO redirects over non-secure (http) connections are a security risk.
@@ -181,11 +181,17 @@ Go to https://aistudio.google.com/apikey to generate API KEY
 # src/agents/greeting_agent/agent.py
 
 from google.adk.agents import Agent
+from src.oauth import oauth_user_details_context
 
 def say_hello():
     return {
         "description": "Hi, what can I do for you today?"
     }
+
+def who_am_i():
+    user_details = oauth_user_details_context.get() # Get user details like uid, email, full name etc...
+    return user_details
+
 
 # Define the agent itself, giving it a name and description.
 # The agent will automatically use the tools you provide in the list.
@@ -194,11 +200,15 @@ root_agent = Agent(
     model="gemini-2.0-flash",
     description="An agent that can greet users.",
     instruction="""
-    Use say_hello tool to greet user
+    Use say_hello tool to greet user, If user asks about himself use who_am_i tool
     """,
-    tools=[say_hello],
+    tools=[say_hello, who_am_i],
 )
 ```
+
+Since Material AI takes care of authentication & authorization you can easily retrieve user information. 
+
+We can use this information to do validations, authorizations and also maybe send email or push notifications.
 
 Make sure to expose agent under `__init__.py` under `src/agents/greeting_agent/__init__.py`
 

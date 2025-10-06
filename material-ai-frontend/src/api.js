@@ -72,9 +72,6 @@ export function fetch_session(context) {
       },
     )
     handle_response(response, context)
-    if (response.status == 404) {
-      throw new NotFound()
-    }
     let body = await response.json()
     return body
   }
@@ -172,9 +169,6 @@ export function delete_session(context) {
       },
     )
     handle_response(response, context)
-    if (response.status == 404) {
-      throw new NotFound()
-    }
     let body = await response.json()
     return body
   }
@@ -185,6 +179,9 @@ export function handle_response(respone, context) {
   if (respone.status == 401) {
     context.setUser()
     throw new Unauthorized()
+  }
+  if(respone.status == 404) {
+    throw new NotFound()
   }
   throw new HttpError(respone.status)
 }

@@ -15,6 +15,9 @@ import http.cookies
 from .auth import _remove_cookies
 from .oauth import get_oauth, OAuthErrorResponse
 from .logging import setup_structured_logging
+from .oauth import oauth_user_details_context
+from .auth import verify_user_details
+from .oauth import OAuthUserDetail
 
 from . import __app_name__, __version__
 
@@ -114,18 +117,27 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 user_id = extract_user_id_from_path(route)
                 if user_id and user_id != uid:
                     raise UnauthorizedException()
-            
-            if route == "/run":
-                body_bytes = await request.body()
-                async def receive():
-                    return {"type": "http.request", "body": body_bytes}
-                json_payload = json.loads(body_bytes.decode('utf-8'))
-                if "user_id" in json_payload and json_payload["user_id"] != uid:
-                    raise UnauthorizedException()
-                new_request = Request(request.scope, receive)
-                return await call_next(new_request)
                 
-            return await call_next(request)
+            if route != "/run":
+                return await call_next(request)
+            
+            user_details_cookie = cookies.get("user_details")
+            decoded_user_details = verify_user_details(user_details_cookie.value)
+            if decoded_user_details == None:
+                raise UnauthorizedException()
+            
+            user_details = OAuthUserDetail(**json.loads(decoded_user_details))
+
+            oauth_user_details_context.set(user_details)
+            body_bytes = await request.body()
+            async def receive():
+                return {"type": "http.request", "body": body_bytes}
+            json_payload = json.loads(body_bytes.decode('utf-8'))
+            if "user_id" in json_payload and json_payload["user_id"] != uid:
+                raise UnauthorizedException()
+            new_request = Request(request.scope, receive)
+            return await call_next(new_request)
+                
         except UnauthorizedException as e:
             response = Response(status_code=401)
             _remove_cookies(response)
