@@ -14,7 +14,7 @@ import time
 import http.cookies
 from .auth import _remove_cookies
 from .oauth import get_oauth, OAuthErrorResponse
-from .logging import setup_structured_logging
+from .log_config import setup_structured_logging
 from .oauth import oauth_user_details_context
 from .auth import verify_user_details
 from .oauth import OAuthUserDetail

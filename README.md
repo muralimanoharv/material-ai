@@ -41,8 +41,11 @@ Make sure you have the following installed on your system:
 
   * **Python** (version 3.9 or higher)
   * **uv** (a fast Python package installer)
+  * **make** (a fast command line interface)
 
 If you don't have `uv`, you can install it quickly. On macOS and Linux, run `curl -LsSf https://astral.sh/uv/install.sh | sh`. For Windows, use `powershell -c "irm https://astral.sh/uv/install.ps1 | iex"`.
+
+If you don't have `make`, you can install it quickly. On macOS and Linux, run `apt-get update && apt-get install -y make`.
 
 -----
 
@@ -117,6 +120,7 @@ If you don't have `uv`, you can install it quickly. On macOS and Linux, run `cur
     ```
 
     The application should now be running on `http://127.0.0.1:8000`.
+    Access swagger API docs on `http://127.0.0.1:8000/docs`.
 
 5.  **Debug the application:**
 
@@ -153,6 +157,53 @@ If you don't have `uv`, you can install it quickly. On macOS and Linux, run `cur
 
     Attach python remote debugger using vscode debug tools
 
+---
+## Docker for Development 🐳
+
+If you are like me lazy to install all dependencies, don't worry we got you covered
+
+### Prerequisites
+
+* You must have **Docker** and **Docker Compose** installed on your system.
+* You have cloned this repository.
+
+### Setup Instructions
+
+**1. Configure Environment Variables**
+
+The application requires environment variables to run. We've included an example file to get you started.
+
+First, copy the example `.env` file:
+```bash
+cp .env.example .env
+````
+
+Next, open the newly created `.env` file and fill in the required values.
+
+**2. Build and Run the Application**
+
+Once your `.env` file is configured, you can start the application with a single command:
+
+```bash
+docker compose up
+```
+
+This command will build the necessary Docker images and start all the services. You can add the `-d` flag to run the containers in the background (detached mode).
+
+### Useful Docker Commands
+
+  * **Run in the background:**
+    ```bash
+    docker compose up -d
+    ```
+  * **Force a rebuild of the images:**
+    ```bash
+    docker compose up --build
+    ```
+  * **Stop and remove the containers:**
+    ```bash
+    docker compose down
+    ```
 -----
 
 ## 🤖 Creating Your First Agent

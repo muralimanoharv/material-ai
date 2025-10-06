@@ -1,0 +1,23 @@
+services:
+  material_ai:
+    build: .
+    networks:
+      - my-project-network 
+    environment:
+     - SSO_CLIENT_ID=${SSO_CLIENT_ID}
+     - SSO_CLIENT_SECRET=${SSO_CLIENT_SECRET}
+     - SSO_REDIRECT_URI=${SSO_REDIRECT_URI}
+     - SSO_SESSION_SECRET_KEY=${SSO_SESSION_SECRET_KEY}
+     - CONFIG_PATH=${CONFIG_PATH}
+     - GOOGLE_GENAI_USE_VERTEXAI=${GOOGLE_GENAI_USE_VERTEXAI}
+     - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+     - ADK_SESSION_DB_URL=${ADK_SESSION_DB_URL}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+      - ./config.ini:/app/config.ini
+
+networks:
+  my-project-network:
+    driver: bridge
