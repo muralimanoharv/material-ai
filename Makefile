@@ -29,4 +29,4 @@ preview:
 
 deploy:
 	@echo "Deploying to cloud run...🚀"
-	./deploy_infra.sh
+	./scripts/deploy_crun.sh

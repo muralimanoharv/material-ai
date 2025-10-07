@@ -1,22 +1,42 @@
 ENVIRONMENT=$1
-echo "STARTING: Deployment...."
+echo "🚀 STARTING: Deployment...."
 
-source ./setup.sh
+source ./scripts/setup.sh
 
 # Create Docker Repository
-echo "STARTING: Creating Artifact Registry..."
+echo "⚙️ STARTING: Creating Artifact Registry..."
 
 gcloud artifacts repositories create ${CRUN_CONTAINER_REPO} \
     --repository-format=docker \
     --location=${PROJECT_DEFAULT_LOCATION} \
     --description="Repo for Cloud run docker images" \
 
-echo "SUCCESS: Artifact Registry created successfully"
+echo "🟢 SUCCESS: Artifact Registry created or exists"
 
-source ./cloudbuild.sh
+#!/bin/bash
+
+# Prompt the user, suggesting 'N' as the default. Allow them to press Enter.
+read -p "🚧 Build and push image to Artifact Registry? (y/N) (default: N): " REPLY
+echo # Move to a new line
+
+# Check the user's reply
+case "$REPLY" in
+  y|Y )
+    # This block only runs if the user explicitly types 'y' or 'Y'
+    source ./scripts/cloudbuild.sh
+    ;;
+  ""|n|N )
+    # This block runs if the user types 'n', 'N', or just presses Enter ("")
+    echo "⚙️  Skipping build. Proceeding to Cloud Run deployment."
+    ;;
+  * )
+    echo "❌ Invalid input. Exiting."
+    exit 1
+    ;;
+esac
 
 # Deploy latest image to cloud run
-echo "STARTING: Deployment to Cloud Run"
+echo "⚙️ STARTING: Deployment to Cloud Run"
 
 gcloud run deploy ${CRUN_SERVICE} \
   --image us-central1-docker.pkg.dev/${PROJECT_ID}/${CRUN_CONTAINER_REPO}/${CRUN_IMAGE} \
@@ -35,4 +55,4 @@ gcloud run deploy ${CRUN_SERVICE} \
   --project=${PROJECT_ID} \
   --service-account=${CRUN_SERVICE_ACCOUNT}
 
-echo "SUCCESS: Deployment to Cloud Run successfully"
+echo "✅ SUCCESS: Deployment to Cloud Run successfully"

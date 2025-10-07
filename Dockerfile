@@ -1,6 +1,6 @@
 
 # Use an official Python runtime as a parent image
-FROM python:3.11-slim-bullseye
+FROM python:3.12-slim
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Set the working directory in the container
