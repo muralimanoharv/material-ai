@@ -31,7 +31,7 @@ echo "🌍 Using Project Location: $PROJECT_DEFAULT_LOCATION"
 echo
 
 # CLOUD RUN ENVIRONMENT VARIABLES
-echo "⚙️ Configuring required environment variables..."
+echo "⚙️  Configuring required environment variables..."
 if [ -f .env ]; then
   export $(grep -v '^#' .env | xargs)
   echo "🟢 .env file loaded."
