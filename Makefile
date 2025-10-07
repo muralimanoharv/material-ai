@@ -15,7 +15,7 @@ check-format:
 
 build-ui:
 	@echo "Building UI...🚀"
-	@cd material-ai-frontend && $(REACT_BUILD_CMD)
+	@cd ui && $(REACT_BUILD_CMD)
 	@echo "UI build complete.✅"
 
 run: build-ui

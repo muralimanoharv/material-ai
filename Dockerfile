@@ -13,7 +13,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 # Install Node.js and npm
 RUN apt-get install -y nodejs
 
-COPY material-ai-frontend/ material-ai-frontend/
+COPY ui/ ui/
 
 COPY Makefile .
 

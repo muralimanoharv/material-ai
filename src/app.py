@@ -26,7 +26,7 @@ _logger = logging.getLogger(__name__)
 _app_instance: FastAPI | None = None
 _lock = threading.Lock()
 
-STATIC_DIR = os.path.join("material-ai-frontend", "dist")
+STATIC_DIR = os.path.join("ui", "dist")
 AGENT_DIR = f"{os.path.dirname(os.path.abspath(__file__))}/agents"
 ALLOWED_ORIGINS = [
     "http://localhost",

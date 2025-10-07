@@ -352,7 +352,7 @@ Material AI's front end is designed to be easily customized and white-labeled to
 ### 1. General Application Configuration
 
 For high-level UI customizations, you can modify the configuration object in the following file:
-`material-ai-frontend/src/assets/config.js`
+`ui/src/assets/config.js`
 
 This file allows you to easily change key aspects of the user experience. A high-level overview of what you can customize includes:
 
@@ -363,7 +363,7 @@ This file allows you to easily change key aspects of the user experience. A high
 ### 2. Customizing Themes (Light & Dark Mode)
 
 To align the application's look and feel with customer branding, you can customize the color palettes in this file:
-`material-ai-frontend/src/assets/themes.js`
+`ui/src/assets/themes.js`
 
 This file defines the `lightPalette` and `darkPalette` used for the application's light and dark modes. You can easily change the color values for various UI elements, including:
 
