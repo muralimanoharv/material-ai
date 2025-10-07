@@ -8,3 +8,4 @@ _IMAGE_REPO=${CRUN_CONTAINER_REPO},_IMAGE_NAME=${CRUN_IMAGE},_VERSION='latest',\
 SHORT_SHA=$COMMIT_SHA
 
 echo "✅ SUCCESS: Image built & deployed to Artifact Registry"
+echo

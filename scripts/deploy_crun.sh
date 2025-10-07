@@ -12,6 +12,7 @@ gcloud artifacts repositories create ${CRUN_CONTAINER_REPO} \
     --description="Repo for Cloud run docker images" \
 
 echo "🟢 SUCCESS: Artifact Registry created or exists"
+echo
 
 #!/bin/bash
 
@@ -36,7 +37,9 @@ case "$REPLY" in
 esac
 
 # Deploy latest image to cloud run
-echo "⚙️ STARTING: Deployment to Cloud Run"
+echo
+echo "🚀  STARTING: Deployment to Cloud Run"
+echo
 
 gcloud run deploy ${CRUN_SERVICE} \
   --image us-central1-docker.pkg.dev/${PROJECT_ID}/${CRUN_CONTAINER_REPO}/${CRUN_IMAGE} \
