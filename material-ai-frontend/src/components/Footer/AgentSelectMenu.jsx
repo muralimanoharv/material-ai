@@ -81,9 +81,12 @@ const AgentSelectMenuBody = menuNeedsLogin((props) => {
 }, 'Sign in to select agents')
 
 function AgentItem({ agent }) {
-  const { selectedAgent, setSelectedAgent } = React.useContext(AppContext)
+  const { selectedAgent, setSelectedAgent, on_new_chat } = React.useContext(AppContext)
   return (
-    <MenuItem key={agent} onClick={() => setSelectedAgent(agent)}>
+    <MenuItem key={agent} onClick={() => {
+      setSelectedAgent(agent);
+      on_new_chat()
+    }}>
       <Box
         sx={{
           width: '100%',

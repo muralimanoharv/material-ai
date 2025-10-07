@@ -42,6 +42,7 @@ Make sure you have the following installed on your system:
   * **Python** (version 3.9 or higher)
   * **uv** (a fast Python package installer)
   * **make** (a fast command line interface)
+  * **nodejs** (https://nodejs.org/en)
 
 If you don't have `uv`, you can install it quickly. On macOS and Linux, run `curl -LsSf https://astral.sh/uv/install.sh | sh`. For Windows, use `powershell -c "irm https://astral.sh/uv/install.ps1 | iex"`.
 
