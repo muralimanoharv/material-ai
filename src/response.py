@@ -64,3 +64,5 @@ class HealthResponse(pydantic.BaseModel):
     uptime: str = Field(..., description="Service uptime duration in HH:MM:SS format.")
     system: SystemHealth
     debug: bool
+    appName: str
+    version: str

@@ -899,8 +899,8 @@ wheels = [
 ]
 
 [[package]]
-name = "material-ai-backend"
-version = "0.1.0"
+name = "material-ai"
+version = "1.0.0"
 source = { virtual = "." }
 dependencies = [
     { name = "deprecated" },

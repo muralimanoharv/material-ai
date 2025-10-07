@@ -15,7 +15,7 @@ import SigninButton from '../SigninButton'
 import UserAvatar from './UserAvatar'
 
 export default function Header() {
-  const { loading, on_new_chat, user } = useContext(AppContext)
+  const { loading, on_new_chat, user, health } = useContext(AppContext)
   const { setOpen } = useContext(LayoutContext)
   const isMobile = useMobileHook()
   return (
@@ -50,6 +50,7 @@ export default function Header() {
         )}
         <Box
           sx={{ cursor: 'pointer' }}
+          title={health?.version}
           onClick={() => {
             on_new_chat()
           }}

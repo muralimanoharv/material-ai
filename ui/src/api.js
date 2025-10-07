@@ -107,6 +107,21 @@ export function fetch_user(context) {
   }
 }
 
+export function fetch_health(context) {
+  return async () => {
+    const response = await fetch(`${HOST}/health`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    })
+    handle_response(response, context)
+    let body = await response.json()
+    return body
+  }
+}
+
 export function send_feedback(context) {
   return async ({ feedback_category, feedback_text, id }) => {
     const response = await fetch(`${HOST}/feedback`, {

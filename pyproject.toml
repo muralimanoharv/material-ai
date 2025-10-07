@@ -1,6 +1,6 @@
 [project]
-name = "material-ai-backend"
-version = "0.1.0"
+name = "material-ai"
+version = "1.0.0"
 description = "Material AI Agent with FastAPI server"
 readme = "README.md"
 requires-python = ">=3.13"

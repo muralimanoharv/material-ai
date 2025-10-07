@@ -6,6 +6,7 @@ from fastapi import APIRouter, Response, Request, Cookie, status
 from fastapi.responses import FileResponse, RedirectResponse, HTMLResponse
 from .request import FeedbackRequest
 from .app import STATIC_DIR
+from . import __version__, __app_name__
 import json
 from .config import get_config
 from .auth import (
@@ -187,4 +188,6 @@ async def health_check():
         uptime=str(uptime_delta),
         system=system_data,
         debug=config.general.debug,
+        appName=__app_name__,
+        version=__version__
     )

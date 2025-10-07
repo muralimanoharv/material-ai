@@ -12,6 +12,7 @@ import {
   UNAUTHORIZED,
   NOTFOUND,
   delete_session,
+  fetch_health,
 } from './api.js'
 import Layout from './components/Layout/Layout.jsx'
 import { config } from './assets/config.js'
@@ -22,6 +23,7 @@ import './App.css'
 function App() {
   const [session, setSession] = useState()
   const [user, setUser] = useState(undefined)
+  const [health, setHealth] = useState(undefined)
   const [prompt, setPrompt] = useState('')
   const [history, setHistory] = useState([])
   const [sessions, setSessions] = useState([])
@@ -279,11 +281,14 @@ function App() {
     showHeading,
     on_new_chat,
     input_focus,
+    health
   }
 
   const onAppLoad = async () => {
     try {
       setLoading(true)
+      const health = await fetch_health(appContext)()
+      setHealth(health)
       const user_details = await fetch_user(appContext)()
       if (!user_details) {
         setShowHeading(true)
