@@ -11,7 +11,7 @@ gcloud artifacts repositories create ${CRUN_CONTAINER_REPO} \
     --location=${PROJECT_DEFAULT_LOCATION} \
     --description="Repo for Cloud run docker images" \
 
-echo "🟢 SUCCESS: Artifact Registry created or exists"
+echo "🟢 SUCCESS: Artifact Registry either created or exists"
 echo
 
 #!/bin/bash

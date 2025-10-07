@@ -19,7 +19,7 @@ echo "✅ Using Project ID: $PROJECT_ID"
 
 
 export PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
-echo "#️⃣ Using Project Number: $PROJECT_NUMBER"
+echo "#️⃣  Using Project Number: $PROJECT_NUMBER"
 
 if [ -z "$PROJECT_NUMBER" ]; then
     exit 1
