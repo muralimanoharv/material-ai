@@ -189,5 +189,5 @@ async def health_check():
         system=system_data,
         debug=config.general.debug,
         appName=__app_name__,
-        version=__version__
+        version=__version__,
     )

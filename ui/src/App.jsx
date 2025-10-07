@@ -281,7 +281,7 @@ function App() {
     showHeading,
     on_new_chat,
     input_focus,
-    health
+    health,
   }
 
   const onAppLoad = async () => {
