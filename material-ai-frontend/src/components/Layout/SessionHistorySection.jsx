@@ -101,7 +101,8 @@ function SessionItem(props) {
 
   const isSelected = context.session === session.id
 
-  const deleteSession = async () => {
+  const deleteSession = async (e) => {
+    e?.stopPropagation()
     try {
       await delete_session(context)(session.id)
       context.setSessions((prevSessions) => {
@@ -133,6 +134,12 @@ function SessionItem(props) {
       key={session.id}
       height={isDrawerOpen() ? 'auto' : 0}
       width={isDrawerOpen() ? drawerWidth - 35 : 0}
+      onClick={async () => {
+        await context.getSession({ sessionId: session.id })
+        await navigate(`/${session.id}`)
+        context.setSession(session.id)
+        if (isMobile) setOpen(false)
+      }}
       sx={{
         opacity: isDrawerOpen() ? '1' : '0',
         cursor: 'pointer',
@@ -174,12 +181,6 @@ function SessionItem(props) {
       >
         <Typography
           sx={{ flexGrow: 1 }}
-          onClick={async () => {
-            await context.getSession({ sessionId: session.id })
-            await navigate(`/${session.id}`)
-            context.setSession(session.id)
-            if (isMobile) setOpen(false)
-          }}
           color={isSelected ? theme.palette.text.selected : undefined}
           fontWeight={500}
           fontSize={'14px'}
