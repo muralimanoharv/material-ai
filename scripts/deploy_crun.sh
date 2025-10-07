@@ -4,7 +4,7 @@ echo "🚀 STARTING: Deployment...."
 source ./scripts/setup.sh
 
 # Create Docker Repository
-echo "⚙️ STARTING: Creating Artifact Registry..."
+echo "⚙️  STARTING: Creating Artifact Registry..."
 
 gcloud artifacts repositories create ${CRUN_CONTAINER_REPO} \
     --repository-format=docker \

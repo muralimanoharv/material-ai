@@ -1,4 +1,4 @@
-echo "⚙️ STARTING: Building & Deploying latest image to Artifact Registry..."
+echo "⚙️  STARTING: Building & Deploying latest image to Artifact Registry..."
 
 COMMIT_SHA=$(git rev-parse --short HEAD)
 
