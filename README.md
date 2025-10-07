@@ -96,7 +96,7 @@ If you don't have `make`, you can install it quickly. On macOS and Linux, run `a
     # WARNING: This configuration is for local development ONLY.
     # For production, this MUST be updated to a public, HTTPS-enabled URL.
     # SSO redirects over non-secure (http) connections are a security risk.
-    SSO_REDIRECT_URI="http://localhost:8000/auth"
+    SSO_REDIRECT_URI="http://localhost:8080/auth"
 
     # Session Management
     SSO_SESSION_SECRET_KEY="GENERATE_A_STRONG_RANDOM_SECRET_KEY"
@@ -120,8 +120,8 @@ If you don't have `make`, you can install it quickly. On macOS and Linux, run `a
     make run
     ```
 
-    The application should now be running on `http://127.0.0.1:8000`.
-    Access swagger API docs on `http://127.0.0.1:8000/docs`.
+    The application should now be running on `http://127.0.0.1:8080`.
+    Access swagger API docs on `http://127.0.0.1:8080/docs`.
 
 5.  **Debug the application:**
 
@@ -154,7 +154,7 @@ If you don't have `make`, you can install it quickly. On macOS and Linux, run `a
     make debug
     ```
 
-    The application should now be running on `http://127.0.0.1:8000` and debug port running on `http://127.0.0.1:5678`.
+    The application should now be running on `http://127.0.0.1:8080` and debug port running on `http://127.0.0.1:5678`.
 
     Attach python remote debugger using vscode debug tools
 

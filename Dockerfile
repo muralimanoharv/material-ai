@@ -32,7 +32,7 @@ COPY src/ src/
 
 COPY config.ini .
 
-# Make port 8000 available to the world outside this container
+# Make port 8080 available to the world outside this container
 EXPOSE 8080
 
 ENV PYTHONPATH="src"
