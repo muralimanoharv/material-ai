@@ -1,5 +1,7 @@
 import os
 import logging
+import psutil
+from datetime import datetime, timezone
 from fastapi import APIRouter, Response, Request, Cookie, status
 from fastapi.responses import FileResponse, RedirectResponse, HTMLResponse
 from .request import FeedbackRequest
@@ -14,10 +16,11 @@ from .auth import (
     verify_user_details,
 )
 from .oauth import OAuthUserDetail
-from .response import UserSuccessResponse
+from .response import UserSuccessResponse, HealthResponse
 
 _logger = logging.getLogger(__name__)
 router = APIRouter()
+START_TIME = datetime.now(timezone.utc)
 
 
 @router.get(
@@ -147,11 +150,41 @@ async def callback(request: Request, code: str, state: str):
 
 @router.get(
     "/health",
-    summary="Tells about health of the service",
+    summary="Get service health and system information",
+    response_model=HealthResponse,
+    tags=["Monitoring"],
 )
-async def health():
+async def health_check():
     """
-    Tells about health of the service
+    Provides a detailed health status of the service, including uptime and
+    current system resource utilization (CPU, Memory, Disk).
     """
     config = get_config()
-    return {"debug": config.general.debug}
+    # 1. Calculate Uptime
+    uptime_delta = datetime.now(timezone.utc) - START_TIME
+
+    # 2. Get System Metrics using psutil
+    memory_info = psutil.virtual_memory()
+    disk_info = psutil.disk_usage("/")
+
+    system_data = {
+        "cpu_percent_used": psutil.cpu_percent(),
+        "memory": {
+            "total": f"{memory_info.total / (1024**3):.2f} GB",
+            "available": f"{memory_info.available / (1024**3):.2f} GB",
+            "percent_used": memory_info.percent,
+        },
+        "disk": {
+            "total": f"{disk_info.total / (1024**3):.2f} GB",
+            "used": f"{disk_info.used / (1024**3):.2f} GB",
+            "free": f"{disk_info.free / (1024**3):.2f} GB",
+            "percent_used": disk_info.percent,
+        },
+    }
+
+    return HealthResponse(
+        status="ok",
+        uptime=str(uptime_delta),
+        system=system_data,
+        debug=config.general.debug,
+    )

@@ -143,14 +143,14 @@ class AuthMiddleware(BaseHTTPMiddleware):
             return await call_next(new_request)
 
         except UnauthorizedException as e:
-            response = Response(status_code=401)
+            response = Response(status_code=401, content="Unauthorized")
             _remove_cookies(response)
             return response
         except Exception as e:
             _logger.error(
                 f"ERROR: Error decoding JSON response from {route}: {e}", exc_info=e
             )
-            response = Response(status_code=500)
+            response = Response(status_code=500, content="Internal Server Error")
             return response
 
 
@@ -241,9 +241,7 @@ async def http_exception_cookie_clearer(request: Request, exc: HTTPException):
     # If the exception is a 401 Unauthorized, clear the cookies
     if exc.status_code == 401:
         # Create a standard JSON response for the 401 error
-        response = Response(
-            status_code=401,
-        )
+        response = Response(status_code=401, content="Unauthorized")
         _remove_cookies(response)
         return response
 

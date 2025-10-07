@@ -6,13 +6,14 @@ import { config } from '../assets/config'
 
 export default function SignoutButton() {
   const context = useContext(AppContext)
-  const { setUser, setSnack } = context
+  const { setUser, setSnack, on_new_chat } = context
   return (
     <Button
       onClick={async () => {
         try {
           await sign_out()
           setUser()
+          on_new_chat()
         } catch (e) {
           if (e.name == UNAUTHORIZED) return
           console.error(e)

@@ -3,3 +3,10 @@ material-ai-frontend/node_modules
 
 # Ignore the node_modules folder within the frontend directory
 material-ai-frontend/dist
+
+.python-version
+.venv
+.vscode
+.env
+**/__pycache__/
+*.db

@@ -1,6 +1,7 @@
 import pydantic
 from typing import Any
 from .oauth import OAuthUserDetail
+from pydantic import Field
 
 
 class UserSuccessResponse(pydantic.BaseModel):
@@ -28,3 +29,38 @@ class StatusCodeAndDetail(pydantic.BaseModel):
 
     status_code: int
     detail: str | dict[Any, Any]
+
+
+# --- Pydantic Models for a Structured Response ---
+
+
+class MemoryHealth(pydantic.BaseModel):
+    total: str
+    available: str
+    percent_used: float
+
+
+class DiskHealth(pydantic.BaseModel):
+    total: str
+    used: str
+    free: str
+    percent_used: float
+
+
+class SystemHealth(pydantic.BaseModel):
+    cpu_percent_used: float = Field(
+        ..., description="Current system-wide CPU utilization as a percentage."
+    )
+    memory: MemoryHealth
+    disk: DiskHealth
+
+
+class HealthResponse(pydantic.BaseModel):
+    """Defines the structured response for the health check endpoint."""
+
+    status: str = Field(
+        "ok", description="Indicates the operational status of the service."
+    )
+    uptime: str = Field(..., description="Service uptime duration in HH:MM:SS format.")
+    system: SystemHealth
+    debug: bool
