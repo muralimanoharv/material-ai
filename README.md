@@ -213,13 +213,13 @@ Adding new agents to Material AI is designed to be simple and intuitive, followi
 
 ### The `agents` Directory
 
-To create a new agent, all you need to do is **add a new Python file inside the `src/agents/<agent_name>/agent.py` directory**.
+To create a new agent, all you need to do is **add a new Python file inside the `src/material_ai/agents/<agent_name>/agent.py` directory**.
 
 Material AI automatically scans this directory on startup. Any valid agent definition it finds will be dynamically loaded and displayed in the UI, with no manual registration or configuration files needed. This allows you to focus purely on building your agent's logic.
 
 ### Example Agent
 
-Here is a simple example of what an agent file might look like. You could save this as `src/agents/greeting_agent/agent.py`:
+Here is a simple example of what an agent file might look like. You could save this as `src/material_ai/agents/greeting_agent/agent.py`:
 
 Make sure to provide necessary environment variables for ADK
 
@@ -230,7 +230,7 @@ GOOGLE_API_KEY="YOUR_GEMINI_API_KEY"
 Go to https://aistudio.google.com/apikey to generate API KEY
 
 ```python
-# src/agents/greeting_agent/agent.py
+# src/material_ai/agents/greeting_agent/agent.py
 
 from google.adk.agents import Agent
 from src.oauth import oauth_user_details_context
@@ -262,7 +262,7 @@ Since Material AI takes care of authentication & authorization you can easily re
 
 We can use this information to do validations, authorizations and also maybe send email or push notifications.
 
-Make sure to expose agent under `__init__.py` under `src/agents/greeting_agent/__init__.py`
+Make sure to expose agent under `__init__.py` under `src/material_ai/agents/greeting_agent/__init__.py`
 
 ```python
 from . import agent
@@ -284,7 +284,7 @@ Material AI is built to be flexible, allowing you to use the default Google SSO 
 
 By default, Material AI uses **Google OAuth 2.0** for authentication. For most use cases, especially local development, you simply need to update your `.env` file with the correct Google OAuth credentials.
 
-The source code for this default implementation is available for reference in `src/oauth/google_oauth.py`.
+The source code for this default implementation is available for reference in `src/material_ai/oauth/google_oauth.py`.
 
 ### Adding a Custom SSO Provider
 
@@ -297,12 +297,12 @@ Follow these two steps to add a new SSO provider:
 First, create a new class for your SSO provider (e.g., `AzureOAuthService`). This class **must** implement the `IOAuthService` interface to ensure it's compatible with the application's authentication flow.
 
 You can find the interface definition, which outlines all the required methods you need to implement, in the following file:
-`src/oauth/interface.py`
+`src/material_ai/oauth/interface.py`
 
 Here is a basic skeleton for what your custom service class would look like:
 
 ```python
-# src/oauth/azure_oauth.py
+# src/material_ai/oauth/azure_oauth.py
 
 from .interface import IOAuthService
 
@@ -318,10 +318,10 @@ class AzureOAuthService(IOAuthService):
 
 #### 2\. Register Your New Service
 
-Next, you need to tell Material AI to use your new service. Open the file `src/oauth/oauth.py` and modify the `get_oauth()` function to instantiate your custom class instead of the default `GoogleOAuthService`.
+Next, you need to tell Material AI to use your new service. Open the file `src/material_ai/oauth/oauth.py` and modify the `get_oauth()` function to instantiate your custom class instead of the default `GoogleOAuthService`.
 
 ```python
-# src/oauth/oauth.py
+# src/material_ai/oauth/oauth.py
 from .google_oauth import GoogleOAuthService
 # Import your new custom service here
 from .azure_oauth import AzureOAuthService 
@@ -352,7 +352,7 @@ Material AI's front end is designed to be easily customized and white-labeled to
 ### 1. General Application Configuration
 
 For high-level UI customizations, you can modify the configuration object in the following file:
-`ui/src/assets/config.js`
+`src/material_ai/ui/ui_config.yaml`
 
 This file allows you to easily change key aspects of the user experience. A high-level overview of what you can customize includes:
 
@@ -363,9 +363,9 @@ This file allows you to easily change key aspects of the user experience. A high
 ### 2. Customizing Themes (Light & Dark Mode)
 
 To align the application's look and feel with customer branding, you can customize the color palettes in this file:
-`ui/src/assets/themes.js`
+`src/material_ai/ui/ui_config.yaml`
 
-This file defines the `lightPalette` and `darkPalette` used for the application's light and dark modes. You can easily change the color values for various UI elements, including:
+This file defines the `lightPalette` and `darkPalette` under theme property used for the application's light and dark modes. You can easily change the color values for various UI elements, including:
 
 * Primary colors (for buttons and accents)
 * Background and paper colors
