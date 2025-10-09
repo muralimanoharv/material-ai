@@ -157,10 +157,11 @@ class AuthMiddleware(BaseHTTPMiddleware):
             return response
 
 
-def _setup_app(app: FastAPI, 
-               oauth_service: IOAuthService = None,
-               ui_config_yaml: str = None,
-            ) -> None:
+def _setup_app(
+    app: FastAPI,
+    oauth_service: IOAuthService = None,
+    ui_config_yaml: str = None,
+) -> None:
     """
     Configures the FastAPI application with middleware, logging,
     based on the provided configuration settings. This setup is intended for use in environments
@@ -194,10 +195,10 @@ def _setup_app(app: FastAPI,
         if oauth_service == None:
             return get_oauth()
         return oauth_service
-    
+
     def override_get_ui_configuration() -> IOAuthService:
         return ui_config
-    
+
     app.dependency_overrides[get_oauth_service] = override_get_oauth_service
     app.dependency_overrides[get_ui_configuration] = override_get_ui_configuration
 
@@ -229,7 +230,11 @@ def _setup_app(app: FastAPI,
         )
 
 
-def get_app(agent_dir: str = AGENT_DIR, oauth_service: IOAuthService = None, ui_config_yaml: str = None):
+def get_app(
+    agent_dir: str = AGENT_DIR,
+    oauth_service: IOAuthService = None,
+    ui_config_yaml: str = None,
+):
     """
     This ensures we construct only a single instance of the app.  We also prevent a
     rat's nest of circular imports by exposing only a single app factory function

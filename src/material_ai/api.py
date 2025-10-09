@@ -17,7 +17,7 @@ from .auth import (
     verify_user_details,
     get_oauth_service,
     IOAuthService,
-    get_ui_configuration
+    get_ui_configuration,
 )
 from .oauth import OAuthUserDetail
 from .response import UserSuccessResponse, HealthResponse
@@ -218,5 +218,5 @@ async def health_check():
     response_model=UIConfig,
     tags=["Configuration"],
 )
-async def config(ui_configuration:  UIConfig = Depends(get_ui_configuration)):
+async def config(ui_configuration: UIConfig = Depends(get_ui_configuration)):
     return ui_configuration

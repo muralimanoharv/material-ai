@@ -272,5 +272,6 @@ async def on_callback(
 def get_oauth_service() -> IOAuthService:
     raise NotImplementedError("This dependency must be overridden by the application.")
 
+
 def get_ui_configuration() -> IOAuthService:
     raise NotImplementedError("This dependency must be overridden by the application.")
