@@ -60,6 +60,7 @@ PROJECT_NAME=${PROJECT_NAME:-$DEFAULT_PROJECT_NAME} # A shorter way to set defau
 
 echo "⚙️  Processing project name..."
 PROJECT_NAME_SANITIZED="${PROJECT_NAME// /_}"
+PROJECT_NAME_CRUN_SANTIZED="${PROJECT_NAME// /-}"
 PROJECT_NAME_SANITIZED="${PROJECT_NAME_SANITIZED//-/_}"
 PROJECT_NAME_LOWERCASE="${PROJECT_NAME_SANITIZED,,}"
 
@@ -85,13 +86,13 @@ show_loader "download_template_files" "Downloading template files..."
 # 3. Generate Config Files
 echo "📄 Generating configuration files..."
 
-touch scripts/env.sh
-cat > scripts/env.sh << EOF
-export CRUN_SERVICE_ACCOUNT_NAME="${PROJECT_NUMBER}-compute"
-export CRUN_SERVICE_ACCOUNT="${CRUN_SERVICE_ACCOUNT_NAME}@developer.gserviceaccount.com"
-export CRUN_SERVICE="${PROJECT_NAME_LOWERCASE}"
-export CRUN_CONTAINER_REPO="${PROJECT_NAME_LOWERCASE}_crun_repository"
-export CRUN_IMAGE="${PROJECT_NAME_LOWERCASE}"
+touch scripts/crun_env.sh
+cat > scripts/crun_env.sh << EOF
+export CRUN_SERVICE_ACCOUNT_NAME="$\{PROJECT_NUMBER}-compute"
+export CRUN_SERVICE_ACCOUNT="$\{CRUN_SERVICE_ACCOUNT_NAME}@developer.gserviceaccount.com"
+export CRUN_SERVICE="${PROJECT_NAME_CRUN_SANTIZED}"
+export CRUN_CONTAINER_REPO="${PROJECT_NAME_CRUN_SANTIZED}-crun-repository"
+export CRUN_IMAGE="${PROJECT_NAME_CRUN_SANTIZED}"
 EOF
 
 cat > Makefile << EOF
