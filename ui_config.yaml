@@ -1,0 +1,66 @@
+# UI Configuration for the application
+title: Gemini Chat GPT
+greeting: What should we do today?
+errorMessage: Some error has occured, Please try again later
+
+models:
+  - model: 2.5 Flash
+    tagline: Fast all-round help
+  - model: 2.5 Pro
+    tagline: Reasoning, math & code
+
+feedback:
+  positive:
+    value: GOOD
+    categories: []
+  negative:
+    value: BAD
+    categories:
+      - Not / poorly personalized
+      - Problem with saving information
+      - Not factually correct
+      - Didn't follow instructions
+      - Offensive / Unsafe
+      - Wrong language
+
+theme:
+  lightPalette:
+    mode: light
+    primary:
+      main: '#1a73e8'
+    background:
+      default: '#ffffff'
+      paper: '#f0f4f9'
+      card: '#f0f4f9'
+      cardHover: '#dde3ea'
+      history: '#d3e3fd'
+    text:
+      primary: '#07080aff'
+      secondary: '#1b1c1d'
+      tertiary: '#575b5f'
+      h5: '#1f1f1f'
+      selected: '#0842a0'
+      tagline: '#9a9b9c'
+    tooltip:
+      background: '#1b1c1d'
+      text: '#e8eaed'
+  darkPalette:
+    mode: dark
+    primary:
+      main: '#8ab4f8'
+    background:
+      default: '#1b1c1d'
+      paper: '#333537'
+      card: '#282a2c'
+      cardHover: '#3d3f42'
+      history: '#1f3760'
+    text:
+      primary: '#fff'
+      secondary: '#9aa0a6'
+      tertiary: '#a2a9b0'
+      h5: '#e3e3e3'
+      selected: '#d3e3fd'
+      tagline: '#747775'
+    tooltip:
+      background: '#fff'
+      text: '#1b1c1d'

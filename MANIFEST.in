@@ -1,1 +1,1 @@
-recursive-include ui/dist *
+recursive-include src/material_ai/ui/dist *

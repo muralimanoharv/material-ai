@@ -1060,6 +1060,7 @@ dependencies = [
     { name = "google-adk" },
     { name = "psutil" },
     { name = "python-json-logger" },
+    { name = "pyyaml" },
 ]
 
 [package.dev-dependencies]
@@ -1077,6 +1078,7 @@ requires-dist = [
     { name = "google-adk", extras = ["database"], specifier = "==0.3.0" },
     { name = "psutil", specifier = ">=7.1.0" },
     { name = "python-json-logger", specifier = ">=3.3.0" },
+    { name = "pyyaml", specifier = ">=6.0.3" },
 ]
 
 [package.metadata.requires-dev]
