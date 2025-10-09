@@ -13,11 +13,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 # Install Node.js and npm
 RUN apt-get install -y nodejs
 
-COPY ui/ ui/
-
 COPY Makefile .
-
-RUN make build-ui
 
 # Install dependencies
 # Comment --no-dev --no-editable for local development debugging
@@ -29,6 +25,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Copy the content of the local src directory to the working directory
 # Comment the below line for local development hot reloading to work
 COPY src/ src/
+
+RUN make build-ui
 
 COPY config.ini .
 

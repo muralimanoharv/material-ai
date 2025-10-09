@@ -90,6 +90,15 @@ show_loader "download_template_files" "Downloading template files..."
 # 3. Generate Config Files
 echo "📄 Generating configuration files..."
 
+touch scripts/env.sh
+cat > scripts/env.sh << EOF
+export CRUN_SERVICE_ACCOUNT_NAME="${PROJECT_NUMBER}-compute"
+export CRUN_SERVICE_ACCOUNT="${CRUN_SERVICE_ACCOUNT_NAME}@developer.gserviceaccount.com"
+export CRUN_SERVICE="${PROJECT_NAME_LOWERCASE}"
+export CRUN_CONTAINER_REPO="${PROJECT_NAME_LOWERCASE}_crun_repository"
+export CRUN_IMAGE="${PROJECT_NAME_LOWERCASE}"
+EOF
+
 cat > Makefile << EOF
 install:
 	@command -v uv >/dev/null 2>&1 || { echo "uv is not installed. Installing uv..."; curl -LsSf https://astral.sh/uv/0.6.12/install.sh | sh; source \$HOME/.local/bin/env; }
