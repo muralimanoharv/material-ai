@@ -30,3 +30,6 @@ preview:
 deploy:
 	@echo "Deploying to cloud run...🚀"
 	./scripts/deploy_crun.sh
+
+build: build-ui
+	python -m build

@@ -10,3 +10,5 @@ ui/dist
 .env
 **/__pycache__/
 *.db
+dist
+**/*.egg-info/
