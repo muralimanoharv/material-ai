@@ -402,9 +402,9 @@ For example, try a prompt like: *"Create a professional color palette for a web 
 
 This project is deployed using a `Makefile` command that automates the build and deployment process.
 
-### 1\. Configure Your Environment
+### 1\. Provide Appropriate Permissions
+Make sure to run `chmod +x ./scripts/*.sh` and provide permissions to execute shell scripts
 
-First, you need to create a configuration file from the provided template under `setup.sh`.
 
 ### 2\. Deploy the Application
 

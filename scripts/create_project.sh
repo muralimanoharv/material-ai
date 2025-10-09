@@ -529,7 +529,7 @@ def ${APP_FUNCTION}():
 
 This project uses a \`Makefile\` command to automate deployment.
 
-1.  **Configure \`setup.sh\`**: Create a configuration file from the template provided in \`setup.sh\`.
+1.  **Permissions**: Make sure to run `chmod +x ./scripts/*.sh` and provide permissions to execute shell scripts
 2.  **Deploy**: Run the following command to build and deploy the application:
     \`\`\`bash
     make deploy
