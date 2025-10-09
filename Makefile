@@ -31,7 +31,11 @@ preview:
 
 deploy:
 	@echo "Deploying to cloud run...🚀"
-	./scripts/deploy_crun.sh
+	cd scripts && ./deploy_crun.sh
+
+teardown:
+	@echo "Deleting all resources"
+	cd scripts && ./teardown.sh
 
 build: build-ui
 	python -m build

@@ -1,21 +1,31 @@
+#!/bin/bash
+set -e
 ENVIRONMENT=$1
 echo "🚀 STARTING: Deployment...."
 
-source ./scripts/setup.sh
+source ./setup.sh
 
 # Create Docker Repository
 echo "⚙️  STARTING: Creating Artifact Registry..."
-
-gcloud artifacts repositories create ${CRUN_CONTAINER_REPO} \
-    --repository-format=docker \
-    --location=${PROJECT_DEFAULT_LOCATION} \
-    --description="Repo for Cloud run docker images" \
-
-echo "🟢 SUCCESS: Artifact Registry either created or exists"
 echo
 
-#!/bin/bash
+if gcloud artifacts repositories describe ${CRUN_CONTAINER_REPO} --location=${PROJECT_DEFAULT_LOCATION} &> /dev/null; then
+  
+  echo "✅ Repository '${CRUN_CONTAINER_REPO}' already exists."
 
+else
+  
+  echo "🚧 Repository not found. Creating..."
+  gcloud artifacts repositories create ${CRUN_CONTAINER_REPO} \
+      --repository-format=docker \
+      --location=${PROJECT_DEFAULT_LOCATION} \
+      --description="Repo for Cloud run docker images"
+      
+  echo "🟢 SUCCESS: Repository created."
+
+fi
+
+echo
 # Prompt the user, suggesting 'N' as the default. Allow them to press Enter.
 read -p "🚧 Build and push image to Artifact Registry? (y/N) (default: N): " REPLY
 echo # Move to a new line
@@ -24,7 +34,7 @@ echo # Move to a new line
 case "$REPLY" in
   y|Y )
     # This block only runs if the user explicitly types 'y' or 'Y'
-    source ./scripts/cloudbuild.sh
+    source ./cloudbuild.sh
     ;;
   ""|n|N )
     # This block runs if the user types 'n', 'N', or just presses Enter ("")

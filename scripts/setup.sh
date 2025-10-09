@@ -1,5 +1,6 @@
 
 #!/bin/bash
+set -e
 
 RED='\033[0;31m'
 NC='\033[0m'
@@ -32,16 +33,19 @@ echo
 
 # CLOUD RUN ENVIRONMENT VARIABLES
 echo "⚙️  Configuring required environment variables..."
-if [ -f .env ]; then
-  export $(grep -v '^#' .env | xargs)
-  echo "🟢 .env file loaded."
+
+# Check for the .env file in the parent directory
+if [ -f ../.env ]; then
+  # Load variables from the parent directory's .env file
+  export $(grep -v '^#' ../.env | xargs)
+  echo "🟢 .env file loaded from parent directory."
   echo
 else
-  echo -e "❌ ${RED}ERROR:${NC} .env file not found."
+  echo -e "❌ ${RED}ERROR:${NC} .env file not found in parent directory."
   exit 1
 fi
 
-source ./scripts/crun_env.sh
+source ./crun_env.sh
 
 # Use Cloud Run URL for SSO Redirect URI
 export SSO_REDIRECT_URI="https://${CRUN_SERVICE}-${PROJECT_NUMBER}.${PROJECT_DEFAULT_LOCATION}.run.app/auth"

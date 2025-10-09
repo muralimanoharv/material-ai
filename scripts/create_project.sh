@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # A function to show a spinner while a command is running
 show_loader() {
@@ -529,7 +530,7 @@ def ${APP_FUNCTION}():
 
 This project uses a \`Makefile\` command to automate deployment.
 
-1.  **Permissions**: Make sure to run `chmod +x ./scripts/*.sh` and provide permissions to execute shell scripts
+1.  **Permissions**: Make sure to run "chmod +x ./scripts/*.sh" and provide permissions to execute shell scripts
 2.  **Deploy**: Run the following command to build and deploy the application:
     \`\`\`bash
     make deploy
