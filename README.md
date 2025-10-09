@@ -1,6 +1,24 @@
 # Material AI
 *You build the agents. We'll handle the rest.*
 
+Of course. Here is a README file based on your request, with important security improvements to the command.
+
+-----
+
+## Material-AI Project Generator 🚀
+
+To create a new project, open your terminal, and run the command below. This will download the interactive setup script, make it executable, and then launch it.
+
+```bash
+wget https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/create_project.sh && \
+chmod +x ./create_project.sh && \
+./create_project.sh && \
+rm ./create_project.sh
+```
+
+Follow the on-screen prompts to generate your new project directory.
+-----
+
 
 ## Current Challenges with the Agent Development Kit (ADK)
 
