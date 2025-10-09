@@ -1,5 +1,5 @@
 from google.adk.agents import Agent
-from src.oauth import oauth_user_details_context
+from src.material_ai.oauth import oauth_user_details_context
 
 
 def say_hello():
