@@ -40,7 +40,7 @@ download_template_files() {
     wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.dockerignore
     wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.gitignore
     wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/cloudbuild.yaml
-    wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.env-example
+    wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.env.example
     # URLs for the scripts directory
     mkdir -p scripts
     wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/cloudbuild.sh
@@ -239,7 +239,7 @@ def who_am_i():
 
 root_agent = Agent(
     name="${PROJECT_NAME_LOWERCASE}",
-    model="gemini-1.5-flash",
+    model="gemini-2.0-flash",
     description="A helpful agent.",
     tools=[say_hello, who_am_i],
 )
