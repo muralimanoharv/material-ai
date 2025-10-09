@@ -37,4 +37,4 @@ build: build-ui
 	python -m build
 
 clean:
-	rm -rf build/ dist/ src/*.egg-info
+	rm -rf build/ dist/ src/*.egg-info src/${PACKAGE_NAME}/ui/dist

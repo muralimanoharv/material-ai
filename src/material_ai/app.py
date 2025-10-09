@@ -28,6 +28,7 @@ _app_instance: FastAPI | None = None
 _lock = threading.Lock()
 
 STATIC_DIR = f"{os.path.dirname(os.path.abspath(__file__))}/ui/dist"
+UI_CONFIG_YAML = f"{os.path.dirname(os.path.abspath(__file__))}/ui/ui_config.yaml"
 AGENT_DIR = f"{os.path.dirname(os.path.abspath(__file__))}/agents"
 ALLOWED_ORIGINS = [
     "http://localhost",
@@ -233,7 +234,7 @@ def _setup_app(
 def get_app(
     agent_dir: str = AGENT_DIR,
     oauth_service: IOAuthService = None,
-    ui_config_yaml: str = None,
+    ui_config_yaml: str = UI_CONFIG_YAML,
 ):
     """
     This ensures we construct only a single instance of the app.  We also prevent a
