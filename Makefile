@@ -37,8 +37,12 @@ teardown:
 	@echo "Deleting all resources"
 	cd scripts && ./teardown.sh
 
-build: build-ui
-	python -m build
-
 clean:
 	rm -rf build/ dist/ src/*.egg-info src/${PACKAGE_NAME}/ui/dist
+
+build: clean build-ui
+	python -m build
+
+push: build
+	twine upload dist/*
+

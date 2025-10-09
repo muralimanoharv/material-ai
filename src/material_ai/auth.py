@@ -1,14 +1,16 @@
 from fastapi import Response, HTTPException
 from fastapi.responses import RedirectResponse
 from datetime import timedelta
+from typing import Callable, Coroutine, Any, TypeAlias
 import base64
 import logging
 import hmac
 import hashlib
-from typing import Tuple
+from typing import Tuple, TypeAlias
 from .config import get_config
+from .request import FeedbackRequest
 from .response import UserSuccessResponse
-from .oauth import get_oauth, OAuthErrorResponse, OAuthSuccessResponse, OAuthUserDetail
+from .oauth import OAuthErrorResponse, OAuthSuccessResponse, OAuthUserDetail
 from .oauth import IOAuthService
 
 _logger = logging.getLogger(__name__)
@@ -274,4 +276,11 @@ def get_oauth_service() -> IOAuthService:
 
 
 def get_ui_configuration() -> IOAuthService:
+    raise NotImplementedError("This dependency must be overridden by the application.")
+
+
+FeedbackHandler: TypeAlias = Callable[[FeedbackRequest], Coroutine[Any, Any, Response]]
+
+
+def get_feedback_handler() -> FeedbackHandler:
     raise NotImplementedError("This dependency must be overridden by the application.")

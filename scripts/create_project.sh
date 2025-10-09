@@ -89,9 +89,9 @@ echo "📄 Generating configuration files..."
 
 touch scripts/crun_env.sh
 cat > scripts/crun_env.sh << EOF
-export CRUN_SERVICE_ACCOUNT_NAME="\${PROJECT_NUMBER}-compute"
-export CRUN_SERVICE_ACCOUNT="\${CRUN_SERVICE_ACCOUNT_NAME}@developer.gserviceaccount.com"
-export CRUN_SERVICE="${PROJECT_NAME_CRUN_SANTIZED}"
+export CRUN_SERVICE_ACCOUNT_NAME="${PROJECT_NAME_CRUN_SANTIZED}-crun-sa-01"
+export CRUN_SERVICE_ACCOUNT="\${CRUN_SERVICE_ACCOUNT_NAME}@\${PROJECT_ID}.iam.gserviceaccount.com"
+export CRUN_SERVICE="${PROJECT_NAME_CRUN_SANTIZED}-crun"
 export CRUN_CONTAINER_REPO="${PROJECT_NAME_CRUN_SANTIZED}-crun-repository"
 export CRUN_IMAGE="${PROJECT_NAME_CRUN_SANTIZED}"
 EOF
@@ -195,7 +195,7 @@ description = "${PROJECT_NAME}"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "material-ai==1.0.0",
+    "material-ai==1.0.1",
 ]
 
 [dependency-groups]

@@ -16,9 +16,16 @@ from .auth import _remove_cookies
 from .oauth import get_oauth, OAuthErrorResponse
 from .log_config import setup_structured_logging
 from .oauth import oauth_user_details_context
-from .auth import verify_user_details, get_oauth_service, get_ui_configuration
+from .auth import (
+    verify_user_details,
+    get_oauth_service,
+    get_ui_configuration,
+    get_feedback_handler,
+)
+from .auth import FeedbackHandler
 from .oauth import OAuthUserDetail, IOAuthService
 from .ui_config import get_ui_config
+from .request import FeedbackRequest
 
 from . import __app_name__, __version__
 
@@ -158,10 +165,15 @@ class AuthMiddleware(BaseHTTPMiddleware):
             return response
 
 
+async def on_feedback(_: FeedbackRequest):
+    return Response(status_code=200)
+
+
 def _setup_app(
     app: FastAPI,
     oauth_service: IOAuthService = None,
     ui_config_yaml: str = None,
+    feedback_handler: FeedbackHandler = None,
 ) -> None:
     """
     Configures the FastAPI application with middleware, logging,
@@ -171,6 +183,10 @@ def _setup_app(
 
     Args:
         app (FastAPI): The FastAPI application instance to configure.
+        oauth_service (IOAuthService, optional): An instance of the OAuth
+            service for authentication. Defaults to GoogleOAuthService.
+        ui_config_yaml (str): The file path to the UI configuration YAML.
+        feedback_handler: A handler function to handle user feedback
 
     Raises:
         RuntimeError: If the configuration is invalid or cannot be loaded.
@@ -200,8 +216,14 @@ def _setup_app(
     def override_get_ui_configuration() -> IOAuthService:
         return ui_config
 
+    def override_get_feedback_handler() -> FeedbackHandler:
+        if feedback_handler == None:
+            return on_feedback
+        return feedback_handler
+
     app.dependency_overrides[get_oauth_service] = override_get_oauth_service
     app.dependency_overrides[get_ui_configuration] = override_get_ui_configuration
+    app.dependency_overrides[get_feedback_handler] = override_get_feedback_handler
 
     # Custom header middleware
     app.add_middleware(AuthMiddleware, oauth_service=override_get_oauth_service())
@@ -235,10 +257,25 @@ def get_app(
     agent_dir: str = AGENT_DIR,
     oauth_service: IOAuthService = None,
     ui_config_yaml: str = UI_CONFIG_YAML,
+    feedback_handler: FeedbackHandler = None,
 ):
-    """
-    This ensures we construct only a single instance of the app.  We also prevent a
-    rat's nest of circular imports by exposing only a single app factory function
+    """Factory function to get the singleton FastAPI application instance.
+
+    This function ensures that only one instance of the FastAPI application is
+    created during the application's lifecycle. It uses a thread-safe lock to
+    manage instantiation, guaranteeing a single, shared app object. This
+    approach also prevents circular import issues by providing a centralized
+    access point.
+
+    Args:
+        agent_dir (str): The directory path for the agent.
+        oauth_service (IOAuthService, optional): An instance of the OAuth
+            service for authentication. Defaults to GoogleOAuthService.
+        ui_config_yaml (str): The file path to the UI configuration YAML.
+        feedback_handler: A handler function to handle user feedback
+
+    Returns:
+        FastAPI: The singleton instance of the FastAPI application.
     """
     global _app_instance
     with _lock:
@@ -250,7 +287,7 @@ def get_app(
                 allow_origins=ALLOWED_ORIGINS if config.general.debug else [],
                 session_db_url=config.adk.session_db_url,
             )
-            _setup_app(app, oauth_service, ui_config_yaml)
+            _setup_app(app, oauth_service, ui_config_yaml, feedback_handler)
             _app_instance = app
 
         return _app_instance

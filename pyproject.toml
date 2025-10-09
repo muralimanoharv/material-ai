@@ -1,6 +1,6 @@
 [project]
 name = "material-ai"
-version = "1.0.0"
+version = "1.0.1"
 description = "Material AI Agent with FastAPI server"
 readme = "README.md"
 license = { text = "MIT" }

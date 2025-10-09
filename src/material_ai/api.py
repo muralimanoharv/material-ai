@@ -16,9 +16,10 @@ from .auth import (
     on_callback,
     verify_user_details,
     get_oauth_service,
-    IOAuthService,
     get_ui_configuration,
+    get_feedback_handler,
 )
+from .auth import IOAuthService, FeedbackHandler
 from .oauth import OAuthUserDetail
 from .response import UserSuccessResponse, HealthResponse
 from .ui_config import UIConfig
@@ -51,9 +52,12 @@ def root():
     description="Receives and logs feedback sent from the user interface.",
     status_code=status.HTTP_200_OK,
 )
-def feedback(feedback: FeedbackRequest):
+async def feedback(
+    feedback: FeedbackRequest,
+    feedback_handler: FeedbackHandler = Depends(get_feedback_handler),
+):
     _logger.info(f"SUCCESS: Feedback received from UI {feedback}")
-    return Response(status_code=200)
+    return await feedback_handler(feedback)
 
 
 @router.get(
