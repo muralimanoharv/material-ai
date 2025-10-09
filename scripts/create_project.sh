@@ -33,7 +33,7 @@ show_loader() {
 download_template_files() {
     # URLs for the root directory
     wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/config.ini
-    wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/ui_config.yaml
+    wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/src/material_ai/ui/ui_config.yaml
     wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/README.md
     wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/Dockerfile
     wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/docker-compose.yml
@@ -229,6 +229,242 @@ root_agent = Agent(
 )
 EOF
 echo "✅ Python source created."
+
+
+# Create README.md
+
+cat > README.md << EOF
+<div align="center">
+  
+# Material AI Agent Builder
+
+**You build the agents. We'll handle the rest.**
+
+</div>
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+
+**Material AI Agent Builder** provides a production-ready framework for creating sophisticated, UI-driven AI agents. It handles the complexities of authentication, session management, and UI configuration, so you can focus entirely on building powerful agent logic.
+
+---
+
+## 🚀 Getting Started
+
+You can set up your development environment either locally using Python or with Docker for a more streamlined experience.
+
+### Method 1: Local Development Environment
+
+Follow these steps to get the project running on your local machine.
+
+#### **1. Prerequisites**
+
+Ensure you have the following tools installed:
+* **Python** (v3.9 or higher)
+* **uv** (a fast Python package installer)
+* **make** (a command-line build tool)
+
+> **Quick Install:**
+> * **uv**: \`curl -LsSf https://astral.sh/uv/install.sh | sh\` (macOS/Linux) or \`powershell -c "irm https://astral.sh/uv/install.ps1 | iex"\` (Windows).
+> * **make**: \`sudo apt-get update && sudo apt-get install make\` (Debian/Ubuntu) or \`brew install make\` (macOS).
+
+#### **2. Installation & Setup**
+
+\`\`\`bash
+# 1. Create and activate a virtual environment
+uv venv
+source .venv/bin/activate
+
+# 2. Install dependencies
+uv sync
+\`\`\`
+
+
+#### **3. Configure Environment Variables**
+
+First, copy the example environment file:
+
+\`\`\`bash
+cp .env.example .env
+\`\`\`
+
+Next, open the new \`.env\` file and add your credentials.
+
+> **⚠️ Important for \`.env\` Configuration:**
+>
+>   * \`SSO_CLIENT_ID\`: The Client Id of OAuth
+>   * \`SSO_CLIENT_SECRET\`: The Client Secret of OAuth
+>   * \`SSO_SESSION_SECRET_KEY\`: Generate a strong, random string for this value.
+>   * \`SSO_REDIRECT_URI\`: For local development, this is \`http://localhost:8080/auth\`. **Do not use \`http\` in production.**
+>   * \`ADK_SESSION_DB_URL\`: The default \`sqlite\` database is for development only. Use a managed database like PostgreSQL or MySQL in production.
+>   * \`GOOGLE_API_KEY\`: API key for Gemini API, Go to https://aistudio.google.com/apikey to generate API KEY
+
+
+#### **4. Run the Application**
+
+Once configured, you can run or debug the application using \`make\`.
+
+\`\`\`bash
+# Run the application normally
+make run
+
+# Or, run in debug mode
+make debug
+\`\`\`
+
+  * **Application URL**: \`http://127.0.0.1:8080\`
+  * **Swagger API Docs**: \`http://127.0.0.1:8080/docs\`
+  * **Debug Port**: \`5678\` (Attach a remote debugger using the provided \`.vscode/launch.json\` config).
+
+
+-----
+
+### Method 2: Docker for Development 🐳
+
+For a quick and isolated setup, use Docker Compose.
+
+#### **1. Prerequisites**
+
+  * **Docker** and **Docker Compose** must be installed.
+
+#### **2. Configure Environment Variables**
+
+Just like the local setup, you need to create and configure your \`.env\` file.
+
+\`\`\`bash
+cp .env.example .env
+\`\`\`
+
+Open the \`.env\` file and fill in your credentials.
+
+#### **3. Build and Run**
+
+Start the application with a single command:
+
+\`\`\`bash
+docker compose up
+\`\`\`
+
+#### **Useful Docker Commands**
+
+  * **Run in the background:** \`docker compose up -d\`
+  * **Force a rebuild of the images:** \`docker compose up --build\`
+  * **Stop and remove the containers:** \`docker compose down\`
+
+-----
+
+## 🤖 Creating an Agent
+
+Adding a new agent is simple. The framework uses a "convention over configuration" approach by automatically discovering agents placed in the \`src/agents/\` directory.
+
+A place holder agent is already provided under \`src/agents/${PROJECT_NAME_LOWERCASE}/agent\`
+
+An agent is a Python file that defines an \`Agent\` instance and the tools it can use.
+
+\`\`\`python
+# src/agents/${PROJECT_NAME_LOWERCASE}/agent.py
+
+from google.adk.agents import Agent
+from material_ai.oauth import oauth_user_details_context
+
+def say_hello():
+    """Greets the user."""
+    return {"message": "Hi, what can I do for you today?"}
+
+def who_am_i():
+    """Gets the current user's details from the active session."""
+    user_details = oauth_user_details_context.get()
+    if not user_details:
+        return {"error": "User is not logged in."}
+    return user_details.model_dump()
+
+# The framework will discover this 'root_agent' instance
+root_agent = Agent(
+    name="${PROJECT_NAME_LOWERCASE}",
+    model="gemini-1.5-flash",
+    description="A helpful agent that can greet users and identify them.",
+    tools=[say_hello, who_am_i],
+)
+\`\`\`
+
+The \`oauth_user_details_context\` gives you secure access to the logged-in user's details within your tools.
+
+-----
+
+## 🎨 Customizing the UI
+
+All UI and theme customizations are managed in a single configuration file: \`ui_config.yaml\`. This allows you to brand the application without touching any code.
+
+### General Configuration
+
+You can modify high-level UI elements:
+
+  * **\`title\` & \`greeting\`**: Change the application title and the welcome message.
+  * **\`models\`**: Define the list of AI models available to the user, complete with names and taglines.
+  * **\`feedback\`**: Customize the categories for user feedback.
+
+### Theming (Light & Dark Mode)
+
+The \`theme\` section in \`ui_config.yaml\` contains \`lightPalette\` and \`darkPalette\` objects. You can change the hex codes for:
+
+  * **Primary Colors**: For buttons, links, and accents.
+  * **Background Colors**: For the main app, cards, and side panels.
+  * **Text Colors**: For headings, paragraphs, and other text elements.
+
+> **✨ Pro Tip: Generate Themes with AI**
+> Use a prompt like *"Create a professional color palette for a web app's light and dark theme. The primary color should be a shade of teal"* in Gemini to generate beautiful color schemes for your \`ui_config.yaml\` file.
+
+-----
+
+## 🔐 Configuring Authentication (SSO)
+
+You can replace the default Google OAuth service with your own implementation.
+
+1.  **Create Your Service**: Create a Python class that implements the required authentication logic. An example is available at src/${OAUTH_FILE_NAME}.py.
+2.  **Register the Service**: In \`src/main.py\`, import and register your custom service when initializing the app.
+
+\`\`\`python
+# src/main.py
+
+import os
+from material_ai import get_app
+# Import your custom OAuth service
+from .${OAUTH_FILE_NAME} import ${OAUTH_CLASS_NAME}
+
+AGENT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "agents")
+
+def ${APP_FUNCTION}():
+    return get_app(
+        agent_dir=AGENT_DIR,
+        # Register your service here
+        oauth_service=${OAUTH_CLASS_NAME}(),
+        ui_config_yaml="ui_config.yaml"
+    )
+\`\`\`
+
+-----
+
+## 📦 Deployment
+
+This project uses a \`Makefile\` command to automate deployment.
+
+1.  **Configure \`setup.sh\`**: Create a configuration file from the template provided in \`setup.sh\`.
+2.  **Deploy**: Run the following command to build and deploy the application:
+    \`\`\`bash
+    make deploy
+    \`\`\`
+
+-----
+
+## 🤝 Contributing & Support
+
+We welcome your contributions\! If you find a bug or have a feature request, please **[open an issue](https://github.com/muralimanoharv/material-ai/issues)** on our GitHub repository.
+
+  * **Bug Reports**: Please include a clear title, a detailed description, and steps to reproduce the issue.
+  * **Feature Requests**: Describe the problem you're solving and the desired functionality.
+
+Thank you for helping improve Material AI\!
+EOF
 
 # 5. Final Message
 echo ""
