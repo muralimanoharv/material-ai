@@ -127,23 +127,30 @@ name = "${PROJECT_NAME_LOWERCASE}"
 version = "1.0.0"
 description = "${PROJECT_NAME}"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 dependencies = [
-    "debugpy>=1.8.1",
     "material_ai @ ${MATERIAL_AI_WHL_PATH}",
 ]
 
-[tool.uv.sources]
-material_ai = { type = "directory", path = "/home/muralimanoharv/Documents/projects/material-ai" }
-
-[tool.uv.dev-dependencies]
-black = ">=24.4.2"
+[dependency-groups]
+dev = [
+    "black>=25.9.0",
+    "build>=1.3.0",
+    "debugpy>=1.8.15",
+    "twine>=6.2.0",
+]
 
 [tool.black]
-line-length = 88
+# Set the maximum line length. Black defaults to 88.
+line-length = 88 
+# Files to skip over
 exclude = '''
 /(
-    \.git|\.mypy_cache|\.venv|\.vscode|dist
+    \.git
+  | \.mypy_cache
+  | \.venv
+  | \.vscode
+  | dist
 )/
 '''
 EOF
