@@ -1,9 +1,5 @@
-# Ignore the node_modules folder within the frontend directory
-src/material_ai/ui/node_modules
-
-# Ignore the node_modules folder within the frontend directory
-src/material_ai/ui/dist
-
+**/node_modules/
+**/dist/
 .python-version
 .venv
 .vscode

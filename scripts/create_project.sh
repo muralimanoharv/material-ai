@@ -34,9 +34,6 @@ download_template_files() {
     # URLs for the root directory
     wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/config.ini
     wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/src/material_ai/ui/ui_config.yaml
-    wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/README.md
-    wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/Dockerfile
-    wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/docker-compose.yml
     wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.dockerignore
     wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.gitignore
     wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/cloudbuild.yaml
@@ -108,6 +105,9 @@ run:
 debug:
 	uv run python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m uvicorn src.main:${APP_FUNCTION} --host 0.0.0.0 --port 8080 --reload
 
+preview:
+	uv run --frozen uvicorn --host 0.0.0.0 --port 8080 --workers 1 --factory src.main:${APP_FUNCTION}
+
 deploy:
 	@echo "Deploying to cloud run...🚀"
 	./scripts/deploy_crun.sh
@@ -117,6 +117,72 @@ format:
 
 check-format:
 	black . --check --diff
+EOF
+
+cat > Dockerfile << EOF
+# Use an official Python runtime as a parent image
+FROM python:3.12-slim
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# Set the working directory in the container
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y make
+RUN apt-get update && apt-get install -y curl gnupg
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+
+# Install Node.js and npm
+RUN apt-get install -y nodejs
+
+COPY Makefile .
+
+# Install dependencies
+# Comment --no-dev --no-editable for local development debugging
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project --no-dev --no-editable --verbose
+
+# Copy the content of the local src directory to the working directory
+# Comment the below line for local development hot reloading to work
+COPY src/ src/
+
+COPY config.ini .
+
+# Make port 8080 available to the world outside this container
+EXPOSE 8080
+
+ENV PYTHONPATH="src"
+ENV GENERAL_DEBUG=false
+ENV CONFIG_PATH=config.ini
+
+CMD ["make", "preview"]
+EOF
+
+cat > docker-compose.yml << EOF
+services:
+  ${PROJECT_NAME_LOWERCASE}:
+    build: .
+    networks:
+      - my-project-network 
+    environment:
+     - SSO_CLIENT_ID=\${SSO_CLIENT_ID}
+     - SSO_CLIENT_SECRET=\${SSO_CLIENT_SECRET}
+     - SSO_REDIRECT_URI=\${SSO_REDIRECT_URI}
+     - SSO_SESSION_SECRET_KEY=\${SSO_SESSION_SECRET_KEY}
+     - CONFIG_PATH=\${CONFIG_PATH}
+     - GOOGLE_GENAI_USE_VERTEXAI=\${GOOGLE_GENAI_USE_VERTEXAI}
+     - GOOGLE_API_KEY=\${GOOGLE_API_KEY}
+     - ADK_SESSION_DB_URL=\${ADK_SESSION_DB_URL}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./src:/app/src
+      - ./config.ini:/app/config.ini
+
+networks:
+  my-project-network:
+    driver: bridge
 EOF
 
 cat > pyproject.toml << EOF
