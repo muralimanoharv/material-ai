@@ -1,6 +1,8 @@
 
 REACT_BUILD_CMD := npm install && npm run build
 
+PACKAGE_NAME := material_ai
+
 install:
 	@command -v uv >/dev/null 2>&1 || { echo "uv is not installed. Installing uv..."; curl -LsSf https://astral.sh/uv/0.6.12/install.sh | sh; source $HOME/.local/bin/env; }
 	uv sync --dev
@@ -15,18 +17,24 @@ check-format:
 
 build-ui:
 	@echo "Building UI...🚀"
-	@cd ui && $(REACT_BUILD_CMD)
+	@cd src/${PACKAGE_NAME}/ui && $(REACT_BUILD_CMD)
 	@echo "UI build complete.✅"
 
 run: build-ui
-	uv run uvicorn --host 0.0.0.0 --port 8080 --factory src.app:get_app --reload
+	uv run uvicorn --host 0.0.0.0 --port 8080 --factory src.${PACKAGE_NAME}.app:get_app --reload
 
 debug: build-ui
-	uv run python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m uvicorn src.main:get_app --host 0.0.0.0 --port 8080 --reload
+	uv run python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m uvicorn src.${PACKAGE_NAME}.main:get_app --host 0.0.0.0 --port 8080 --reload
 
 preview:
-	uv run --frozen uvicorn --host 0.0.0.0 --port 8080 --workers 1 --factory src.app:get_app
+	uv run --frozen uvicorn --host 0.0.0.0 --port 8080 --workers 1 --factory src.${PACKAGE_NAME}.app:get_app
 
 deploy:
 	@echo "Deploying to cloud run...🚀"
 	./scripts/deploy_crun.sh
+
+build: build-ui
+	python -m build
+
+clean:
+	rm -rf build/ dist/ src/*.egg-info
