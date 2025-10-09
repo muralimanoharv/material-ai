@@ -15,9 +15,9 @@ chmod +x ./create_project.sh && \
 ./create_project.sh && \
 rm ./create_project.sh
 ```
-
-Follow the on-screen prompts to generate your new project directory.
 -----
+Follow the on-screen prompts to generate your new project directory.
+
 
 
 ## Current Challenges with the Agent Development Kit (ADK)
