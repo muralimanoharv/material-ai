@@ -56,8 +56,6 @@ echo "-------------------------------------------------"
 
 # --- CONFIGURATION ---
 DEFAULT_PROJECT_NAME="my-awesome-agent"
-# IMPORTANT: Update this path to point to your local Material-AI wheel file
-MATERIAL_AI_WHL_PATH="file:/home/muralimanoharv/Documents/projects/material-ai/dist/material_ai-1.0.0-py3-none-any.whl"
 
 # 1. Get Project Name and Generate Variables
 read -p "§ Project Name (default: ${DEFAULT_PROJECT_NAME}): " PROJECT_NAME
@@ -129,7 +127,7 @@ description = "${PROJECT_NAME}"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "material_ai @ ${MATERIAL_AI_WHL_PATH}",
+    "material-ai==1.0.0",
 ]
 
 [dependency-groups]
