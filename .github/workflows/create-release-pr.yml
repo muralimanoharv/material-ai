@@ -12,18 +12,4 @@ jobs:
       - uses: googleapis/release-please-action@v4
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
-          release-type: python
-          package-name: material-ai
-          extra-files: |
-            - path: src/material_ai/__init__.py
-              search: __version__ = "(.+)"
-              replace: __version__ = "${version}"
-            - path: scripts/create_project.sh
-              search: DEFAULT_PROJECT_VERSION="(.+)"
-              replace: DEFAULT_PROJECT_VERSION="${version}"
-            - path: scripts/my_script.sh
-              search: __version__ = "(.+)"
-              replace: __version__ = "${version}"
-            - path: scripts/__init__.py
-              search: __version__ = "(.+)"
-              replace: __version__ = "${version}"
+          config-file: release-please-config.json
