@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.6](https://github.com/muralimanoharv/material-ai/compare/v1.0.5...v1.0.6) (2025-10-10)
+
+
+### Bug Fixes
+
+* fix bug 11 ([f726782](https://github.com/muralimanoharv/material-ai/commit/f726782f70b0899600d59397fded0fdb6d96191e))
+* fix cookie deleation bug ([9e4b721](https://github.com/muralimanoharv/material-ai/commit/9e4b721dc0c5d843941fec072136e3fcef4e89aa))
+* fix-bug-9 ([04271c9](https://github.com/muralimanoharv/material-ai/commit/04271c9e3884b00c4d821e2adc215448830d2afa))
+
 ## [1.0.5](https://github.com/muralimanoharv/material-ai/compare/v1.0.4...v1.0.5) (2025-10-10)
 
 
