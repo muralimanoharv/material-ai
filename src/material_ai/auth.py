@@ -133,6 +133,7 @@ def _remove_cookies(response: Response):
     Args:
         response: The FastAPI Response object to be modified.
     """
+    # We want to delete all cookies
     response.delete_cookie("access_token")
     response.delete_cookie("refresh_token")
     response.delete_cookie("user_details")
