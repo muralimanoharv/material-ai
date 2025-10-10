@@ -18,9 +18,6 @@ jobs:
             - path: src/material_ai/__init__.py
               search: __version__ = "(.+)"
               replace: __version__ = "${version}"
-            - path: config.json
-              search: '"appVersion": "(.+)"'
-              replace: '"appVersion": "${version}"'
             - path: scripts/create_project.sh
               search: DEFAULT_PROJECT_VERSION=(.+)
               replace: DEFAULT_PROJECT_VERSION=${version}
