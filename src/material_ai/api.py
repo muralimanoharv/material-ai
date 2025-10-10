@@ -41,6 +41,7 @@ START_TIME = datetime.now(timezone.utc)
     },
 )
 def root():
+    # Serve static react content on /
     return FileResponse(
         path=os.path.join(STATIC_DIR, "index.html"), media_type="text/html"
     )
