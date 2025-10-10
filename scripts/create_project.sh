@@ -54,6 +54,7 @@ echo "-------------------------------------------------"
 
 # --- CONFIGURATION ---
 DEFAULT_PROJECT_NAME="my-awesome-agent"
+DEFAULT_PROJECT_VERSION=1.0.6 # x-release-please-versio
 
 # 1. Get Project Name and Generate Variables
 read -p "§ Project Name (default: ${DEFAULT_PROJECT_NAME}): " PROJECT_NAME
@@ -195,7 +196,7 @@ description = "${PROJECT_NAME}"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "material-ai",
+    "material-ai==${DEFAULT_PROJECT_VERSION}",
 ]
 
 [dependency-groups]
