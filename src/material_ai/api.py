@@ -57,6 +57,7 @@ async def feedback(
     feedback_handler: FeedbackHandler = Depends(get_feedback_handler),
 ):
     _logger.info(f"SUCCESS: Feedback received from UI {feedback}")
+    # Here we call the handler passed by caller to handle the feedback logic as required.
     return await feedback_handler(feedback)
 
 
