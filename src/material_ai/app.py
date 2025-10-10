@@ -272,7 +272,8 @@ def get_app(
         oauth_service (IOAuthService, optional): An instance of the OAuth
             service for authentication. Defaults to GoogleOAuthService.
         ui_config_yaml (str): The file path to the UI configuration YAML.
-        feedback_handler: A handler function to handle user feedback
+        feedback_handler: A handler function to handle user feedback. caller can implement
+            their own feedback logic.
 
     Returns:
         FastAPI: The singleton instance of the FastAPI application.
