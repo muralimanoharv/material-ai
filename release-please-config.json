@@ -3,7 +3,8 @@
     ".": {
       "release-type": "python",
       "extra-files": [
-            "scripts/create_project.sh"
+            "scripts/create_project.sh",
+            "pyproject.toml"
        ]
     }
   }
