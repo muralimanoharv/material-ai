@@ -9,7 +9,15 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v3
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           release-type: python
+          package-name: material-ai
+          extra-files: |
+            - path: src/material_ai/__init__.py
+              search: __version__ = "(.+)"
+              replace: __version__ = "${version}"
+            - path: scripts/create_project.sh
+              search: DEFAULT_PROJECT_VERSION=(.+)
+              replace: DEFAULT_PROJECT_VERSION=${version}
