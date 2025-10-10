@@ -4,14 +4,14 @@
       "release-type": "python",
       "extra-files": [
         {
-          "type": "toml",
+          "type": "generic",
           "path": "pyproject.toml",
-          "jsonpath": "project.version"
+          "regex": "version = \"(.+)\""
         },
         {
-          "type": "python",
+          "type": "generic",
           "path": "src/material_ai/__init__.py",
-          "version_name": "__version__"
+          "regex": "__version__ = \"(.+)\""
         },
         {
           "type": "generic",
@@ -19,9 +19,9 @@
           "regex": "DEFAULT_PROJECT_VERSION=(.+)"
         },
         {
-          "type": "python",
+          "type": "generic",
           "path": "scripts/__init__.py",
-          "version_name": "__version__"
+          "regex": "__version__ = \"(.+)\""
         }
       ]
     }
