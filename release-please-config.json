@@ -1,24 +1,7 @@
 {
   "packages": {
     ".": {
-      "release-type": "simple",
-      "extra-files": [
-        {
-          "type": "generic",
-          "path": "pyproject.toml",
-          "pattern": "version = \"(.+)\""
-        },
-        {
-          "type": "generic",
-          "path": "src/material_ai/__init__.py",
-          "pattern": "__version__ = \"(.+)\""
-        },
-        {
-          "type": "generic",
-          "path": "scripts/create_project.sh",
-          "pattern": "DEFAULT_PROJECT_VERSION=(.+)"
-        }
-      ]
+      "release-type": "python"
     }
   }
 }
