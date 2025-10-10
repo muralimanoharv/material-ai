@@ -208,6 +208,7 @@ def _setup_app(
 
     ui_config = get_ui_config(ui_config_yaml)
 
+    # Setup overrides
     def override_get_oauth_service() -> IOAuthService:
         if oauth_service == None:
             return get_oauth()
