@@ -196,7 +196,7 @@ description = "${PROJECT_NAME}"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "material-ai",
+    "material-ai==${DEFAULT_PROJECT_VERSION}",
 ]
 
 [dependency-groups]
