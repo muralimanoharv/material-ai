@@ -82,7 +82,6 @@ async def logout(
     Terminates the user's session.
     """
     response = Response(status_code=200)
-    # clear cookies access_token, refresh_token, user_info & remove user sessios
     await remove_token(response, refresh_token, oauth_service)
     return response
 
