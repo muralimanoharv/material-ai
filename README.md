@@ -9,12 +9,15 @@ Of course. Here is a README file based on your request, with important security 
 
 To create a new project, open your terminal, and run the command below. This will download the interactive setup script, make it executable, and then launch it.
 
+[//]: # ( x-release-please-start-version )
+
 ```bash
-wget https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/create_project.sh && \
+wget https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/tags/v1.0.6/scripts/create_project.sh && \
 chmod +x ./create_project.sh && \
 ./create_project.sh && \
 rm ./create_project.sh
 ```
+[//]: # (x-release-please-end)
 -----
 Follow the on-screen prompts to generate your new project directory.
 
