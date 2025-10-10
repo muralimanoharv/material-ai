@@ -6,17 +6,17 @@
         {
           "type": "generic",
           "path": "pyproject.toml",
-          "regex": "version = \"(.+)\""
+          "pattern": "version = \"(.+)\""
         },
         {
           "type": "generic",
           "path": "src/material_ai/__init__.py",
-          "regex": "__version__ = \"(.+)\""
+          "pattern": "__version__ = \"(.+)\""
         },
         {
           "type": "generic",
           "path": "scripts/create_project.sh",
-          "regex": "DEFAULT_PROJECT_VERSION=(.+)"
+          "pattern": "DEFAULT_PROJECT_VERSION=(.+)"
         }
       ]
     }
