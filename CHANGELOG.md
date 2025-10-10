@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.7](https://github.com/muralimanoharv/material-ai/compare/v1.0.6...v1.0.7) (2025-10-10)
+
+
+### Bug Fixes
+
+* fix bug 14 ([c7394e2](https://github.com/muralimanoharv/material-ai/commit/c7394e23b952b8c62a7c3e5320e99242c9e51d8d))
+
 ## [1.0.6](https://github.com/muralimanoharv/material-ai/compare/v1.0.5...v1.0.6) (2025-10-10)
 
 
