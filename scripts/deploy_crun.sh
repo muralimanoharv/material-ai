@@ -5,7 +5,7 @@ echo "🚀 STARTING: Deployment...."
 
 source ./setup.sh
 
-# Service account for CloudRun
+# This created service account will be used to exeute cloud run
 gcloud iam service-accounts create ${CRUN_SERVICE_ACCOUNT} --display-name "Cloudrun service account"
 
 # Create Docker Repository
