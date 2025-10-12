@@ -41,12 +41,10 @@ class AuthMiddleware(BaseHTTPMiddleware):
             route.startswith(prefix) for prefix in EXCLUDED_PREFIXES
         )
 
-
         if is_excluded_path:
             return await call_next(request)
 
         cookies_header = request.headers.get("cookie")
-
 
         try:
             if not cookies_header:

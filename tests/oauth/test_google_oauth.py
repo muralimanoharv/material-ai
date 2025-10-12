@@ -148,8 +148,8 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
             "name": "Test User",
             "given_name": "Test User",
             "family_name": "Test User",
-            "picture": 'Test Pitcure',
-            "email_verified": True
+            "picture": "Test Pitcure",
+            "email_verified": True,
         }
         respx.get("https://www.googleapis.com/oauth2/v3/userinfo").mock(
             return_value=httpx.Response(200, json=user_info_payload)
@@ -208,14 +208,17 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
         """
         # Arrange: Mock the API response for a successful token refresh
         respx.post("https://oauth2.googleapis.com/token").mock(
-            return_value=httpx.Response(200, json={
-                "access_token": "brand_new_access_token",
-                "expires_in": 3599,
-            })
+            return_value=httpx.Response(
+                200,
+                json={
+                    "access_token": "brand_new_access_token",
+                    "expires_in": 3599,
+                },
+            )
         )
 
         # Arrange: Mock the internal call to get user details
-        mock_user_detail =OAuthUserDetail(
+        mock_user_detail = OAuthUserDetail(
             sub="123",
             email="test@example.com",
             name="Test User",
@@ -224,17 +227,23 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
             given_name="Test User",
             picture="Test pitcure",
         )
-        with patch.object(self.service, 'sso_get_user_details', new_callable=AsyncMock) as mock_get_details:
+        with patch.object(
+            self.service, "sso_get_user_details", new_callable=AsyncMock
+        ) as mock_get_details:
             mock_get_details.return_value = mock_user_detail
 
             # Act: Call the function with an existing refresh token
-            response = await self.service.sso_get_new_access_token(self.sso_config, "existing_refresh_token")
+            response = await self.service.sso_get_new_access_token(
+                self.sso_config, "existing_refresh_token"
+            )
 
             # Assert
             mock_get_details.assert_awaited_once_with("brand_new_access_token")
             self.assertIsInstance(response, OAuthSuccessResponse)
             self.assertEqual(response.access_token, "brand_new_access_token")
-            self.assertEqual(response.refresh_token, "existing_refresh_token") # Should return the original refresh token
+            self.assertEqual(
+                response.refresh_token, "existing_refresh_token"
+            )  # Should return the original refresh token
             self.assertEqual(response.user_detail, mock_user_detail)
 
     @respx.mock
@@ -244,18 +253,25 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
         """
         # Arrange: Mock an API response for an invalid or expired refresh token
         respx.post("https://oauth2.googleapis.com/token").mock(
-            return_value=httpx.Response(200, json={
-                "error": "invalid_grant",
-                "error_description": "Token has been expired or revoked."
-            })
+            return_value=httpx.Response(
+                200,
+                json={
+                    "error": "invalid_grant",
+                    "error_description": "Token has been expired or revoked.",
+                },
+            )
         )
-        
-        with patch.object(self.service, 'sso_get_user_details', new_callable=AsyncMock) as mock_get_details:
+
+        with patch.object(
+            self.service, "sso_get_user_details", new_callable=AsyncMock
+        ) as mock_get_details:
             # Act
-            response = await self.service.sso_get_new_access_token(self.sso_config, "revoked_refresh_token")
+            response = await self.service.sso_get_new_access_token(
+                self.sso_config, "revoked_refresh_token"
+            )
 
             # Assert
-            mock_get_details.assert_not_awaited() # User details should not be fetched
+            mock_get_details.assert_not_awaited()  # User details should not be fetched
             self.assertIsInstance(response, OAuthErrorResponse)
             self.assertEqual(response.status_code, 400)
             self.assertEqual(response.detail, "Token has been expired or revoked.")
@@ -269,12 +285,18 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
         respx.post("https://oauth2.googleapis.com/token").mock(
             return_value=httpx.Response(200, json={"access_token": "new_token"})
         )
-        
+
         # Arrange: Mock a failure in the subsequent user detail call
-        error_response = OAuthErrorResponse(status_code=401, detail="Invalid credentials")
-        with patch.object(self.service, 'sso_get_user_details', return_value=error_response):
+        error_response = OAuthErrorResponse(
+            status_code=401, detail="Invalid credentials"
+        )
+        with patch.object(
+            self.service, "sso_get_user_details", return_value=error_response
+        ):
             # Act
-            response = await self.service.sso_get_new_access_token(self.sso_config, "good_refresh_token")
+            response = await self.service.sso_get_new_access_token(
+                self.sso_config, "good_refresh_token"
+            )
 
             # Assert: The final response should be the error from the failed downstream call
             self.assertIs(response, error_response)
@@ -290,7 +312,9 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
         )
 
         # Act
-        response = await self.service.sso_get_new_access_token(self.sso_config, "some_refresh_token")
+        response = await self.service.sso_get_new_access_token(
+            self.sso_config, "some_refresh_token"
+        )
 
         # Assert: The decorator should catch the HTTPStatusError and format the response
         self.assertIsInstance(response, OAuthErrorResponse)

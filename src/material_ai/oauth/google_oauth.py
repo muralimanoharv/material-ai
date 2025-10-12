@@ -22,7 +22,7 @@ class GoogleOAuthService(IOAuthService):
             "scope": "openid email profile",
             "state": state,
             "access_type": "offline",
-            "prompt": "consent"
+            "prompt": "consent",
         }
 
         query_string = urllib.parse.urlencode(params)

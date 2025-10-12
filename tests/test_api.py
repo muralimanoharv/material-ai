@@ -447,10 +447,13 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
         self.mock_feedback_handler.assert_not_awaited()
 
     def test_api_without_access_token(self, mock_get_config):
- 
+
         invalid_payload = {"text": "This is missing the value."}
 
-        self.client.cookies = {"refresh_token": "test_refresh_token", "user_details": "test_user_details"}
+        self.client.cookies = {
+            "refresh_token": "test_refresh_token",
+            "user_details": "test_user_details",
+        }
 
         response = self.client.post("/feedback", json=invalid_payload)
 
@@ -462,7 +465,10 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
 
         invalid_payload = {"text": "This is missing the value."}
 
-        self.client.cookies = {"refresh_token": "test_refresh_token", "access_token": "test_user_details"}
+        self.client.cookies = {
+            "refresh_token": "test_refresh_token",
+            "access_token": "test_user_details",
+        }
 
         response = self.client.post("/feedback", json=invalid_payload)
 
@@ -480,8 +486,8 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
 
     def test_api_with_error_oauth_service(self, mock_get_config):
 
-        self.mock_oauth_service.sso_verify_access_token.return_value = OAuthErrorResponse(
-            status_code=401, detail="SomeErrorHasOccured"
+        self.mock_oauth_service.sso_verify_access_token.return_value = (
+            OAuthErrorResponse(status_code=401, detail="SomeErrorHasOccured")
         )
 
         response = self.client.get("/logout")
@@ -489,7 +495,9 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     @patch("material_ai.middleware.auth_middleware.verify_user_details")
-    def test_api_with_users_and_invalid_user(self, mock_verify_user_details, mock_get_config):
+    def test_api_with_users_and_invalid_user(
+        self, mock_verify_user_details, mock_get_config
+    ):
 
         mock_verify_user_details.return_value = None
         response = self.client.post("/run")
@@ -497,38 +505,38 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     @patch("material_ai.middleware.auth_middleware.verify_user_details")
-    def test_api_with_users_and_invalid_uid(self, mock_verify_user_details, mock_get_config):
+    def test_api_with_users_and_invalid_uid(
+        self, mock_verify_user_details, mock_get_config
+    ):
         user_detail = OAuthUserDetail(
-                sub="12345",
-                name="Fresh User",
-                given_name="Fresh User",
-                family_name="Fresh User",
-                picture="Test pitcure",
-                email="test@test.com",
-                email_verified=True,
-            )
+            sub="12345",
+            name="Fresh User",
+            given_name="Fresh User",
+            family_name="Fresh User",
+            picture="Test pitcure",
+            email="test@test.com",
+            email_verified=True,
+        )
         mock_verify_user_details.return_value = user_detail.model_dump_json()
-        response = self.client.post("/run", json={
-            "user_id": "test_user_1234"
-        })
+        response = self.client.post("/run", json={"user_id": "test_user_1234"})
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     @patch("material_ai.middleware.auth_middleware.verify_user_details")
-    def test_api_with_users_and_valid_uid(self, mock_verify_user_details, mock_get_config):
+    def test_api_with_users_and_valid_uid(
+        self, mock_verify_user_details, mock_get_config
+    ):
         user_detail = OAuthUserDetail(
-                sub="test_user_123",
-                name="Fresh User",
-                given_name="Fresh User",
-                family_name="Fresh User",
-                picture="Test pitcure",
-                email="test@test.com",
-                email_verified=True,
-            )
+            sub="test_user_123",
+            name="Fresh User",
+            given_name="Fresh User",
+            family_name="Fresh User",
+            picture="Test pitcure",
+            email="test@test.com",
+            email_verified=True,
+        )
         mock_verify_user_details.return_value = user_detail.model_dump_json()
-        response = self.client.post("/run", json={
-            "user_id": "test_user_123"
-        })
+        response = self.client.post("/run", json={"user_id": "test_user_123"})
 
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_CONTENT)
 
