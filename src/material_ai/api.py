@@ -33,7 +33,6 @@ START_TIME = datetime.now(timezone.utc)
     "/",
     summary="Serve Frontend Application",
     description="Serves the main index.html file, which is the entry point for the web UI.",
-    response_class=HTMLResponse,
     responses={
         200: {
             "description": "The main HTML page of the application.",
@@ -41,7 +40,6 @@ START_TIME = datetime.now(timezone.utc)
     },
 )
 def root():
-    # Serve static react content on /
     return FileResponse(
         path=os.path.join(STATIC_DIR, "index.html"), media_type="text/html"
     )
@@ -58,7 +56,6 @@ async def feedback(
     feedback_handler: FeedbackHandler = Depends(get_feedback_handler),
 ):
     _logger.info(f"SUCCESS: Feedback received from UI {feedback}")
-    # Here we call the handler passed by caller to handle the feedback logic as required.
     return await feedback_handler(feedback)
 
 
@@ -132,8 +129,6 @@ async def user(
     """
     Handles user detail retrieval based on session cookies.
     """
-    if refresh_token is None:
-        return Response(status_code=401)
 
     if user_details is not None:
         user_details = verify_user_details(user_details)
@@ -170,7 +165,6 @@ async def callback(
     stored_state = request.session.get("oauth_state")
     if not stored_state or stored_state != state:
         return Response(status_code=403)
-
     return await on_callback(code, oauth_service)
 
 

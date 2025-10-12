@@ -1,0 +1,4 @@
+[report]
+# Exclude files from the report
+omit =
+    src/material_ai/oauth/interface.py

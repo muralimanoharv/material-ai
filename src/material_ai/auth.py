@@ -14,6 +14,7 @@ from .oauth import OAuthErrorResponse, OAuthSuccessResponse, OAuthUserDetail
 from .oauth import IOAuthService
 
 _logger = logging.getLogger(__name__)
+FeedbackHandler: TypeAlias = Callable[[FeedbackRequest], Coroutine[Any, Any, Response]]
 
 
 def verify_user_details(user_details: str) -> str | None:
@@ -277,9 +278,6 @@ def get_oauth_service() -> IOAuthService:
 
 def get_ui_configuration() -> IOAuthService:
     raise NotImplementedError("This dependency must be overridden by the application.")
-
-
-FeedbackHandler: TypeAlias = Callable[[FeedbackRequest], Coroutine[Any, Any, Response]]
 
 
 def get_feedback_handler() -> FeedbackHandler:

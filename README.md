@@ -254,7 +254,7 @@ Go to https://aistudio.google.com/apikey to generate API KEY
 # src/material_ai/agents/greeting_agent/agent.py
 
 from google.adk.agents import Agent
-from src.material_ai.oauth import oauth_user_details_context
+from material_ai.oauth import oauth_user_details_context
 
 def say_hello():
     return {

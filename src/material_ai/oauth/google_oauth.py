@@ -1,10 +1,11 @@
 import secrets
 import httpx
 import logging
+import urllib.parse
 from .interface import IOAuthService
 from .schema import OAuthRedirectionResponse, OAuthUserDetail, OAuthSuccessResponse
 from .schema import OAuthErrorResponse, SSOConfig
-from .utli import handle_httpx_errors
+from .util import handle_httpx_errors
 
 _logger = logging.getLogger(__name__)
 
@@ -13,17 +14,22 @@ class GoogleOAuthService(IOAuthService):
 
     def sso_get_redirection_url(self, sso: SSOConfig) -> OAuthRedirectionResponse:
         state = secrets.token_urlsafe(16)
-        scope = "openid email profile"
-        redirection_url = (
-            f"https://accounts.google.com/o/oauth2/v2/auth?"
-            f"response_type=code&"
-            f"client_id={sso.client_id}&"
-            f"redirect_uri={sso.redirect_uri}&"
-            f"scope={scope}&"
-            f"state={state}&"
-            f"access_type=offline&"
-            f"prompt=consent"
-        )
+
+        params = {
+            "response_type": "code",
+            "client_id": sso.client_id,
+            "redirect_uri": sso.redirect_uri,
+            "scope": "openid email profile",
+            "state": state,
+            "access_type": "offline",
+            "prompt": "consent"
+        }
+
+        query_string = urllib.parse.urlencode(params)
+
+        base_url = "https://accounts.google.com/o/oauth2/v2/auth"
+        redirection_url = f"{base_url}?{query_string}"
+
         return OAuthRedirectionResponse(redirection_url=redirection_url, state=state)
 
     @handle_httpx_errors(url="https://oauth2.googleapis.com/token")
@@ -143,8 +149,6 @@ class GoogleOAuthService(IOAuthService):
             response = await client.post(url, params=params)
             response.raise_for_status()
 
-        if response.status_code != 200:
-            return None
         json_response = response.json()
 
         return json_response.get("sub")

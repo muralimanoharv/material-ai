@@ -24,7 +24,7 @@ run: build-ui
 	uv run uvicorn --host 0.0.0.0 --port 8080 --factory src.${PACKAGE_NAME}.app:get_app --reload
 
 debug: build-ui
-	uv run python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m uvicorn src.${PACKAGE_NAME}.main:get_app --host 0.0.0.0 --port 8080 --reload
+	uv run python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m uvicorn src.${PACKAGE_NAME}.app:get_app --host 0.0.0.0 --port 8080 --reload
 
 preview:
 	uv run --frozen uvicorn --host 0.0.0.0 --port 8080 --workers 1 --factory src.${PACKAGE_NAME}.app:get_app
@@ -38,11 +38,17 @@ teardown:
 	cd scripts && ./teardown.sh
 
 clean:
-	rm -rf build/ dist/ src/*.egg-info src/${PACKAGE_NAME}/ui/dist
+	rm -rf build/ dist/ src/*.egg-info src/${PACKAGE_NAME}/ui/dist htmlcov/ .coverage
 
 build: clean build-ui
 	python -m build
 
 push: build
 	twine upload dist/*
+
+test: clean
+	pytest
+
+test-cov: clean
+	pytest --cov=src/material_ai --cov-report=html
 
