@@ -25,4 +25,6 @@ jobs:
         run: black --check .
 
       - name: Run tests and check coverage
+        env:
+          CONFIG_PATH: config.ini
         run: pytest --cov=./ --cov-report=xml --cov-fail-under=90
