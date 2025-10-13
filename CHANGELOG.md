@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0](https://github.com/muralimanoharv/material-ai/compare/v1.0.7...v1.1.0) (2025-10-13)
+
+
+### Features
+
+* adding create_csv too to greeting agent ([5482083](https://github.com/muralimanoharv/material-ai/commit/5482083009613a2ed6e264b89530f6ac444d86ec))
+* remove material ai agent ([255c6a1](https://github.com/muralimanoharv/material-ai/commit/255c6a1df1e290409ff4a9bcf18e9bdae588e386))
+
+
+### Bug Fixes
+
+* fix logout issue ([1151cdd](https://github.com/muralimanoharv/material-ai/commit/1151cddbaa846822085a4cd3fb542b27eaa190d6))
+
 ## [1.0.7](https://github.com/muralimanoharv/material-ai/compare/v1.0.6...v1.0.7) (2025-10-10)
 
 
