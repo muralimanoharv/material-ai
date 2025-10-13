@@ -6,7 +6,8 @@ echo "🚀 STARTING: Deployment...."
 source ./setup.sh
 
 # This created service account will be used to exeute cloud run
-gcloud iam service-accounts create ${CRUN_SERVICE_ACCOUNT} --display-name "Cloudrun service account"
+gcloud iam service-accounts list --filter="email ~ ^${CRUN_SERVICE_ACCOUNT_NAME}@" --format="value(email)" | grep -q . || \
+gcloud iam service-accounts create ${CRUN_SERVICE_ACCOUNT_NAME} --display-name "Cloudrun service account"
 
 # Create Docker Repository
 echo "⚙️  STARTING: Creating Artifact Registry..."
