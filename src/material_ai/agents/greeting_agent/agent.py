@@ -4,6 +4,7 @@ from material_ai.oauth import oauth_user_details_context
 import csv
 import io
 
+
 def say_hello():
     return {"description": "Hi, what can I do for you today?"}
 
@@ -11,6 +12,7 @@ def say_hello():
 def who_am_i():
     user_details = oauth_user_details_context.get()
     return user_details
+
 
 def create_csv(tool_context=None) -> str:
     """
