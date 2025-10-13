@@ -1,8 +1,10 @@
+# .github/workflows/ci.yml
+
 name: Lint, Test and Check Coverage
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ main ] # Or your default branch
 
 jobs:
   build-and-test:
@@ -14,24 +16,15 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.11' # Specify your Python version
 
       - name: Install dependencies with uv
         run: |
-          # Install uv
           pip install uv
-          # Install dev dependencies from pyproject.toml
           uv pip install .[dev]
 
       - name: Check Code Formatting
         run: black --check .
 
-      - name: Run tests and generate coverage report
-        run: pytest --cov=./ --cov-report=xml
-
-      - name: Check Code Coverage
-        uses: code-kern-ai/py-cov-action@v4
-        with:
-          path: coverage.xml
-          min-coverage: 90
-          fail-below-min: true
+      - name: Run tests and check coverage
+        run: pytest --cov=./ --cov-report=xml --cov-fail-under=90
