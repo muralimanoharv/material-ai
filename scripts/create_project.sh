@@ -44,6 +44,7 @@ download_template_files() {
     wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/cloudbuild.sh
     wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/setup.sh
     wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/deploy_crun.sh
+    wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/teardown.sh
 }
 
 
@@ -114,6 +115,10 @@ preview:
 deploy:
 	@echo "Deploying to cloud run...🚀"
 	./scripts/deploy_crun.sh
+  
+teardown:
+	@echo "Deleting all resources"
+	cd scripts && ./teardown.sh
 
 format:
 	black .
