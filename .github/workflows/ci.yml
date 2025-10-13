@@ -1,0 +1,37 @@
+name: Lint, Test and Check Coverage
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies with uv
+        run: |
+          # Install uv
+          pip install uv
+          # Install dev dependencies from pyproject.toml
+          uv pip install .[dev]
+
+      - name: Check Code Formatting
+        run: black --check .
+
+      - name: Run tests and generate coverage report
+        run: pytest --cov=./ --cov-report=xml
+
+      - name: Check Code Coverage
+        uses: code-kern-ai/py-cov-action@v4
+        with:
+          path: coverage.xml
+          min-coverage: 90
+          fail-below-min: true
