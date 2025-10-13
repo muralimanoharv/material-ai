@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/muralimanoharv/material-ai/compare/v1.1.0...v1.1.1) (2025-10-13)
+
+
+### Bug Fixes
+
+* fixing create project script deploy command in make file ([35f55f6](https://github.com/muralimanoharv/material-ai/commit/35f55f632dcd9049950e6224982e63fdd95f5694))
+
 ## [1.1.0](https://github.com/muralimanoharv/material-ai/compare/v1.0.7...v1.1.0) (2025-10-13)
 
 
