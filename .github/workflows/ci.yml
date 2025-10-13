@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies with uv
         run: |
           pip install uv
-          uv pip install .[dev]
+          uv pip install --system .[dev]
 
       - name: Check Code Formatting
         run: black --check .
