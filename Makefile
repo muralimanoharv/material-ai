@@ -38,7 +38,7 @@ teardown:
 	cd scripts && ./teardown.sh
 
 clean:
-	rm -rf build/ dist/ src/*.egg-info src/${PACKAGE_NAME}/ui/dist htmlcov/ .coverage
+	rm -rf build/ dist/ src/*.egg-info src/${PACKAGE_NAME}/ui/dist htmlcov/ .coverage /build
 
 build: clean build-ui
 	python -m build
