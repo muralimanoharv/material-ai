@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.2](https://github.com/muralimanoharv/material-ai/compare/v1.1.1...v1.1.2) (2025-10-14)
+
+
+### Bug Fixes
+
+* fix a issue where when user hash is invalid app throws error ([8585574](https://github.com/muralimanoharv/material-ai/commit/858557459f8c7fc915c47fcad53605cb1a0d7df7))
+* fix a issue where when user hash is invalid app throws error ([8cefee3](https://github.com/muralimanoharv/material-ai/commit/8cefee374848e4547b04c95cbb6aa41a7f84994b))
+
 ## [1.1.1](https://github.com/muralimanoharv/material-ai/compare/v1.1.0...v1.1.1) (2025-10-13)
 
 
