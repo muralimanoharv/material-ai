@@ -3,7 +3,8 @@ import logging
 import psutil
 from datetime import datetime, timezone
 from fastapi import APIRouter, Response, Request, Cookie, status, Depends
-from fastapi.responses import FileResponse, RedirectResponse, HTMLResponse
+from fastapi.responses import FileResponse, RedirectResponse
+from .exec import UnauthorizedException
 from .request import FeedbackRequest
 from .app import STATIC_DIR
 from . import __version__, __app_name__
@@ -104,6 +105,9 @@ async def login(
     # Generate a secure state token
     state, redirect_url = get_redirection_url(oauth_service)
     request.session["oauth_state"] = state
+    _logger.debug(
+        f"Redirecting to OAuth provider with oauth_state token with value: {state}"
+    )
     return RedirectResponse(url=redirect_url)
 
 
@@ -132,9 +136,11 @@ async def user(
     """
 
     if user_details is not None:
-        user_details = verify_user_details(user_details)
+        verified_user_details = verify_user_details(user_details)
+        if verified_user_details is None:
+            raise UnauthorizedException()
         return UserSuccessResponse(
-            user_response=OAuthUserDetail(**json.loads(user_details))
+            user_response=OAuthUserDetail(**json.loads(verified_user_details))
         )
 
     return await get_user_details(response, refresh_token, oauth_service)
@@ -165,6 +171,9 @@ async def callback(
     """
     stored_state = request.session.get("oauth_state")
     if not stored_state or stored_state != state:
+        _logger.error(
+            f"ERROR: Session missmatch stored state: {stored_state}, not same as state: {state}"
+        )
         return Response(status_code=403)
     return await on_callback(code, oauth_service)
 
