@@ -40,7 +40,9 @@ START_TIME = datetime.now(timezone.utc)
         }
     },
 )
-def root():
+def root(request: Request):
+    if "session_initialized" not in request.session:
+        request.session["session_initialized"] = True
     return FileResponse(
         path=os.path.join(STATIC_DIR, "index.html"), media_type="text/html"
     )
