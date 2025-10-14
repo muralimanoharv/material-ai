@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/muralimanoharv/material-ai/compare/v1.1.2...v1.1.3) (2025-10-14)
+
+
+### Bug Fixes
+
+* fix oauth state token miss match issue ([06e3de6](https://github.com/muralimanoharv/material-ai/commit/06e3de66f8c5cced0c3cfe2b422e03faa70c6abb))
+
 ## [1.1.2](https://github.com/muralimanoharv/material-ai/compare/v1.1.1...v1.1.2) (2025-10-14)
 
 
