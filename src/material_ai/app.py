@@ -130,16 +130,12 @@ def _setup_middleware(app: FastAPI, oauth_service: IOAuthService):
             required by the AuthMiddleware.
     """
     config = get_config()
-    app.add_middleware(AuthMiddleware, oauth_service=oauth_service)
-    app.add_middleware(
-        AddXAppHeaderMiddleware,
-        app_name=__app_name__,
-        app_version=__version__,
+    _logger.debug(
+        f"DEBUG: Creating session with secret_key: {config.sso.session_secret_key}"
     )
     app.add_middleware(SessionMiddleware, secret_key=config.sso.session_secret_key)
-
     if config.general.debug:
-        _logger.debug("App running in DEBUG mode")
+        _logger.debug("DEBUG: App running in DEBUG mode")
 
         # Apply cors middleware in debug mode
         app.add_middleware(
@@ -149,6 +145,12 @@ def _setup_middleware(app: FastAPI, oauth_service: IOAuthService):
             allow_methods=["*"],
             allow_headers=["*"],
         )
+    app.add_middleware(
+        AddXAppHeaderMiddleware,
+        app_name=__app_name__,
+        app_version=__version__,
+    )
+    app.add_middleware(AuthMiddleware, oauth_service=oauth_service)
 
 
 def _setup_app(

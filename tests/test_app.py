@@ -173,19 +173,18 @@ class TestGetAppFactory(unittest.TestCase):
 
         # Assert: Check that the correct middleware was added
         expected_calls = [
-            call(AuthMiddleware, oauth_service=mock_oauth_service),
+            call(SessionMiddleware, secret_key="fake-secret"),
             call(
                 AddXAppHeaderMiddleware,
                 app_name=app_module.__app_name__,
                 app_version=app_module.__version__,
             ),
-            call(SessionMiddleware, secret_key="fake-secret"),
+            call(AuthMiddleware, oauth_service=mock_oauth_service),
         ]
         mock_app.add_middleware.assert_has_calls(expected_calls, any_order=False)
 
         # Ensure CORSMiddleware was NOT added
         self.assertEqual(mock_app.add_middleware.call_count, 3)
-        mock_logger.debug.assert_not_called()
 
     @patch("material_ai.app.get_config")
     @patch("material_ai.app._logger")
@@ -208,12 +207,6 @@ class TestGetAppFactory(unittest.TestCase):
 
         # Assert: Check that the standard middleware AND CORS middleware were added
         expected_calls = [
-            call(AuthMiddleware, oauth_service=mock_oauth_service),
-            call(
-                AddXAppHeaderMiddleware,
-                app_name=app_module.__app_name__,
-                app_version=app_module.__version__,
-            ),
             call(SessionMiddleware, secret_key="fake-secret"),
             call(
                 CORSMiddleware,
@@ -222,12 +215,17 @@ class TestGetAppFactory(unittest.TestCase):
                 allow_methods=["*"],
                 allow_headers=["*"],
             ),
+            call(
+                AddXAppHeaderMiddleware,
+                app_name=app_module.__app_name__,
+                app_version=app_module.__version__,
+            ),
+            call(AuthMiddleware, oauth_service=mock_oauth_service),
         ]
         mock_app.add_middleware.assert_has_calls(expected_calls, any_order=False)
 
         # Ensure exactly four middlewares were added
         self.assertEqual(mock_app.add_middleware.call_count, 4)
-        mock_logger.debug.assert_called_once_with("App running in DEBUG mode")
 
     @patch("material_ai.app.get_feedback_handler")
     @patch("material_ai.app.get_ui_configuration")

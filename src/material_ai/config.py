@@ -54,20 +54,20 @@ def get_config() -> Config:
         if _config_instance is None:
             config_path_from_env = os.environ.get("CONFIG_PATH")
             if not config_path_from_env:
-                msg = "Environment variable CONFIG_PATH not set"
+                msg = "ERROR: Environment variable CONFIG_PATH not set"
                 _logger.error(msg)
                 raise ConfigError(msg)
 
             config_path = pathlib.Path(config_path_from_env)
             if not config_path.exists() or not config_path.is_file():
-                msg = f"Config file not found at {config_path}"
+                msg = f"ERROR: Config file not found at {config_path}"
                 _logger.error(msg)
                 raise ConfigError(msg)
 
             try:
                 _config_instance = _configure(config_path)
             except Exception as e:
-                msg = f"Error loading configuration: {e}"
+                msg = f"ERROR: Error loading configuration: {e}"
                 _logger.error(msg, exc_info=e)
                 raise ConfigError(msg) from e
     return _config_instance
@@ -145,7 +145,7 @@ def get_config_value(
 
     # Always use env var first
     if env_value is not None:
-        _logger.debug(f"Using environment variable {env_var_name}")
+        _logger.debug(f"DEBUG: Using environment variable {env_var_name}")
         return env_value
 
     if default is _sentinel:

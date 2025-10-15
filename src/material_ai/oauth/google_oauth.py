@@ -45,7 +45,7 @@ class GoogleOAuthService(IOAuthService):
             "redirect_uri": sso.redirect_uri,
             "grant_type": "authorization_code",
         }
-        _logger.debug(f"Requesting access token from {url}")
+        _logger.debug(f"DEBUG: Requesting access token from {url}")
 
         async with httpx.AsyncClient() as client:
             response = await client.post(url, data=token_payload)

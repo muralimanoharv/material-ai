@@ -58,7 +58,7 @@ async def feedback(
     feedback: FeedbackRequest,
     feedback_handler: FeedbackHandler = Depends(get_feedback_handler),
 ):
-    _logger.info(f"SUCCESS: Feedback received from UI {feedback}")
+    _logger.info(f"INFO: SUCCESS: Feedback received from UI {feedback}")
     response = await feedback_handler(feedback)
     return response
 
@@ -109,7 +109,7 @@ async def login(
     state, redirect_url = get_redirection_url(oauth_service)
     request.session["oauth_state"] = state
     _logger.debug(
-        f"Redirecting to OAuth provider with oauth_state token with value: {state}"
+        f"DEBUG: Redirecting to OAuth provider with oauth_state token with value: {state}"
     )
     return RedirectResponse(url=redirect_url)
 
@@ -174,6 +174,7 @@ async def callback(
     """
     stored_state = request.session.get("oauth_state")
     if not stored_state or stored_state != state:
+        _logger.debug(f"DEBUG: session {request.session}")
         _logger.error(
             f"ERROR: Session missmatch stored state: {stored_state}, not same as state: {state}"
         )
