@@ -28,6 +28,7 @@ export default function PromptInput() {
     setFiles,
     cancelApi,
     user,
+    config,
   } = useContext(AppContext)
   const theme = useTheme()
   const [fullScreen, setFullScreen] = useState(false)
@@ -131,9 +132,11 @@ export default function PromptInput() {
                 },
               },
             }}
-            placeholder={user ? 'Ask Gemini' : 'Sign in to ask gemini'}
+            placeholder={
+              user ? `Ask ${config.title}` : `Sign in to ask ${config.title}`
+            }
             inputProps={{
-              'aria-label': 'Ask Gemini',
+              'aria-label': `Ask ${config.title}`,
               style: {
                 height: fullScreen ? '500px' : undefined,
               },
@@ -206,7 +209,7 @@ export default function PromptInput() {
         sx={{ textAlign: 'center', marginTop: '16px', marginBottom: '16px' }}
       >
         <Typography variant="h6">
-          Gemini can make mistakes, so double-check it
+          {config.title} can make mistakes, so double-check it
         </Typography>
       </Box>
     </Box>

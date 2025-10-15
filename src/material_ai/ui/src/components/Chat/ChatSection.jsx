@@ -53,7 +53,7 @@ function ChatItemSection(props) {
       await send_feedback(context)(dto)
       setFeedback(dto)
       context.setSnack(
-        'Thank you! Your feedback helps make Gemini better for everyone',
+        `Thank you! Your feedback helps make ${config.title} better for everyone`,
       )
     } catch (e) {
       if (e.name == UNAUTHORIZED) return
@@ -68,7 +68,7 @@ function ChatItemSection(props) {
       await send_feedback(context)(dto)
       setFeedback(dto)
       setNegativeFeedbackToggle(false)
-      context.setSnack('Thank you for helping improve Gemini')
+      context.setSnack(`Thank you for helping improve ${config.title}`)
     } catch (e) {
       if (e.name == UNAUTHORIZED) return
       console.error(e)

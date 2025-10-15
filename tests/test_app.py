@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, MagicMock, call
+from unittest.mock import patch, MagicMock, call, AsyncMock
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 import material_ai.app as app_module
@@ -275,15 +275,9 @@ class TestGetAppFactory(unittest.TestCase):
         )
 
     @patch("material_ai.app.Response")
-    @patch("material_ai.app.get_feedback_handler")
-    @patch("material_ai.app.get_ui_configuration")
-    @patch("material_ai.app.get_oauth_service")
-    @patch("material_ai.app.get_ui_config")
-    def test_overrides_with_none_feedback_handler(
+    @patch("material_ai.app.get_feedback_handler", new_callable=AsyncMock)
+    async def test_overrides_with_none_feedback_handler(
         self,
-        mock_get_ui_config,
-        mock_get_oauth,
-        mock_get_ui,
         mock_get_feedback,
         mock_response,
     ):
@@ -309,7 +303,7 @@ class TestGetAppFactory(unittest.TestCase):
         override_func = mock_app.dependency_overrides[mock_get_feedback]
 
         # Call the override function to execute the lambda
-        lambda_handler = override_func()
+        lambda_handler = await override_func()
 
         lambda_handler(None)
 

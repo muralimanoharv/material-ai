@@ -53,7 +53,7 @@ export default function ChatNegativeFeebackSelection() {
         </IconButton>
       </Box>
       <Typography variant="h4">
-        Your feedback helps make Gemini better for everyone.
+        Your feedback helps make {config.title} better for everyone.
       </Typography>
       <Box>
         <MaterialList>

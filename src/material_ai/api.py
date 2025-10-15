@@ -59,7 +59,8 @@ async def feedback(
     feedback_handler: FeedbackHandler = Depends(get_feedback_handler),
 ):
     _logger.info(f"SUCCESS: Feedback received from UI {feedback}")
-    return await feedback_handler(feedback)
+    response = await feedback_handler(feedback)
+    return response
 
 
 @router.get(
