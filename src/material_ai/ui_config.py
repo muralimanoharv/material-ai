@@ -122,7 +122,7 @@ def get_ui_config(ui_config_yaml) -> UIConfig:
                 return _config_instance
             config_path = pathlib.Path(ui_config_yaml)
             if not config_path.exists() or not config_path.is_file():
-                msg = f"Config file not found at {config_path}"
+                msg = f"WARNING: Config file not found at {config_path}"
                 _logger.warning(msg)
                 _config_instance = DEFAULT_CONFIG
                 return _config_instance
@@ -130,7 +130,7 @@ def get_ui_config(ui_config_yaml) -> UIConfig:
                 with open(config_path, "r") as file:
                     _config_instance = UIConfig(**yaml.safe_load(file))
             except Exception as e:
-                msg = f"Error loading ui configuration: {e}"
+                msg = f"WARNING: Error loading ui configuration: {e}"
                 _logger.warning(msg, exc_info=e)
                 _config_instance = DEFAULT_CONFIG
     return _config_instance

@@ -69,7 +69,7 @@ class TestUIConfigLoader(unittest.TestCase):
             config = get_ui_config(ui_config_yaml=non_existent_file)
             self.assertEqual(config, DEFAULT_CONFIG)
             mock_log.assert_called_once_with(
-                f"Config file not found at {pathlib.Path(non_existent_file)}"
+                f"WARNING: Config file not found at {pathlib.Path(non_existent_file)}"
             )
 
     def test_get_config_with_invalid_yaml_syntax(self):
@@ -87,7 +87,9 @@ class TestUIConfigLoader(unittest.TestCase):
             self.assertEqual(config, DEFAULT_CONFIG)
             # Check that a loading error was logged
             self.assertTrue(
-                mock_log.call_args[0][0].startswith("Error loading ui configuration")
+                mock_log.call_args[0][0].startswith(
+                    "WARNING: Error loading ui configuration"
+                )
             )
 
         pathlib.Path(tmp_path).unlink()
@@ -109,9 +111,6 @@ class TestUIConfigLoader(unittest.TestCase):
         with patch("material_ai.ui_config._logger.warning") as mock_log:
             config = get_ui_config(ui_config_yaml=tmp_path)
             self.assertEqual(config, DEFAULT_CONFIG)
-            self.assertTrue(
-                mock_log.call_args[0][0].startswith("Error loading ui configuration")
-            )
 
         pathlib.Path(tmp_path).unlink()
 

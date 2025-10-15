@@ -42,10 +42,12 @@ def verify_user_details(user_details: str) -> str | None:
     ).hexdigest()
 
     if not hmac.compare_digest(calculated, signature):
-        _logger.warning(f"Invalid user id signature: {calculated} != {signature}")
+        _logger.warning(
+            f"WARNING: Invalid user id signature: {calculated} != {signature}"
+        )
         return None
 
-    _logger.debug(f"Verified user details: {user_details}")
+    _logger.debug(f"DEBUG: Verified user details: {user_details}")
 
     return base64.b64decode(user_details_bytes).decode("utf-8")
 
