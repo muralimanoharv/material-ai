@@ -62,6 +62,10 @@ def _setup_logging(config: Config):
     )
 
 
+async def default_feedback_handler(_):
+    return Response(status_code=200)
+
+
 def _setup_overrides(
     app: FastAPI,
     oauth_service: IOAuthService,
@@ -100,7 +104,7 @@ def _setup_overrides(
 
     def override_get_feedback_handler() -> FeedbackHandler:
         if feedback_handler == None:
-            return lambda _: Response(status_code=200)
+            return default_feedback_handler
         return feedback_handler
 
     app.dependency_overrides[get_oauth_service] = override_get_oauth_service
