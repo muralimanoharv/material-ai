@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.6](https://github.com/muralimanoharv/material-ai/compare/v1.1.5...v1.1.6) (2025-10-15)
+
+
+### Bug Fixes
+
+* remove unnecessary debug logs ([c92faca](https://github.com/muralimanoharv/material-ai/commit/c92faca5536321c7a075caab8d341acb2561b91d))
+* remove unnecessary debug logs ([31a9f3d](https://github.com/muralimanoharv/material-ai/commit/31a9f3de3df2e428717db2d7a559ad4fa0447cc3))
+
 ## [1.1.5](https://github.com/muralimanoharv/material-ai/compare/v1.1.4...v1.1.5) (2025-10-15)
 
 
