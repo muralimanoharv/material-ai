@@ -174,7 +174,6 @@ async def callback(
     """
     stored_state = request.session.get("oauth_state")
     if not stored_state or stored_state != state:
-        _logger.debug(f"DEBUG: session {request.session}")
         _logger.error(
             f"ERROR: Session missmatch stored state: {stored_state}, not same as state: {state}"
         )

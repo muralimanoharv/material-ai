@@ -130,9 +130,6 @@ def _setup_middleware(app: FastAPI, oauth_service: IOAuthService):
             required by the AuthMiddleware.
     """
     config = get_config()
-    _logger.debug(
-        f"DEBUG: Creating session with secret_key: {config.sso.session_secret_key}"
-    )
     app.add_middleware(SessionMiddleware, secret_key=config.sso.session_secret_key)
     if config.general.debug:
         _logger.debug("DEBUG: App running in DEBUG mode")
