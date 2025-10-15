@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.5](https://github.com/muralimanoharv/material-ai/compare/v1.1.4...v1.1.5) (2025-10-15)
+
+
+### Bug Fixes
+
+* fix forbidden state issue on oauth login ([13996f1](https://github.com/muralimanoharv/material-ai/commit/13996f11584feb339c61b7338c4b8c26c1424763))
+* fix forbidden state issue on oauth login ([59f1708](https://github.com/muralimanoharv/material-ai/commit/59f1708d08a382d6f760118ec19c8ba3474f72f9))
+
 ## [1.1.4](https://github.com/muralimanoharv/material-ai/compare/v1.1.3...v1.1.4) (2025-10-15)
 
 
