@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.4](https://github.com/muralimanoharv/material-ai/compare/v1.1.3...v1.1.4) (2025-10-15)
+
+
+### Bug Fixes
+
+* fix feedback issue & ui placeholders where we see Gemini ([497829a](https://github.com/muralimanoharv/material-ai/commit/497829af36aecdeaf20d4845454d6cee57607b5b))
+* fix feedback issue & ui placeholders where we see Gemini ([4ede96d](https://github.com/muralimanoharv/material-ai/commit/4ede96d1337fc1a1bdf08cde3fa4ed49887ae91e))
+
 ## [1.1.3](https://github.com/muralimanoharv/material-ai/compare/v1.1.2...v1.1.3) (2025-10-14)
 
 
