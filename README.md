@@ -1,8 +1,5 @@
 # Material AI
 *You build the agents. We'll handle the rest.*
-
-Of course. Here is a README file based on your request, with important security improvements to the command.
-
 -----
 
 ## Material-AI Project Generator 🚀
