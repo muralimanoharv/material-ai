@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.7](https://github.com/muralimanoharv/material-ai/compare/v1.1.6...v1.1.7) (2025-10-16)
+
+
+### Documentation
+
+* Update README.md ([272f09c](https://github.com/muralimanoharv/material-ai/commit/272f09c70a67cf0829383bc98bde6cf2965153d6))
+
 ## [1.1.6](https://github.com/muralimanoharv/material-ai/compare/v1.1.5...v1.1.6) (2025-10-15)
 
 
