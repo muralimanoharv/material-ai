@@ -1,6 +1,5 @@
 # Material AI
 *You build the agents. We'll handle the rest.*
------
 
 ## Material-AI Project Generator 🚀
 
