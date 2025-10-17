@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.7](https://github.com/muralimanoharv/material-ai/compare/v1.1.6...v1.1.7) (2025-10-17)
+
+
+### Bug Fixes
+
+* fix ui feedback snack error ([f02ff17](https://github.com/muralimanoharv/material-ai/commit/f02ff17526a29741e4f57417c2c07466da169af5))
+* fix ui feedback snack error ([288e52c](https://github.com/muralimanoharv/material-ai/commit/288e52cc3fb30c9aab7e194ada1e914f55f2527d))
+
+
+### Documentation
+
+* Update README.md ([6e65add](https://github.com/muralimanoharv/material-ai/commit/6e65add0ca3a19f54e0eaea47c8d3e3a8920412b))
+* Update README.md ([272f09c](https://github.com/muralimanoharv/material-ai/commit/272f09c70a67cf0829383bc98bde6cf2965153d6))
+
 ## [1.1.6](https://github.com/muralimanoharv/material-ai/compare/v1.1.5...v1.1.6) (2025-10-15)
 
 
