@@ -117,7 +117,7 @@ const FileSelectMenuBody = menuNeedsLogin((props) => {
     <Box sx={{ width: 200 }}>
       {FILE_OPTIONS.map(({ title, icon: Icon }) => {
         return (
-          <MenuItem onClick={() => props.uploadFile()} key={title}>
+          <MenuItem onClick={() => props.onFileUpload()} key={title}>
             <ListItemIcon>{Icon}</ListItemIcon>
             <Typography variant="h5">{title}</Typography>
           </MenuItem>

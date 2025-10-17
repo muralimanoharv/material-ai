@@ -69,7 +69,7 @@ function App() {
 
   const createParts = ({ prompt, files }) => {
     const parts = [{ text: prompt }]
-    if (files?.length) return
+    if (!files?.length) return parts
 
     const fileParts = files.map((file) => ({
       inline_data: {
