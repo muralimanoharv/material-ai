@@ -43,6 +43,7 @@ export default function ChatSection() {
 
 function ChatItemSection(props) {
   const context = useContext(AppContext)
+  const { config } = context
   const [feedback, setFeedback] = useState()
   const [negativeFeedbackToggle, setNegativeFeedbackToggle] = useState(false)
   const chat = props.chat

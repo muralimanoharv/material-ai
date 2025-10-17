@@ -453,7 +453,10 @@ An agent is a Python file that defines an \`Agent\` instance and the tools it ca
 # src/agents/${PROJECT_NAME_LOWERCASE}/agent.py
 
 from google.adk.agents import Agent
+from google.genai.types import Part, Blob
 from material_ai.oauth import oauth_user_details_context
+import csv
+import io
 
 def say_hello():
     """Greets the user."""
@@ -466,12 +469,45 @@ def who_am_i():
         return {"error": "User is not logged in."}
     return user_details.model_dump()
 
+def create_csv(tool_context=None) -> str:
+    """
+    Creates sample CSV data and return the file
+    """
+    if tool_context is None:
+        return {
+            "status": "error",
+            "message": "Tool context is missing, cannot save artifact.",
+        }
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Write header and data rows
+    writer.writerow(["ID", "Name", "Role"])
+    writer.writerow(["1", "John Doe", "Engineer"])
+    writer.writerow(["2", "Jane Smith", "Designer"])
+
+    csv_content = output.getvalue()
+    content_bytes = csv_content.encode("utf-8")
+    output.close()
+    artifact_part = Part(inline_data=Blob(data=content_bytes, mime_type="text/csv"))
+    filename = "my-csv.csv"
+    version = tool_context.save_artifact(filename=filename, artifact=artifact_part)
+    return {
+        "status": "success",
+        "message": f"File '{filename}' (version {version}) has been created and is now available for download.",
+    }
+
+
 # The framework will discover this 'root_agent' instance
 root_agent = Agent(
     name="${PROJECT_NAME_LOWERCASE}",
-    model="gemini-1.5-flash",
-    description="A helpful agent that can greet users and identify them.",
-    tools=[say_hello, who_am_i],
+    model="gemini-2.0-flash",
+    description="An agent that can greet users.",
+    instruction="""
+    Use 'say_hello' tool to greet user, If user asks about himself use 'who_am_i' tool,
+    If the users ask about a csv file use 'create_csv' tool
+    """,
+    tools=[say_hello, who_am_i, create_csv],
 )
 \`\`\`
 
