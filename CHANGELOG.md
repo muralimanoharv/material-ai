@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.8](https://github.com/muralimanoharv/material-ai/compare/v1.1.7...v1.1.8) (2025-10-17)
+
+
+### Bug Fixes
+
+* fix file upload issue in ui ([5b404b4](https://github.com/muralimanoharv/material-ai/commit/5b404b4ffcc360b4193147ae938b0a7d606a5c20))
+* fix file upload issue in ui ([4ef6db2](https://github.com/muralimanoharv/material-ai/commit/4ef6db25bc0be9038711dd8f0cdaedbcb020687b))
+
 ## [1.1.7](https://github.com/muralimanoharv/material-ai/compare/v1.1.6...v1.1.7) (2025-10-17)
 
 
