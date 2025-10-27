@@ -224,10 +224,10 @@ def get_app(
         if _app_instance is None:
             config = get_config()
             app = get_fast_api_app(
-                agent_dir=agent_dir,
+                agents_dir=agent_dir,
                 web=False,
                 allow_origins=ALLOWED_ORIGINS if config.general.debug else [],
-                session_db_url=config.adk.session_db_url,
+                session_service_uri=config.adk.session_db_url,
             )
             _setup_app(app, oauth_service, ui_config_yaml, feedback_handler)
             _app_instance = app
