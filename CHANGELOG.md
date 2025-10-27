@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.9](https://github.com/muralimanoharv/material-ai/compare/v1.1.8...v1.1.9) (2025-10-27)
+
+
+### Bug Fixes
+
+* upgrading adk version to support latest adk version ([c829261](https://github.com/muralimanoharv/material-ai/commit/c829261ea2ac476fe34cf9f1b52c06ccdbc312d3))
+* upgrafing adk version to support latest adk version ([b8a047c](https://github.com/muralimanoharv/material-ai/commit/b8a047c695b1f1cc620c9e9bd8397da2c7e94b12))
+
 ## [1.1.8](https://github.com/muralimanoharv/material-ai/compare/v1.1.7...v1.1.8) (2025-10-17)
 
 
