@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.10](https://github.com/muralimanoharv/material-ai/compare/v1.1.9...v1.1.10) (2025-11-04)
+
+
+### Bug Fixes
+
+* fix ui issue parts not found ([ad8bb5e](https://github.com/muralimanoharv/material-ai/commit/ad8bb5eaf8c695dab8757e2f6b4c595223a3dbdd))
+* fix ui issue parts not found ([2ce1c3c](https://github.com/muralimanoharv/material-ai/commit/2ce1c3c08bfe0662480cbb78fb20306ab661bede))
+
 ## [1.1.9](https://github.com/muralimanoharv/material-ai/compare/v1.1.8...v1.1.9) (2025-10-27)
 
 
