@@ -218,7 +218,7 @@ function App() {
       let prevPrompt = ''
       if (sessionDto && sessionDto.events) {
         for (let event of sessionDto.events) {
-          if (event.content.role == 'user') {
+          if (event?.content?.role == 'user') {
             prevPrompt = event?.content?.parts[0]?.text ?? prevPrompt
           }
           history.push({
@@ -237,6 +237,7 @@ function App() {
     } catch (e) {
       if (e.name == UNAUTHORIZED) return
       if (e.name == NOTFOUND) {
+        setSnack(config.errorMessage)
         on_new_chat()
         return
       }

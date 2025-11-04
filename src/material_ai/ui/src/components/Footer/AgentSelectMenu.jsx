@@ -3,6 +3,7 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { Box, Button, Tooltip, Typography } from '@mui/material'
 import { AppContext } from '../../context'
+import { fetch_sessions } from '../../api'
 import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { menuNeedsLogin } from '../../hoc'
@@ -81,14 +82,18 @@ const AgentSelectMenuBody = menuNeedsLogin((props) => {
 }, 'Sign in to select agents')
 
 function AgentItem({ agent }) {
-  const { selectedAgent, setSelectedAgent, on_new_chat } =
-    React.useContext(AppContext)
+  const context = React.useContext(AppContext)
+  const { selectedAgent, setSelectedAgent, on_new_chat, setSessions } = context
   return (
     <MenuItem
       key={agent}
-      onClick={() => {
+      onClick={async () => {
         setSelectedAgent(agent)
         on_new_chat()
+        const sessions = await fetch_sessions(context)({
+          selectedAgent: agent,
+        })
+        setSessions([...sessions].reverse())
       }}
     >
       <Box

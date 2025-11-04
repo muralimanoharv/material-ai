@@ -82,8 +82,9 @@ function ChatItemSection(props) {
     let fileNames = []
     let fileData = []
     let filesList = []
+    let parts = chat?.parts ?? []
 
-    for (let part of chat.parts) {
+    for (let part of parts) {
       if (part.text) {
         let text = part.text
         if (isValidJson(text)) {

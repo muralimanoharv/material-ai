@@ -63,3 +63,8 @@ body {
   animation: fadeIn 1s;
   animation-fill-mode: forwards;
 }
+
+.chat-item-box-model .react-markdown > pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
