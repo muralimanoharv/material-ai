@@ -86,13 +86,19 @@ function SessionItem(props) {
   const fetchSession = async () => {
     try {
       const dto = await fetch_session(context)({ session_id: session.id })
-      const events = dto.events.filter((event) => event.content.role == 'user')
+      const events = dto.events.filter(
+        (event) => event?.content?.role == 'user',
+      )
       const firstEvent = events[0]
-      const parts = firstEvent.content.parts.filter((part) => part['text'])
+      const parts = firstEvent?.content?.parts.filter((part) => part['text'])
       const firstPart = parts[0]
       setTitle(firstPart.text)
     } catch (e) {
       if (e.name == UNAUTHORIZED) return
+      if (e.name == NOTFOUND) {
+        context.setSnack(context.config.errorMessage)
+        return
+      }
       console.debug(`Unable to parse title for session ${session.id}`)
       console.debug(e)
       setTitle(session.id)
