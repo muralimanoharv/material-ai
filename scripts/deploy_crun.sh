@@ -3,7 +3,41 @@ set -e
 ENVIRONMENT=$1
 echo "🚀 STARTING: Deployment...."
 
+gcloud auth login
+
 source ./setup.sh
+
+echo "⚙️  STARTING: Enabling required API's..."
+gcloud services enable \
+    cloudbuild.googleapis.com \
+    artifactregistry.googleapis.com \
+    run.googleapis.com
+
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+    --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" \
+    --role="roles/artifactregistry.writer"
+
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+    --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" \
+    --role="roles/storage.objectViewer"
+
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+    --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+    --role="roles/storage.objectViewer"
+
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+    --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+    --role="roles/logging.logWriter"
+
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+    --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+    --role="roles/artifactregistry.writer"
+
+echo -n "Waiting for 30 seconds for propagation..."
+for i in $(seq 1 30); do
+    echo -n "."
+    sleep 1
+done
 
 # This created service account will be used to exeute cloud run
 gcloud iam service-accounts list --filter="email ~ ^${CRUN_SERVICE_ACCOUNT_NAME}@" --format="value(email)" | grep -q . || \
