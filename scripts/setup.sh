@@ -18,6 +18,7 @@ fi
 export PROJECT_ID=$PROJECT_ID
 echo "✅ Using Project ID: $PROJECT_ID"
 
+gcloud config set project $PROJECT_ID
 
 export PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
 echo "#️⃣  Using Project Number: $PROJECT_NUMBER"

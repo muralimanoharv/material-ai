@@ -18,8 +18,9 @@ export default function ChatItem(props) {
   const text = props.part?.text ?? ''
   let isUser = () => props.role == 'user'
   let isLargeText = () => text.length > 116
-  let isFunctionCall = () =>
-    props.part.functionResponse || props.part.functionCall
+  let isFunctionCall = () => {
+    return props?.part?.functionResponse || props?.part?.functionCall
+  }
   let justifyContent = isUser() && !isFunctionCall() ? 'flex-end' : 'flex-start'
   let alignSelf = isUser() && !isFunctionCall() ? 'flex-end' : 'flex-start'
   let backgroundColor =
@@ -130,14 +131,12 @@ export default function ChatItem(props) {
         >
           {!isUser() && !isFunctionCall() ? <img src="/gemini.svg" /> : null}
           {content}
-          {isUser() &&
-            isLargeText() &&
-            !isFunctionCall()(
-              <UserTextToggleButton
-                textExpand={textExpand}
-                textExpandToggle={textExpandToggle}
-              />,
-            )}
+          {isUser() && isLargeText() && !isFunctionCall() && (
+            <UserTextToggleButton
+              textExpand={textExpand}
+              textExpandToggle={textExpandToggle}
+            />
+          )}
         </Box>
       </Box>
       {!isUser() && !isFunctionCall() ? <ModelButtons {...props} /> : null}
