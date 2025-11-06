@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.11](https://github.com/muralimanoharv/material-ai/compare/v1.1.10...v1.1.11) (2025-11-06)
+
+
+### Bug Fixes
+
+* fix ui issue expand text issue ([60f3f91](https://github.com/muralimanoharv/material-ai/commit/60f3f915efd62ba9279281c32cd265be31bc9caa))
+* fix ui issue expand text issue ([ab1d408](https://github.com/muralimanoharv/material-ai/commit/ab1d40842ffa7aebc856d1bd37246556c85c553e))
+
 ## [1.1.10](https://github.com/muralimanoharv/material-ai/compare/v1.1.9...v1.1.10) (2025-11-04)
 
 
