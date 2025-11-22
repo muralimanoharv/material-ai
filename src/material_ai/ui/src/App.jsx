@@ -5,7 +5,7 @@ import { AppContext, AppConfigContext } from './context.jsx'
 import {
   create_session,
   send_message,
-  fetch_sessions,
+  fetch_history,
   fetch_session,
   fetch_agents,
   fetch_user,
@@ -164,7 +164,7 @@ function App() {
           update_history(id, { loading: false })
           // Id new session was created we update path param
           if (isNewSession) {
-            navigate(`/${session_id}`)
+            navigate(`/${appContext.selectedAgent}/session/${session_id}`)
           }
         },
       })
@@ -187,7 +187,15 @@ function App() {
     } finally {
       if (isNewSession) {
         setSessions((prevSessions) => {
-          return [{ id: session_id }, ...prevSessions]
+          return [
+            {
+              id: session_id,
+              title: prompt,
+              app_name: selectedAgent,
+              last_update_time: new Date().getTime(),
+            },
+            ...prevSessions,
+          ]
         })
       }
     }
@@ -226,7 +234,7 @@ function App() {
   const on_new_chat = () => {
     clear_history()
     setSession()
-    navigate('/')
+    navigate(`/${selectedAgent}`)
     setShowHeading(true)
     input_focus()
   }
@@ -324,18 +332,19 @@ function App() {
       const user = user_details.user_response
       setUser(user)
       const agents = await fetch_agents(appContext)()
-      const selectedAgent = agents[0]
+      const pathParams = location.pathname.split('/')
+      let selectedAgent = pathParams[1] || agents[0]
       setAgents(agents)
       setSelectedAgent(selectedAgent)
-      const sessions = await fetch_sessions({ ...appContext, user })({
+      const history_response = await fetch_history(appContext)({
         selectedAgent,
       })
-      setSessions([...sessions].reverse())
-      if (location.pathname === '/') {
+      setSessions(history_response.history)
+      if (pathParams.length < 3) {
         setShowHeading(true)
         return
       }
-      let sessionId = location.pathname.substring(1)
+      let sessionId = pathParams[3]
       await getSession({ sessionId, selectedAgent, user })
       setSession(sessionId)
     } catch (e) {
@@ -362,7 +371,8 @@ function App() {
       <AppContext.Provider value={appContext}>
         <Layout history={history}>
           <Routes>
-            <Route path="/:sessionId" element={<ChatPage />} />
+            <Route path="/:agentId/session/:sessionId" element={<ChatPage />} />
+            <Route path="/:agentId" element={<ChatPage />} />
             <Route path="/" element={<ChatPage />} />
           </Routes>
         </Layout>

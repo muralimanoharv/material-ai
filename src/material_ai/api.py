@@ -1,6 +1,8 @@
 import os
 import logging
 import psutil
+from .app import get_endpoint_function
+from google.adk.cli.adk_web_server import Session
 from datetime import datetime, timezone
 from fastapi import APIRouter, Response, Request, Cookie, status, Depends
 from fastapi.responses import FileResponse, RedirectResponse
@@ -20,9 +22,9 @@ from .auth import (
     get_ui_configuration,
     get_feedback_handler,
 )
-from .auth import IOAuthService, FeedbackHandler
+from .auth import IOAuthService, FeedbackHandler, get_user
 from .oauth import OAuthUserDetail
-from .response import UserSuccessResponse, HealthResponse
+from .response import UserSuccessResponse, HealthResponse, History, HistoryResponse
 from .ui_config import UIConfig
 
 _logger = logging.getLogger(__name__)
@@ -233,3 +235,28 @@ async def health_check():
 )
 async def config(ui_configuration: UIConfig = Depends(get_ui_configuration)):
     return ui_configuration
+
+
+@router.get(
+    "/apps/{app_name}/history",
+    summary="Get session history",
+    response_model=HistoryResponse,
+)
+async def history(app_name: str, user: OAuthUserDetail = Depends(get_user)):
+    list_sessions = get_endpoint_function("list_sessions")
+    get_session = get_endpoint_function("get_session")
+    sessions: list[Session] = await list_sessions(app_name, user.sub)
+    sessions.sort(key=lambda s: s.last_update_time, reverse=True)
+    history = []
+    for session in sessions:
+        session_instance: Session = await get_session(app_name, user.sub, session.id)
+        history.append(
+            History(
+                id=session.id,
+                title=session_instance.events[0].content.parts[0].text,
+                last_update_time=session.last_update_time * 1000,
+                app_name=session.app_name,
+            )
+        )
+
+    return HistoryResponse(history=history)

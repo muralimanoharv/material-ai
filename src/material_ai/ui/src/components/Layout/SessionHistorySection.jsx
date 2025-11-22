@@ -1,11 +1,6 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext } from 'react'
 import { AppContext, LayoutContext } from '../../context'
-import {
-  delete_session,
-  fetch_session,
-  NOTFOUND,
-  UNAUTHORIZED,
-} from '../../api'
+import { delete_session, NOTFOUND, UNAUTHORIZED } from '../../api'
 import { Box, IconButton, Tooltip, Typography, useTheme } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { drawerWidth } from '../material/MaterialDrawer'
@@ -79,31 +74,8 @@ function SessionItem(props) {
   const theme = useTheme()
   const navigate = useNavigate()
   const session = props.session
-  const [title, setTitle] = useState(session.id)
   const { isDrawerOpen, setOpen } = useContext(LayoutContext)
   const isMobile = useMobileHook()
-
-  const fetchSession = async () => {
-    try {
-      const dto = await fetch_session(context)({ session_id: session.id })
-      const events = dto.events.filter(
-        (event) => event?.content?.role == 'user',
-      )
-      const firstEvent = events[0]
-      const parts = firstEvent?.content?.parts.filter((part) => part['text'])
-      const firstPart = parts[0]
-      setTitle(firstPart.text)
-    } catch (e) {
-      if (e.name == UNAUTHORIZED) return
-      if (e.name == NOTFOUND) {
-        context.setSnack(context.config.errorMessage)
-        return
-      }
-      console.debug(`Unable to parse title for session ${session.id}`)
-      console.debug(e)
-      setTitle(session.id)
-    }
-  }
 
   const isSelected = context.session === session.id
 
@@ -130,9 +102,23 @@ function SessionItem(props) {
     }
   }
 
-  useEffect(() => {
-    fetchSession()
-  }, [])
+  const formatTimestamp = (unixTimestamp) => {
+    const date = new Date(unixTimestamp)
+
+    const datePart = date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    })
+
+    const timePart = date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    })
+
+    return `${datePart} at ${timePart}`
+  }
 
   return (
     <Box
@@ -142,7 +128,7 @@ function SessionItem(props) {
       width={isDrawerOpen() ? drawerWidth - 35 : 0}
       onClick={async () => {
         await context.getSession({ sessionId: session.id })
-        await navigate(`/${session.id}`)
+        await navigate(`/${session.app_name}/session/${session.id}`)
         context.setSession(session.id)
         if (isMobile) setOpen(false)
       }}
@@ -171,7 +157,12 @@ function SessionItem(props) {
     >
       <Tooltip
         placement="right"
-        title={title}
+        title={
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <span>{formatTimestamp(session.last_update_time)}</span>
+            <span>{session.title}</span>
+          </Box>
+        }
         slotProps={{
           popper: {
             modifiers: [
@@ -194,7 +185,7 @@ function SessionItem(props) {
           variant="h6"
           noWrap
         >
-          {title}
+          {session.title}
         </Typography>
       </Tooltip>
       <IconButton

@@ -3,10 +3,11 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { Box, Button, Tooltip, Typography } from '@mui/material'
 import { AppContext } from '../../context'
-import { fetch_sessions } from '../../api'
+import { fetch_history } from '../../api'
 import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { menuNeedsLogin } from '../../hoc'
+import { useNavigate } from 'react-router-dom'
 
 export default function AgentSelectMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null)
@@ -83,6 +84,7 @@ const AgentSelectMenuBody = menuNeedsLogin((props) => {
 
 function AgentItem({ agent }) {
   const context = React.useContext(AppContext)
+  const navigate = useNavigate()
   const { selectedAgent, setSelectedAgent, on_new_chat, setSessions } = context
   return (
     <MenuItem
@@ -90,10 +92,11 @@ function AgentItem({ agent }) {
       onClick={async () => {
         setSelectedAgent(agent)
         on_new_chat()
-        const sessions = await fetch_sessions(context)({
+        navigate(`/${agent}`)
+        const history_response = await fetch_history(context)({
           selectedAgent: agent,
         })
-        setSessions([...sessions].reverse())
+        setSessions(history_response.history)
       }}
     >
       <Box

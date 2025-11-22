@@ -1,8 +1,7 @@
 import pydantic
 from pydantic import Field
-from typing import Any
+from typing import Any, List
 from .oauth import OAuthUserDetail
-from .ui_config import UIConfig
 
 
 class UserSuccessResponse(pydantic.BaseModel):
@@ -67,3 +66,14 @@ class HealthResponse(pydantic.BaseModel):
     debug: bool
     appName: str
     version: str
+
+
+class History(pydantic.BaseModel):
+    id: str
+    title: str
+    last_update_time: float
+    app_name: str
+
+
+class HistoryResponse(pydantic.BaseModel):
+    history: List[History]
