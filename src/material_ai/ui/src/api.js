@@ -110,6 +110,21 @@ export function fetch_sessions(context) {
   }
 }
 
+export function fetch_history(context) {
+  return async ({ selectedAgent }) => {
+    const response = await fetch(`${HOST}/apps/${selectedAgent}/history`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    })
+    handle_response(response, context)
+    let body = await response.json()
+    return body
+  }
+}
+
 export function fetch_session(context) {
   return async ({ session_id, selected_agent, user }) => {
     const response = await fetch(

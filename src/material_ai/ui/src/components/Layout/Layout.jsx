@@ -81,6 +81,7 @@ export default function Layout(props) {
               <Box
                 sx={{
                   flexGrow: 1,
+                  height: '60vh',
                   display: 'flex',
                   overflowY: 'auto',
                   overflowX: 'hidden',

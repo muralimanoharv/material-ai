@@ -1,7 +1,9 @@
 import threading
 import logging
 import os
+from typing import Optional, Mapping, Any
 from fastapi import FastAPI, HTTPException, Response
+from fastapi.routing import APIRoute
 from google.adk.cli.fast_api import get_fast_api_app
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
@@ -199,6 +201,7 @@ def get_app(
     oauth_service: IOAuthService = None,
     ui_config_yaml: str = UI_CONFIG_YAML,
     feedback_handler: FeedbackHandler = None,
+    adk_kwargs: Optional[Mapping[str, Any]] = {},
 ):
     """Factory function to get the singleton FastAPI application instance.
 
@@ -228,8 +231,27 @@ def get_app(
                 web=False,
                 allow_origins=ALLOWED_ORIGINS if config.general.debug else [],
                 session_service_uri=config.adk.session_db_url,
+                **adk_kwargs,
             )
             _setup_app(app, oauth_service, ui_config_yaml, feedback_handler)
             _app_instance = app
 
         return _app_instance
+
+
+def get_app_instance() -> FastAPI | None:
+    return _app_instance
+
+
+def get_endpoint_function(function_name: str):
+    """
+    Searches app.routes for a route where the endpoint function name matches.
+    """
+    instance = get_app_instance()
+    if not instance:
+        return None
+    for route in get_app_instance().routes:
+        if isinstance(route, APIRoute):
+            if route.name == function_name:
+                return route.endpoint
+    return None

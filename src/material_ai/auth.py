@@ -1,12 +1,14 @@
-from fastapi import Response, HTTPException
+from fastapi import Response, HTTPException, Cookie
 from fastapi.responses import RedirectResponse
 from datetime import timedelta
 from typing import Callable, Coroutine, Any, TypeAlias
 import base64
+import json
 import logging
 import hmac
 import hashlib
 from typing import Tuple, TypeAlias
+from .exec import UnauthorizedException
 from .config import get_config
 from .request import FeedbackRequest
 from .response import UserSuccessResponse
@@ -284,3 +286,14 @@ def get_ui_configuration() -> IOAuthService:
 
 def get_feedback_handler() -> FeedbackHandler:
     raise NotImplementedError("This dependency must be overridden by the application.")
+
+
+def get_user(
+    user_details: str | None = Cookie(
+        None, description="Cached user details as a JSON string."
+    )
+) -> OAuthUserDetail:
+    verified_user_details = verify_user_details(user_details)
+    if verified_user_details is None:
+        raise UnauthorizedException()
+    return OAuthUserDetail(**json.loads(verified_user_details))
