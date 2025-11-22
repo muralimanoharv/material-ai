@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.13](https://github.com/muralimanoharv/material-ai/compare/v1.1.12...v1.1.13) (2025-11-22)
+
+
+### Bug Fixes
+
+* fix ui navigation & get history optimization ([d571cc7](https://github.com/muralimanoharv/material-ai/commit/d571cc7ad687f437b3f1849c65c32d7a37fd1287))
+* fix ui navigation & get history optimization ([fc22da9](https://github.com/muralimanoharv/material-ai/commit/fc22da95fd32fef790884a76d707fdc0518053eb))
+
 ## [1.1.12](https://github.com/muralimanoharv/material-ai/compare/v1.1.11...v1.1.12) (2025-11-22)
 
 
