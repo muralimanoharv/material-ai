@@ -8,7 +8,7 @@ To create a new project, open your terminal, and run the command below. This wil
 [//]: # ( x-release-please-start-version )
 
 ```bash
-wget https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/tags/v1.1.11/scripts/create_project.sh && \
+wget https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/tags/v1.1.12/scripts/create_project.sh && \
 chmod +x ./create_project.sh && \
 ./create_project.sh && \
 rm ./create_project.sh
