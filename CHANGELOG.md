@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.12](https://github.com/muralimanoharv/material-ai/compare/v1.1.11...v1.1.12) (2025-11-22)
+
+
+### Bug Fixes
+
+* adding bug  artifact download fails to show on ui ([12ef172](https://github.com/muralimanoharv/material-ai/commit/12ef1729733f6ef3ba8ffa6f0b0ed8c4d6ac3647))
+* adding bug  artifact download fails to show on ui ([b1d5902](https://github.com/muralimanoharv/material-ai/commit/b1d590281c512dbe6579705f7c9c519ecd7358eb))
+
 ## [1.1.11](https://github.com/muralimanoharv/material-ai/compare/v1.1.10...v1.1.11) (2025-11-06)
 
 
