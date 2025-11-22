@@ -1,5 +1,6 @@
 from google.adk.agents import Agent
 from google.genai.types import Part, Blob
+from google.adk.tools.tool_context import ToolContext
 from material_ai.oauth import oauth_user_details_context
 import csv
 import io
@@ -14,7 +15,7 @@ def who_am_i():
     return user_details
 
 
-def create_csv(tool_context=None) -> str:
+async def create_csv(tool_context: ToolContext = None) -> str:
     """
     Creates sample CSV data and return the file
     """
@@ -36,7 +37,9 @@ def create_csv(tool_context=None) -> str:
     output.close()
     artifact_part = Part(inline_data=Blob(data=content_bytes, mime_type="text/csv"))
     filename = "my-csv.csv"
-    version = tool_context.save_artifact(filename=filename, artifact=artifact_part)
+    version = await tool_context.save_artifact(
+        filename=filename, artifact=artifact_part
+    )
     return {
         "status": "success",
         "message": f"File '{filename}' (version {version}) has been created and is now available for download.",

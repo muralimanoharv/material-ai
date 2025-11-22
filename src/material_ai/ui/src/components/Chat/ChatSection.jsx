@@ -111,11 +111,11 @@ function ChatItemSection(props) {
       filesList.push(fileDto)
     }
 
-    if (chat?.actions?.artifact_delta) {
-      Object.keys(chat.actions.artifact_delta).forEach((key) => {
+    if (chat?.actions?.artifactDelta) {
+      Object.keys(chat.actions.artifactDelta).forEach((key) => {
         filesList.push({
           name: key,
-          version: chat.actions.artifact_delta[key],
+          version: chat.actions.artifactDelta[key],
           type: 'artifact',
         })
       })

@@ -16,8 +16,15 @@ export function create_session(context) {
 }
 
 export function send_message(context) {
-  return async ({ parts, session_id, controller }) => {
-    const response = await fetch(`${HOST}/run`, {
+  return async ({
+    parts,
+    session_id,
+    controller,
+    on_message,
+    on_finish,
+    on_abort,
+  }) => {
+    const response = await fetch(`${HOST}/run_sse`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -36,8 +43,52 @@ export function send_message(context) {
       signal: controller.signal,
     })
     handle_response(response, context)
-    let body = await response.json()
-    return body
+    const reader = response.body.getReader()
+    on_message_sse({ reader, on_message, on_finish })
+    return reader
+  }
+}
+
+export const on_message_sse = async ({ reader, on_message, on_finish }) => {
+  const decoder = new TextDecoder()
+  let buffer = ''
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+
+      if (done) {
+        on_finish()
+        break
+      }
+
+      const chunk = decoder.decode(value, { stream: true })
+      buffer += chunk
+      const parts = buffer.split('\n\n')
+      buffer = parts.pop()
+
+      for (const part of parts) {
+        const lines = part.split('\n')
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const jsonStr = line.replace('data: ', '')
+            try {
+              const data = JSON.parse(jsonStr)
+              on_message(data)
+            } catch (e) {
+              console.log('Received non-JSON data:', jsonStr)
+            }
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Stream reading error:', error)
+    throw error
+  } finally {
+    try {
+      reader.releaseLock()
+    } catch (e) {}
   }
 }
 

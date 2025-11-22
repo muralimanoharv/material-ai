@@ -35,6 +35,8 @@ function App() {
   const [files, setFiles] = useState([])
   const [showHeading, setShowHeading] = useState(false)
   const [controller, setController] = useState(undefined)
+  const [reader, setReader] = useState(undefined)
+  const [loadingId, setLoadingId] = useState(undefined)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -53,7 +55,16 @@ function App() {
         cancelled: true,
         parts: [{ text: 'You stopped this response' }],
       })
-      controller.abort()
+      controller?.abort()
+      if (reader)
+        reader
+          .cancel()
+          .catch((err) => console.warn('Reader cancel error:', err))
+      if (loadingId) update_history(loadingId, { loading: false })
+      setPromptLoading(false)
+      setController(undefined)
+      setLoadingId(undefined)
+      setReader(undefined)
       setTimeout(() => {
         resolve()
       }, 100)
@@ -81,6 +92,18 @@ function App() {
     parts.push({ text: JSON.stringify({ fileNames }) })
 
     return parts
+  }
+
+  const on_send_error = (e) => {
+    console.error(e)
+    add_history({
+      role: 'model',
+      id: `${new Date().getTime()}`,
+      prompt,
+      cancelled: true,
+      parts: [{ text: config.errorMessage }],
+    })
+    setSnack(config.errorMessage)
   }
 
   const send = async (prompt, options = { submittedFiles: [] }) => {
@@ -111,35 +134,41 @@ function App() {
         parts,
         loading: true,
       })
-
+      setLoadingId(id)
       setPrompt('')
       setFiles([])
 
-      const messages = await send_message(appContext)({
+      const reader = await send_message(appContext)({
         session_id,
         parts,
         controller,
+        on_message: (message) => {
+          if (message.error) {
+            on_send_error(message.error)
+            return
+          }
+          add_history({
+            ...message.content,
+            role: 'model',
+            id: message.id,
+            prompt,
+            actions: {
+              ...message.actions,
+            },
+          })
+        },
+        on_finish: () => {
+          // Hide loading indicator
+          setController(undefined)
+          setPromptLoading(false)
+          update_history(id, { loading: false })
+          // Id new session was created we update path param
+          if (isNewSession) {
+            navigate(`/${session_id}`)
+          }
+        },
       })
-      // Hide loading indicator
-      update_history(id, { loading: false })
-
-      // Update history
-      for (let message of messages) {
-        add_history({
-          ...message.content,
-          role: 'model',
-          id: message.id,
-          prompt,
-          actions: {
-            ...message.actions,
-          },
-        })
-      }
-
-      // Id new session was created we update path param
-      if (isNewSession) {
-        navigate(`/${session_id}`)
-      }
+      setReader(reader)
     } catch (e) {
       // If request was aborted or cancelled by user
       update_history(id, { loading: false })
@@ -154,11 +183,8 @@ function App() {
       }
       setPrompt(prompt)
       setFiles(options.submittedFiles)
-      console.error(e)
-      setSnack(config.errorMessage)
+      on_send_error(e)
     } finally {
-      setController(undefined)
-      setPromptLoading(false)
       if (isNewSession) {
         setSessions((prevSessions) => {
           return [{ id: session_id }, ...prevSessions]
