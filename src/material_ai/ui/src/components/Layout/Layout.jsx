@@ -32,16 +32,21 @@ export default function Layout(props) {
 
   React.useEffect(() => {
     if (scrollableBoxRef.current) {
-      // const scrollableElement = scrollableBoxRef.current;
-      // scrollableElement.scrollTo({
-      //     top: scrollableElement.scrollHeight,
-      //     behavior: 'smooth'
-      // });
-      let last_model_box = document.querySelector(
-        '.chat-item-box-user:last-of-type',
-      )
-      if (!last_model_box) return
-      last_model_box.scrollIntoView({
+      
+      const parent = document.querySelector('.chat-items'); 
+      const children = parent.children;
+
+      let lastUserMessage = null;
+
+      for (let i = children.length - 1; i >= 0; i--) {
+        if (children[i].classList.contains('chat-item-box-user')) {
+          lastUserMessage = children[i];
+          break;
+        }
+      }
+
+      if (!lastUserMessage) return
+      lastUserMessage?.scrollIntoView({
         behavior: 'smooth',
         inline: 'start',
         block: 'start',

@@ -77,3 +77,10 @@ class History(pydantic.BaseModel):
 
 class HistoryResponse(pydantic.BaseModel):
     history: List[History]
+
+class Agent(pydantic.BaseModel):
+    name: str
+    model: str
+
+class AgentResponse(pydantic.BaseModel):
+    agents: List[Agent]

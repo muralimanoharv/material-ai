@@ -10,7 +10,6 @@ import SigninButton from '../SigninButton'
 
 export default function SessionHistorySection() {
   const context = useContext(AppContext)
-  const { config } = context
   const { isDrawerOpen } = useContext(LayoutContext)
   const theme = useTheme()
   return (
@@ -102,6 +101,12 @@ function SessionItem(props) {
     }
   }
 
+  const truncText = (text) => {
+    let maxLength = 30
+    if (text.length > maxLength) return `${text.substring(0, maxLength)}...`
+    return text
+  }
+
   const formatTimestamp = (unixTimestamp) => {
     const date = new Date(unixTimestamp)
 
@@ -128,7 +133,7 @@ function SessionItem(props) {
       width={isDrawerOpen() ? drawerWidth - 35 : 0}
       onClick={async () => {
         await context.getSession({ sessionId: session.id })
-        await navigate(`/${session.app_name}/session/${session.id}`)
+        await navigate(`/agents/${session.app_name}/session/${session.id}`)
         context.setSession(session.id)
         if (isMobile) setOpen(false)
       }}
@@ -155,39 +160,49 @@ function SessionItem(props) {
         },
       }}
     >
-      <Tooltip
-        placement="right"
-        title={
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <span>{formatTimestamp(session.last_update_time)}</span>
-            <span>{session.title}</span>
-          </Box>
-        }
-        slotProps={{
-          popper: {
-            modifiers: [
-              {
-                name: 'offset',
-                options: {
-                  offset: [0, 24],
-                },
+      {isDrawerOpen() ? (
+        <Box sx={{ flexGrow: 1 }}>
+          <Tooltip
+            placement="right"
+            title={session.title}
+            slotProps={{
+              popper: {
+                modifiers: [
+                  {
+                    name: 'offset',
+                    options: {
+                      offset: [0, 24],
+                    },
+                  },
+                ],
               },
-            ],
-          },
-        }}
-      >
-        <Typography
-          sx={{ flexGrow: 1 }}
-          color={isSelected ? theme.palette.text.selected : undefined}
-          fontWeight={500}
-          fontSize={'14px'}
-          lineHeight={'20px'}
-          variant="h6"
-          noWrap
-        >
-          {session.title}
-        </Typography>
-      </Tooltip>
+            }}
+          >
+            <Typography
+              sx={{ flexGrow: 1 }}
+              color={isSelected ? theme.palette.text.selected : undefined}
+              fontWeight={500}
+              fontSize={'14px'}
+              lineHeight={'20px'}
+              variant="h6"
+            >
+              {truncText(session.title)}
+            </Typography>
+            <Typography
+              sx={{ flexGrow: 1 }}
+              color={isSelected ? theme.palette.text.selected : undefined}
+              fontWeight={300}
+              fontSize={'10px'}
+              lineHeight={'20px'}
+              variant="h5"
+              noWrap
+            >
+              {formatTimestamp(session.last_update_time)}
+            </Typography>
+          </Tooltip>
+        </Box>
+      ) : null}
+
       <IconButton
         onClick={deleteSession}
         className="session-trash-button session-history"

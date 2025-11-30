@@ -23,7 +23,6 @@ function App() {
   const [session, setSession] = useState()
   const [user, setUser] = useState(undefined)
   const [health, setHealth] = useState(undefined)
-  const [prompt, setPrompt] = useState('')
   const [history, setHistory] = useState([])
   const [sessions, setSessions] = useState([])
   const [agents, setAgents] = useState([])
@@ -128,14 +127,16 @@ function App() {
 
       // Add user history with loading indicator
       add_history({
-        role: 'user',
-        id,
+        content: {
+          role: 'user',
+          parts,
+        },
         prompt,
-        parts,
+        id,
         loading: true,
       })
       setLoadingId(id)
-      setPrompt('')
+      options.setPrompt('')
       setFiles([])
 
       const reader = await send_message(appContext)({
@@ -148,13 +149,8 @@ function App() {
             return
           }
           add_history({
-            ...message.content,
-            role: 'model',
-            id: message.id,
+            ...message,
             prompt,
-            actions: {
-              ...message.actions,
-            },
           })
         },
         on_finish: () => {
@@ -164,7 +160,9 @@ function App() {
           update_history(id, { loading: false })
           // Id new session was created we update path param
           if (isNewSession) {
-            navigate(`/${appContext.selectedAgent}/session/${session_id}`)
+            navigate(
+              `/agents/${appContext.selectedAgent}/session/${session_id}`,
+            )
           }
         },
       })
@@ -181,7 +179,7 @@ function App() {
         setShowHeading(true)
         return
       }
-      setPrompt(prompt)
+      options.setPrompt(prompt)
       setFiles(options.submittedFiles)
       on_send_error(e)
     } finally {
@@ -234,7 +232,7 @@ function App() {
   const on_new_chat = () => {
     clear_history()
     setSession()
-    navigate(`/${selectedAgent}`)
+    navigate(`/agents/${selectedAgent}`)
     setShowHeading(true)
     input_focus()
   }
@@ -248,25 +246,7 @@ function App() {
         user: user?.sub,
       })
       setShowHeading(false)
-      let history = []
-      let prevPrompt = ''
-      if (sessionDto && sessionDto.events) {
-        for (let event of sessionDto.events) {
-          if (event?.content?.role == 'user') {
-            prevPrompt = event?.content?.parts[0]?.text ?? prevPrompt
-          }
-          history.push({
-            ...event.content,
-            id: event.id,
-            prompt: prevPrompt,
-            actions: {
-              ...event.actions,
-            },
-          })
-        }
-      }
-
-      setHistory(history)
+      setHistory(sessionDto.events)
       input_focus()
     } catch (e) {
       if (e.name == UNAUTHORIZED) return
@@ -289,8 +269,6 @@ function App() {
     setSession,
     user,
     setUser,
-    prompt,
-    setPrompt,
     isValidSession,
     send,
     loading,
@@ -319,6 +297,20 @@ function App() {
     config,
   }
 
+  const getPathParams = () => {
+    const parts = location.pathname.split('/')
+    const pathParams = {}
+    for (let i = 0; i < parts.length; i++) {
+      if (parts[i] == 'agents' && parts[i + 1]) {
+        pathParams['agentId'] = parts[i + 1]
+      }
+      if (parts[i] == 'session' && parts[i + 1]) {
+        pathParams['sessionId'] = parts[i + 1]
+      }
+    }
+    return pathParams
+  }
+
   const onAppLoad = async () => {
     try {
       setLoading(true)
@@ -332,19 +324,19 @@ function App() {
       const user = user_details.user_response
       setUser(user)
       const agents = await fetch_agents(appContext)()
-      const pathParams = location.pathname.split('/')
-      let selectedAgent = pathParams[1] || agents[0]
+      const pathParams = getPathParams()
+      let selectedAgent = pathParams['agentId'] || agents[0]
       setAgents(agents)
       setSelectedAgent(selectedAgent)
       const history_response = await fetch_history(appContext)({
         selectedAgent,
       })
       setSessions(history_response.history)
-      if (pathParams.length < 3) {
+      if (!pathParams['sessionId']) {
         setShowHeading(true)
         return
       }
-      let sessionId = pathParams[3]
+      let sessionId = pathParams['sessionId']
       await getSession({ sessionId, selectedAgent, user })
       setSession(sessionId)
     } catch (e) {
@@ -371,8 +363,12 @@ function App() {
       <AppContext.Provider value={appContext}>
         <Layout history={history}>
           <Routes>
-            <Route path="/:agentId/session/:sessionId" element={<ChatPage />} />
-            <Route path="/:agentId" element={<ChatPage />} />
+            <Route path="/agents" element={<>Hi</>} />
+            <Route
+              path="/agents/:agentId/session/:sessionId"
+              element={<ChatPage />}
+            />
+            <Route path="/agents/:agentId" element={<ChatPage />} />
             <Route path="/" element={<ChatPage />} />
           </Routes>
         </Layout>

@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../../context'
 import {
   InputBase,
@@ -16,12 +16,11 @@ import { CHAT_SECTION_WIDTH } from '../../assets/themes'
 import ModelSelectMenu from './ModelSelectMenu'
 import FileSelectMenu from './FileSelectMenu'
 import AgentSelectMenu from './AgentSelectMenu'
-import FileBox from '../Chat/FileBox'
+import FileBox from '../Chat/item/FileBox'
 
 export default function PromptInput() {
   const {
-    prompt,
-    setPrompt,
+    prompt: contextPrompt,
     send,
     promptLoading,
     files,
@@ -32,10 +31,12 @@ export default function PromptInput() {
   } = useContext(AppContext)
   const theme = useTheme()
   const [fullScreen, setFullScreen] = useState(false)
+  const [prompt, setPrompt] = useState('')
+
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    send(prompt, { submittedFiles: [...files] })
+    send(prompt, { submittedFiles: [...files], setPrompt })
   }
 
   const handleKeyDown = (event) => {

@@ -1,10 +1,10 @@
 import { useTheme } from '@emotion/react'
 import { Box, IconButton, Tooltip, Typography } from '@mui/material'
 import ClearIcon from '@mui/icons-material/Clear'
-import { fetch_artifact, UNAUTHORIZED } from '../../api'
-import { formatBase64Data } from '../../utils'
+import { fetch_artifact, UNAUTHORIZED } from '../../../api'
+import { formatBase64Data } from '../../../utils'
 import { useContext } from 'react'
-import { AppContext } from '../../context'
+import { AppContext } from '../../../context'
 
 export default function FileBox(props) {
   const context = useContext(AppContext)

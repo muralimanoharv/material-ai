@@ -92,7 +92,7 @@ function AgentItem({ agent }) {
       onClick={async () => {
         setSelectedAgent(agent)
         on_new_chat()
-        navigate(`/${agent}`)
+        navigate(`/agents/${agent}`)
         const history_response = await fetch_history(context)({
           selectedAgent: agent,
         })

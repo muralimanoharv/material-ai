@@ -1,5 +1,5 @@
 import { Box } from '@mui/material'
-import FileBox from './FileBox'
+import FileBox from './FileBox.jsx'
 
 export default function FilesBox(props) {
   return (

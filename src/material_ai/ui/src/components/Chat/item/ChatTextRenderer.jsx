@@ -1,12 +1,10 @@
 import { Typography } from '@mui/material'
-import { useMemo } from 'react'
-import Markdown from './Markdown'
+import Markdown from '../Markdown'
 
-export default function ChatBodyRenderer(props) {
-  const MarkdownMemo = useMemo(() => <Markdown>{props.part?.text}</Markdown>)
-  if (props.isUser()) return <UserMarkdownRenderer {...props} />
+export default function ChatTextRenderer(props) {
+  if (props.isUser) return <UserMarkdownRenderer {...props} />
 
-  return <>{MarkdownMemo}</>
+  return <Markdown>{props.part?.text}</Markdown>
 }
 
 function UserMarkdownRenderer(props) {

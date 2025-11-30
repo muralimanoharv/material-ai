@@ -2,7 +2,7 @@ import { Box, IconButton, Tooltip } from '@mui/material'
 import CopyAllOutlinedIcon from '@mui/icons-material/CopyAllOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import { useContext } from 'react'
-import { AppContext } from '../../context'
+import { AppContext } from '../../../context'
 
 export default function UserButtons(props) {
   const { setSnack, setPrompt, input_focus } = useContext(AppContext)

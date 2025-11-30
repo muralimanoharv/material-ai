@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react'
-import MaterialList from '../material/MaterialList'
+import MaterialList from '../../material/MaterialList'
 import CloseIcon from '@mui/icons-material/Close'
 import {
   Box,
@@ -11,7 +11,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { AppContext, ChatItemContext } from '../../context'
+import { AppContext, ChatItemContext } from '../../../context'
 import CheckIcon from '@mui/icons-material/Check'
 
 export default function ChatNegativeFeebackSelection() {

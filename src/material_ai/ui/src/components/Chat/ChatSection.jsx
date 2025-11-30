@@ -1,13 +1,19 @@
 import React, { useContext, useMemo, useState } from 'react'
 import { Box } from '@mui/material'
 import { ChatItemContext, AppContext } from '../../context'
-import ChatItem from './ChatItem'
+import ChatItem from './item/ChatItem'
 import { CHAT_SECTION_WIDTH } from '../../assets/themes'
 import { send_feedback, UNAUTHORIZED } from '../../api'
 import { isValidJson } from '../../utils'
+import ChatArtifactSection from './item/ChatArtifactSection'
+import ChatLoading from './item/ChatLoading'
+import ChatFunctionCall from './item/ChatFunctionCall'
+import ChatFunctionResponse from './item/ChatFunctionResponse'
+import ChatUserFiles from './item/ChatUserFiles'
 
 export default function ChatSection() {
-  const { history, config } = useContext(AppContext)
+  const context = useContext(AppContext)
+  const history = useMemo(() => context.history, [context.history])
   return (
     <Box
       sx={{
@@ -19,6 +25,7 @@ export default function ChatSection() {
       }}
     >
       <Box
+        className="chat-items"
         sx={{
           display: 'flex',
           gap: '10px',
@@ -77,72 +84,34 @@ function ChatItemSection(props) {
     }
   }
 
-  const [text_parts, files] = useMemo(() => {
-    let textParts = []
-    let fileNames = []
-    let fileData = []
-    let filesList = []
-    let parts = chat?.parts ?? []
-
-    for (let part of parts) {
-      if (part.text) {
-        let text = part.text
-        if (isValidJson(text)) {
-          let json = JSON.parse(text)
-          if (json.fileNames) fileNames = json.fileNames ?? []
-        } else {
-          textParts.push(part)
-        }
-      } else if (part.inline_data || part.inlineData) {
-        fileData.push(part.inline_data || part.inlineData)
-      } else {
-        textParts.push(part)
-      }
-    }
-    for (let i = 0; i < fileNames.length; i++) {
-      let fileDto = {
-        name: fileNames[i],
-        version: 0,
-        type: 'upload',
-      }
-      if (fileData[i]) {
-        fileDto = { ...fileDto, inlineData: { ...fileData[i] } }
-      }
-      filesList.push(fileDto)
-    }
-
-    if (chat?.actions?.artifactDelta) {
-      Object.keys(chat.actions.artifactDelta).forEach((key) => {
-        filesList.push({
-          name: key,
-          version: chat.actions.artifactDelta[key],
-          type: 'artifact',
-        })
-      })
-    }
-    return [textParts, filesList]
-  }, [])
-
   const chatContext = {
     chat,
-    files,
-    postPostiveFeedback,
     feedback,
+    negativeFeedbackToggle,
+    postPostiveFeedback,
     setFeedback,
     postNegativeFeedback,
-    negativeFeedbackToggle,
     setNegativeFeedbackToggle,
   }
 
   return (
     <ChatItemContext.Provider value={chatContext} key={chat.id}>
       <React.Fragment key={chat.id}>
-        {text_parts.map((part, idx) => {
-          return (
-            <ChatItem key={idx} part={part} role={chat.role} files={files} />
-          )
+        {chat.content.parts.map((part, idx) => {
+          return <ChatItemSectionBody part={part} key={`${chat.id}-${idx}`} />
         })}
       </React.Fragment>
+      <ChatArtifactSection />
+      <ChatLoading />
     </ChatItemContext.Provider>
   )
+}
+
+function ChatItemSectionBody({ part }) {
+  if (part.inlineData) return null
+  if (part.functionCall) return <ChatFunctionCall part={part}/>
+  if (part.functionResponse) return <ChatFunctionResponse part={part}/>
+  if (isValidJson(part.text)) return <ChatUserFiles part={part} />
+
+  return <ChatItem part={part} />
 }
