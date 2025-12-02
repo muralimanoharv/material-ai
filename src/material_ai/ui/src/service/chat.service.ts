@@ -7,9 +7,7 @@ import type { NavigateFunction } from 'react-router'
 
 interface ChatServiceContext {
   getUser: () => User | undefined
-  getSession: () => string | undefined
   getConfig: () => AppConfig
-  getSelectedAgent: () => string
   setPromptLoading: React.Dispatch<React.SetStateAction<boolean>>
   setFiles: React.Dispatch<React.SetStateAction<FileAttachment[]>>
   setSessions: React.Dispatch<React.SetStateAction<Session[]>>
@@ -33,11 +31,17 @@ export class ChatService {
     this.context = context
   }
 
+  call_me() {
+    this.context.setPromptLoading(true)
+  }
+
   async send_message(
     prompt: string,
-    options?: {
-      submittedFiles: FileAttachment[]
-      setPrompt: React.Dispatch<React.SetStateAction<string>>
+    options: {
+      submitted_files?: FileAttachment[]
+      setPrompt?: React.Dispatch<React.SetStateAction<string>>
+      session_id?: string
+      agent: string
     },
   ) {
     if (!prompt) return
@@ -45,17 +49,21 @@ export class ChatService {
     const user = this.context.getUser()
     if (!user) return
 
-    let sessionId = this.context.getSession()
-    const isNewSession = !sessionId
+    const agent = options.agent
+
+    let session_id = options.session_id
+    const is_new_session = !session_id
 
     const id = `${new Date().getTime()}`
-    const files = options?.submittedFiles || []
+    const files = options?.submitted_files || []
     try {
       this.context.setPromptLoading(true)
 
-      if (isNewSession) {
-        sessionId = (await this.apiService.create_session()).id
+      if (is_new_session) {
+        session_id = (await this.apiService.create_session(agent)).id
       }
+
+      if (!session_id) return
       await this.cancel_api()
 
       this.controller = new AbortController()
@@ -72,15 +80,15 @@ export class ChatService {
         loading: true,
       })
       this.loadingId = id
-      options?.setPrompt('')
+      if (options.setPrompt) options.setPrompt('')
       this.context.setFiles([])
 
       const reader = await this.apiService.send_message({
-        session_id: sessionId!,
+        session_id,
         parts,
         controller: this.controller,
         sub: user.sub,
-        app_name: this.context.getSelectedAgent(),
+        app_name: agent,
         on_message: (message: any) => {
           if (message.error) {
             this.on_send_error(message.error)
@@ -95,10 +103,8 @@ export class ChatService {
           this.controller = undefined
           this.context.setPromptLoading(false)
           this.historyService.update_history(id, { loading: false })
-          if (!isNewSession) return
-          this.context.navigate(
-            `/agents/${this.context.getSelectedAgent()}/session/${sessionId}`,
-          )
+          if (!is_new_session) return
+          this.context.navigate(`/agents/${agent}/session/${session_id}`)
         },
       })
       this.reader = reader
@@ -109,17 +115,16 @@ export class ChatService {
         if (e.name === 'AbortError') return
       }
 
-      options?.setPrompt(prompt)
+      if (options.setPrompt) options.setPrompt(prompt)
       this.context.setFiles(files)
       this.on_send_error(e)
     } finally {
-      if (isNewSession && sessionId) {
-        const newSession = {
-          id: sessionId!,
+      if (is_new_session && session_id) {
+        const newSession: Session = {
+          id: session_id,
           user_id: user.sub,
-          session_id: sessionId!,
           title: prompt,
-          app_name: this.context.getSelectedAgent(),
+          app_name: agent,
           last_update_time: new Date().getTime(),
         }
         this.context.setSessions((prevSessions) => {
@@ -143,12 +148,9 @@ export class ChatService {
   }
 
   async cancel_api(): Promise<void> {
-    return new Promise((resolve) => {
-      if (this.controller || this.reader) {
+    return new Promise(async (resolve) => {
+      if(this.controller) {
         this.controller?.abort()
-        this.reader
-          ?.cancel()
-          .catch((err) => console.warn('Reader cancel error:', err))
         this.historyService.add_history({
           content: {
             role: 'model',
@@ -157,15 +159,27 @@ export class ChatService {
           id: `${new Date().getTime()}`,
           cancelled: true,
         })
+        this.controller = undefined;
+        this.context.setPromptLoading(false)
+      }
+      if (this.reader) {
+        try {
+           await this.reader.cancel()
+        } catch(e) {
+          console.warn('Reader cancel error:', e)
+        } finally {
+          this.reader = undefined
+        }        
       }
 
       if (this.loadingId) {
         this.historyService.update_history(this.loadingId, {
           loading: false,
         })
+        this.loadingId = undefined
       }
 
-      this.context.setPromptLoading(false)
+      
       resolve()
     })
   }

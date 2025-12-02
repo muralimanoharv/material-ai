@@ -10,13 +10,16 @@ import MenuIcon from '@mui/icons-material/Menu'
 import { useMobileHook } from '../../hooks'
 import SigninButton from '../SigninButton'
 import UserAvatar from './UserAvatar'
+import { useNavigate } from 'react-router'
 
 export default function Header() {
   // We cast the context to our strict types
-  const { loading, on_new_chat, user, health, config } = useContext(
+  const { loading, user, health, config } = useContext(
     AppContext,
   ) as AppContextType
   const { setOpen } = useContext(LayoutContext) as LayoutContextType
+
+  const navigate = useNavigate()
 
   const isMobile = useMobileHook()
 
@@ -54,7 +57,7 @@ export default function Header() {
           sx={{ cursor: 'pointer' }}
           title={health?.version}
           onClick={() => {
-            on_new_chat()
+            navigate("/")
           }}
         >
           <Typography

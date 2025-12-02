@@ -19,18 +19,17 @@ import StopRoundedIcon from '@mui/icons-material/StopRounded'
 import FullscreenOutlinedIcon from '@mui/icons-material/FullscreenOutlined'
 import FullscreenExitOutlinedIcon from '@mui/icons-material/FullscreenExitOutlined'
 import { CHAT_SECTION_WIDTH } from '../../assets/themes'
-import ModelSelectMenu from '../menu/ModelSelectMenu'
+// import ModelSelectMenu from '../menu/ModelSelectMenu'
 import FileSelectMenu from '../menu/FileSelectMenu'
 import AgentSelectMenu from '../menu/AgentSelectMenu'
 import FileBox from '../chat/item/FileBox'
-
-// =============================================================================
-// 2. Component
-// =============================================================================
+import { useAgentId, useSessionId } from '../../hooks'
 
 export default function PromptInput() {
   const { promptLoading, files, setFiles, user, config, chatService } =
     useContext(AppContext) as AppContextType
+  const session_id = useSessionId()
+  const agent = useAgentId() as string
 
   const theme = useTheme()
   const [fullScreen, setFullScreen] = useState(false)
@@ -38,7 +37,12 @@ export default function PromptInput() {
 
   const handleSubmit = (event?: SyntheticEvent) => {
     event?.preventDefault()
-    chatService.send_message(prompt, { submittedFiles: [...files], setPrompt })
+    chatService.send_message(prompt, {
+      submitted_files: [...files],
+      setPrompt,
+      session_id,
+      agent,
+    })
   }
 
   const handleKeyDown = (
@@ -170,9 +174,6 @@ export default function PromptInput() {
             sx={{ display: 'flex', justifyContent: 'flex-start', gap: '5px' }}
           >
             <FileSelectMenu setFiles={setFiles} files={files} />
-            {/* Note: AgentSelectMenu in previous steps didn't accept props, 
-                but we pass them here based on the original JSX. 
-                If typescript complains, update AgentSelectMenu definition. */}
             <AgentSelectMenu />
           </Box>
           <Box
@@ -183,7 +184,7 @@ export default function PromptInput() {
               alignItems: 'center',
             }}
           >
-            <ModelSelectMenu />
+            {/* <ModelSelectMenu /> */}
             {promptLoading ? (
               <Tooltip title="Stop response">
                 <IconButton

@@ -8,6 +8,7 @@ import {
   LayoutContext,
   type LayoutContextType,
   type ThemeContextType,
+  AppContext,
 } from '../../context'
 import SettingsSwipeableDrawer from './drawers/SettingsSwipeableDrawer'
 import MaterialDrawer, { drawerWidth } from '../material/MaterialDrawer'
@@ -21,14 +22,14 @@ import { useMobileHook } from '../../hooks'
 
 interface LayoutProps {
   children: React.ReactNode
-  history?: any
+  showFooter?: boolean
 }
 
 interface FlexibleDrawerProps {
   children: React.ReactNode
 }
 
-export default function Layout(props: LayoutProps) {
+export default function Layout({children, showFooter = true}: LayoutProps) {
   const [open, setOpen] = React.useState(false)
   const [hoverOpen, setHoverOpen] = React.useState(false)
   const [settingsDrawerOpen, setSettingsDrawerOpen] = React.useState(false)
@@ -36,6 +37,8 @@ export default function Layout(props: LayoutProps) {
 
   const isMobile = useMobileHook()
   const theme = useTheme()
+
+  const context = React.useContext(AppContext)
 
   const { theme: currentTheme, setTheme } = React.useContext(
     ThemeContext,
@@ -72,7 +75,7 @@ export default function Layout(props: LayoutProps) {
         })
       }
     }
-  }, [props.history])
+  }, [context?.history])
 
   return (
     <LayoutContext.Provider
@@ -128,9 +131,9 @@ export default function Layout(props: LayoutProps) {
               sx={{ flexGrow: 1, overflowY: 'auto', padding: '0 16px' }}
               ref={scrollableBoxRef}
             >
-              {props.children}
+              {children}
             </Box>
-            <Footer />
+            {showFooter && <Footer />}
           </Box>
         </Box>
       </Box>

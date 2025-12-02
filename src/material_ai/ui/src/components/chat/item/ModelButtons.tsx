@@ -14,6 +14,7 @@ import {
   type ChatItemContextType,
 } from '../../../context'
 import type { ChatPart, FeedbackDto } from '../../../schema'
+import { useAgentId, useSessionId } from '../../../hooks'
 
 interface ModelButtonsProps {
   part: ChatPart
@@ -38,6 +39,9 @@ export default function ModelButtons(props: ModelButtonsProps) {
     chat,
     setNegativeFeedbackToggle,
   } = useContext(ChatItemContext) as ChatItemContextType
+
+  const agent = useAgentId() as string
+  const session_id = useSessionId() as string
 
   const actions: ActionItem[] = [
     {
@@ -80,9 +84,11 @@ export default function ModelButtons(props: ModelButtonsProps) {
       icon: <RefreshIcon fontSize="small" />,
       tooltip: 'Redo',
       onClick: () => {
-        // Assuming chat.prompt exists
         const prompt = chat.prompt
-        chatService.send_message(prompt!)
+        chatService.send_message(prompt!, {
+          session_id,
+          agent,
+        })
       },
     },
     {

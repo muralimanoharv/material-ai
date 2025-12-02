@@ -5,6 +5,7 @@ import { useContext } from 'react'
 import { AppContext, type AppContextType } from '../../../context'
 import type { InlineData } from '../../../schema'
 import { useParams } from 'react-router'
+import { useAgentId } from '../../../hooks'
 
 export interface FileData {
   name: string
@@ -26,6 +27,8 @@ export default function FileBox(props: FileBoxProps) {
   const { file, showClear, onClearFile } = props
   const theme = useTheme()
 
+  const agent = useAgentId() as string
+
   const fileName = file.name
   const parts = fileName.split('.')
   const name = parts[0]
@@ -45,7 +48,7 @@ export default function FileBox(props: FileBoxProps) {
       if (file.inlineData) {
         inlineData = file.inlineData
       } else if (file.type === 'artifact') {
-        const artifact = await apiService.fetch_artifact({
+        const artifact = await apiService.fetch_artifact(agent, {
           artifact_name: file.name,
           version: file.version ?? 0,
           session,

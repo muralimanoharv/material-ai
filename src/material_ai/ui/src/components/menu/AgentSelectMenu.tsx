@@ -7,13 +7,15 @@ import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { menuNeedsLogin } from './hoc'
 import { useNavigate } from 'react-router'
+import { useAgentId } from '../../hooks'
+import type { Agent } from '../../schema'
 
 interface AgentSelectMenuBodyProps {
-  agents: string[]
+  agents: Agent[]
 }
 
 interface AgentItemProps {
-  agent: string
+  agent: Agent
 }
 
 export default function AgentSelectMenu() {
@@ -86,7 +88,7 @@ const AgentSelectMenuBody = menuNeedsLogin<AgentSelectMenuBodyProps>(
     return (
       <Box sx={{ width: 300 }}>
         {props.agents.map((agent) => (
-          <AgentItem key={agent} agent={agent} />
+          <AgentItem key={agent.name} agent={agent} />
         ))}
       </Box>
     )
@@ -95,20 +97,15 @@ const AgentSelectMenuBody = menuNeedsLogin<AgentSelectMenuBodyProps>(
 )
 
 function AgentItem({ agent }: AgentItemProps) {
-  const context = React.useContext(AppContext) as AppContextType
   const navigate = useNavigate()
 
-  const { selectedAgent, setSelectedAgent, on_new_chat, setSessions } = context
+  const selectedAgent = useAgentId()
 
   return (
     <MenuItem
-      key={agent}
+      key={agent.name}
       onClick={async () => {
-        setSelectedAgent(agent)
-        on_new_chat()
         navigate(`/agents/${agent}`)
-        const history_response = await context.apiService.fetch_history(agent)
-        setSessions((history_response as any).history || history_response)
       }}
     >
       <Box
@@ -127,11 +124,11 @@ function AgentItem({ agent }: AgentItemProps) {
           }}
         >
           <Typography textTransform="capitalize" variant="h5">
-            {agent.replaceAll('_', ' ')}
+            {agent.name.replaceAll('_', ' ')}
           </Typography>
-          <Typography variant="h6">{agent}</Typography>
+          <Typography variant="h6">{agent.model}</Typography>
         </Box>
-        {selectedAgent === agent ? (
+        {selectedAgent === agent.name ? (
           <Box mt={'5px'}>
             <CheckCircleIcon color="primary" />
           </Box>

@@ -7,7 +7,7 @@ import {
   LayoutContext,
   type LayoutContextType,
 } from '../../../context'
-import { useMobileHook } from '../../../hooks'
+import { useAgentId, useMobileHook } from '../../../hooks'
 
 export default function NewChatButton() {
   const { on_new_chat, promptLoading, user } = useContext(
@@ -17,6 +17,8 @@ export default function NewChatButton() {
 
   const isMobile = useMobileHook()
 
+  const agent = useAgentId()
+
   return (
     <DrawerButton
       disabled={promptLoading || !user}
@@ -24,7 +26,7 @@ export default function NewChatButton() {
       icon={<AddCommentOutlinedIcon fontSize="small" />}
       title="New chat"
       onClick={() => {
-        on_new_chat()
+        on_new_chat(agent)
         if (isMobile) setOpen(false)
       }}
     />

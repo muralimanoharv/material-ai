@@ -1,6 +1,7 @@
 import { createContext } from 'react'
 import { type Theme } from '@mui/material/styles'
 import type {
+  Agent,
   AppConfig,
   ChatItem,
   FeedbackDto,
@@ -13,10 +14,6 @@ import { ApiService } from './service/api.service'
 import { ChatService } from './service/chat.service'
 
 export interface AppContextType {
-  // Session State
-  session: string | undefined
-  setSession: React.Dispatch<React.SetStateAction<string | undefined>>
-
   // User State
   user: User | undefined
   setUser: React.Dispatch<React.SetStateAction<User | undefined>>
@@ -29,9 +26,7 @@ export interface AppContextType {
   setSnack: (message: string) => void
 
   // Models & Agents
-  agents: string[]
-  selectedAgent: string
-  setSelectedAgent: React.Dispatch<React.SetStateAction<string>>
+  agents: Agent[]
 
   // Files
   files: FileAttachment[]
@@ -45,12 +40,8 @@ export interface AppContextType {
   setSessions: React.Dispatch<React.SetStateAction<Session[]>>
 
   // Navigation / Flow
-  on_new_chat: () => void
-  fetchSession: (args: {
-    sessionId: string
-    selectedAgent: string
-    user?: string
-  }) => Promise<void>
+  on_new_chat: (agent?: string) => void
+  fetchSession: (agent: string, session_id: string) => Promise<void>
   setPrompt: (text: string) => void
 
   // Configuration & Meta

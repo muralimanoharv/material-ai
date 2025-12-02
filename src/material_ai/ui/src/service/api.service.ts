@@ -10,10 +10,11 @@ import {
   type HealthResponse,
   type ArtifactResponse,
   type DeleteSessionResponse,
+  type Agent,
+  type AgentResponse,
 } from '../schema'
 
 interface ApiServiceContext {
-  getSelectedAgent: () => string
   getUser: () => User | undefined
   on401: () => void
   on404: () => void
@@ -72,9 +73,9 @@ export class ApiService {
     return reader
   }
 
-  async create_session(): Promise<Session> {
+  async create_session(agent: string): Promise<Session> {
     const response = await fetch(
-      `${HOST}/apps/${this.context.getSelectedAgent()}/users/${this.context.getUser()?.sub}/sessions`,
+      `${HOST}/apps/${agent}/users/${this.context.getUser()?.sub}/sessions`,
       {
         method: 'POST',
         credentials: 'include',
@@ -88,7 +89,7 @@ export class ApiService {
     return body
   }
 
-  async fetch_history(app: string): Promise<Session[]> {
+  async fetch_sessions(app: string): Promise<Session[]> {
     const response = await fetch(`${HOST}/apps/${app}/history`, {
       method: 'GET',
       headers: {
@@ -105,9 +106,9 @@ export class ApiService {
     return body.history
   }
 
-  async fetch_session(session_id: string): Promise<Session> {
+  async fetch_session(agent: string, session_id: string): Promise<Session> {
     const response = await fetch(
-      `${HOST}/apps/${this.context.getSelectedAgent()}/users/${this.context.getUser()?.sub}/sessions/${session_id}`,
+      `${HOST}/apps/${agent}/users/${this.context.getUser()?.sub}/sessions/${session_id}`,
       {
         method: 'GET',
         headers: {
@@ -124,8 +125,8 @@ export class ApiService {
     return body
   }
 
-  async fetch_agents(): Promise<string[]> {
-    const response = await fetch(`${HOST}/list-apps`, {
+  async fetch_agents(): Promise<Agent[]> {
+    const response = await fetch(`${HOST}/agents`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -135,9 +136,9 @@ export class ApiService {
 
     this.handle_response(response)
 
-    const body = (await response.json()) as string[]
+    const body = (await response.json()) as AgentResponse
 
-    return body
+    return body.agents
   }
 
   async fetch_user(): Promise<User> {
@@ -193,13 +194,16 @@ export class ApiService {
     return body
   }
 
-  async fetch_artifact(dto: {
-    artifact_name: string
-    version: string | number
-    session: string
-  }): Promise<ArtifactResponse> {
+  async fetch_artifact(
+    agent: string,
+    dto: {
+      artifact_name: string
+      version: string | number
+      session: string
+    },
+  ): Promise<ArtifactResponse> {
     const response = await fetch(
-      `${HOST}/apps/${this.context.getSelectedAgent()}/users/${this.context.getUser()?.sub}/sessions/${dto.session}/artifacts/${dto.artifact_name}?version=${dto.version}`,
+      `${HOST}/apps/${agent}/users/${this.context.getUser()?.sub}/sessions/${dto.session}/artifacts/${dto.artifact_name}?version=${dto.version}`,
       {
         method: 'GET',
         headers: {
@@ -216,9 +220,12 @@ export class ApiService {
     return body
   }
 
-  async delete_session(session_id: string): Promise<DeleteSessionResponse> {
+  async delete_session(
+    agent: string,
+    session_id: string,
+  ): Promise<DeleteSessionResponse> {
     const response = await fetch(
-      `${HOST}/apps/${this.context.getSelectedAgent()}/users/${this.context.getUser()?.sub}/sessions/${session_id}`,
+      `${HOST}/apps/${agent}/users/${this.context.getUser()?.sub}/sessions/${session_id}`,
       {
         method: 'DELETE',
         headers: {

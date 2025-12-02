@@ -4,10 +4,11 @@ import { Box, IconButton, Tooltip, Typography, useTheme } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { drawerWidth } from '../material/MaterialDrawer'
 import { useNavigate } from 'react-router'
-import { useMobileHook } from '../../hooks'
+import { useAgentId, useMobileHook } from '../../hooks'
 import SigninButton from '../SigninButton'
 import { type Session } from '../../schema'
 import { type AppContextType, type LayoutContextType } from '../../context'
+import { useSessionId } from '../../hooks'
 
 interface SessionItemProps {
   session: Session
@@ -88,12 +89,15 @@ function SessionItem({ session }: SessionItemProps) {
   ) as LayoutContextType
   const isMobile = useMobileHook()
 
-  const isSelected = context.session === session.id
+  const session_id = useSessionId()
+  const agent = useAgentId()
+
+  const isSelected = session_id === session.id
 
   const deleteSession = async (e: MouseEvent) => {
     e?.stopPropagation()
     try {
-      await apiService.delete_session(session.id)
+      await apiService.delete_session(agent, session.id)
 
       context.setSessions((prevSessions) => {
         return [
@@ -102,7 +106,7 @@ function SessionItem({ session }: SessionItemProps) {
           ),
         ]
       })
-      if (isSelected) context.on_new_chat()
+      if (isSelected) context.on_new_chat(agent)
     } catch (e: unknown) {
       console.error(e)
       context.setSnack(config?.errorMessage || 'Error deleting session')
@@ -144,12 +148,8 @@ function SessionItem({ session }: SessionItemProps) {
       height={isDrawerOpen() ? 'auto' : 0}
       width={isDrawerOpen() ? drawerWidth - 35 : 0}
       onClick={async () => {
-        await context.fetchSession({
-          sessionId: session.id,
-          selectedAgent: session.app_name,
-        })
+        await context.fetchSession(session.app_name, session.id)
         await navigate(`/agents/${session.app_name}/session/${session.id}`)
-        context.setSession(session.id)
         if (isMobile) setOpen(false)
       }}
       sx={{

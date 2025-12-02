@@ -4,14 +4,16 @@ import { AppContext, type AppContextType } from '../../context'
 import { Box, Typography, useTheme } from '@mui/material'
 
 export default function ChatPage() {
-  let { user, config, loading, history } = useContext(AppContext) as AppContextType
+  let { user, config, loading, history } = useContext(
+    AppContext,
+  ) as AppContextType
 
   const theme = useTheme()
-  let showHeading = false;
+  let showHeading = false
 
-  if(!loading) {
+  if (!loading) {
     showHeading = !history.length
-  } 
+  }
 
   return (
     <>

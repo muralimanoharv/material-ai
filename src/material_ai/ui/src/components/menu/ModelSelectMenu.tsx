@@ -4,8 +4,8 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { Box, Typography } from '@mui/material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { AppContext, type AppContextType } from '../../context'
+import { useAgentId } from '../../hooks'
 
 interface ModelItemProps {
   model: string
@@ -13,13 +13,13 @@ interface ModelItemProps {
 }
 
 export default function ModelSelectMenu() {
-  const { currentModel, user, config } = React.useContext(
-    AppContext,
-  ) as AppContextType
+  const { user, config, agents } = React.useContext(AppContext) as AppContextType
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null)
 
   const open = Boolean(anchorEl)
+
+  const agent_id = useAgentId()
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
@@ -51,7 +51,7 @@ export default function ModelSelectMenu() {
           width: '120px',
         }}
       >
-        {currentModel}
+        {agents.find(agent => agent.name = agent_id)?.model}
       </Button>
       <Menu
         id="model-menu"
@@ -90,8 +90,6 @@ export default function ModelSelectMenu() {
 }
 
 function ModelItem({ model, tagline }: ModelItemProps) {
-  const { currentModel } = React.useContext(AppContext) as AppContextType
-
   return (
     <MenuItem key={model}>
       <Box
@@ -107,11 +105,6 @@ function ModelItem({ model, tagline }: ModelItemProps) {
           <Typography variant="h5">{tagline}</Typography>
           <Typography variant="h6">{model}</Typography>
         </Box>
-        {currentModel === model ? (
-          <Box>
-            <CheckCircleIcon color="primary" />
-          </Box>
-        ) : null}
       </Box>
     </MenuItem>
   )

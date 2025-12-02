@@ -53,20 +53,6 @@ export function isValidJson(str: string): boolean {
   return true
 }
 
-export const getPathParams = (): Record<string, string> => {
-  const parts = location.pathname.split('/')
-  const pathParams: Record<string, string> = {}
-  for (let i = 0; i < parts.length; i++) {
-    if (parts[i] === 'agents' && parts[i + 1]) {
-      pathParams['agentId'] = parts[i + 1]
-    }
-    if (parts[i] === 'session' && parts[i + 1]) {
-      pathParams['sessionId'] = parts[i + 1]
-    }
-  }
-  return pathParams
-}
-
 export const createParts = ({
   prompt,
   files,

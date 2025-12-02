@@ -7,25 +7,23 @@ import {
   type ThemeContextType,
 } from './context'
 import { ApiService } from './service/api.service'
-import Layout from './components/layout/Layout'
 import { Snackbar } from '@mui/material'
-import ChatPage from './components/pages/ChatPage'
-import type { ChatItem, FileAttachment, Session, User } from './schema'
-import { getPathParams } from './utils'
+import type { Agent, ChatItem, FileAttachment, Session, User } from './schema'
 import { HistoryService } from './service/history.service'
 import { ChatService } from './service/chat.service'
+import AgentPage from './components/pages/AgentPage'
+import AgentsPage from './components/pages/AgentsPage'
 
 function App() {
   const { config } = useContext(ThemeContext) as ThemeContextType
 
-  const [session, setSession] = useState<string | undefined>()
+  // const [session, setSession] = useState<string | undefined>()
   const [user, setUser] = useState<User | undefined>(undefined)
   const [health, setHealth] = useState<any>(undefined)
 
   const [history, setHistory] = useState<ChatItem[]>([])
   const [sessions, setSessions] = useState<Session[]>([])
-  const [agents, setAgents] = useState<string[]>([])
-  const [selectedAgent, setSelectedAgent] = useState<string>('')
+  const [agents, setAgents] = useState<Agent[]>([])
 
   const [loading, setLoading] = useState(false)
   const [promptLoading, setPromptLoading] = useState(false)
@@ -37,26 +35,19 @@ function App() {
 
   const ref = useRef<{
     user: User | undefined
-    selectedAgent: string
-    session: string | undefined
   }>({
     user,
-    selectedAgent,
-    session,
   })
-  ref.current = { user, selectedAgent, session }
+  ref.current = { user }
 
   const historyService = useRef(new HistoryService(setHistory))
 
   const getUser = () => ref.current.user
-  const getSelectedAgent = () => ref.current.selectedAgent
   const getConfig = () => config
-  const getSession = () => ref.current.session
 
   const apiService = useRef(
     new ApiService({
       getUser,
-      getSelectedAgent,
       getConfig,
       on401: () => {
         setUser(undefined)
@@ -64,16 +55,14 @@ function App() {
       },
       on404: () => {
         setSnack(config.errorMessage)
-        on_new_chat()
+        navigate("/")
       },
     }),
   )
 
   const chatService = useRef(
     new ChatService(apiService.current, historyService.current, {
-      getSession,
       getConfig,
-      getSelectedAgent,
       getUser,
       setPromptLoading,
       setFiles,
@@ -83,10 +72,15 @@ function App() {
     }),
   )
 
-  const on_new_chat = () => {
+  const on_new_chat = (agent?: string) => {
     historyService.current.clear_history()
-    setSession(undefined)
-    navigate(`/agents/${selectedAgent}`)
+
+    if(!agent) {
+      navigate("/")
+      return;
+    }
+
+    navigate(`/agents/${agent}`)
     input_focus()
   }
 
@@ -94,10 +88,10 @@ function App() {
     document.getElementById('input-base')?.focus()
   }
 
-  const fetchSession = async ({ sessionId }: { sessionId: string }) => {
+  const fetchSession = async (agent: string, session_id: string) => {
     try {
       setLoading(true)
-      const session = await apiService.current.fetch_session(sessionId)
+      const session = await apiService.current.fetch_session(agent, session_id)
       setHistory(session?.events || [])
       input_focus()
     } finally {
@@ -108,8 +102,6 @@ function App() {
   }
 
   const appContext: AppContextType = {
-    session,
-    setSession,
     user,
     setUser,
     loading,
@@ -121,8 +113,6 @@ function App() {
     sessions,
     setSessions,
     agents,
-    selectedAgent,
-    setSelectedAgent,
     promptLoading,
     fetchSession,
     on_new_chat,
@@ -143,32 +133,13 @@ function App() {
 
       const user = await apiService.current.fetch_user()
 
-      if (!user) {
-        return
-      }
+      if (!user) return
 
       setUser(user)
 
-      const agentList = await apiService.current.fetch_agents()
-      const pathParams = getPathParams()
+      const agents = await apiService.current.fetch_agents()
 
-      const defaultAgent = pathParams['agentId'] || agentList[0]
-      setAgents(agentList)
-      setSelectedAgent(defaultAgent)
-
-      const history = await apiService.current.fetch_history(defaultAgent)
-
-      setSessions(history || [])
-
-      if (!pathParams['sessionId']) {
-        return
-      }
-
-      const sessionId = pathParams['sessionId']
-      await fetchSession({
-        sessionId,
-      })
-      setSession(sessionId)
+      setAgents(agents || [])
     } finally {
       setTimeout(() => {
         setLoading(false)
@@ -184,17 +155,13 @@ function App() {
   return (
     <>
       <AppContext.Provider value={appContext}>
-        <Layout history={history}>
-          <Routes>
-            <Route path="/agents" element={<>Agents</>} />
-            <Route
-              path="/agents/:agentId/session/:sessionId"
-              element={<ChatPage />}
-            />
-            <Route path="/agents/:agentId" element={<ChatPage />} />
-            <Route path="/" element={<ChatPage />} />
+        <Routes>
+            <Route path="/agents" element={<AgentsPage />} />
+            <Route path="/agents/:agentId" element={<AgentPage />}>
+              <Route path="session/:sessionId" element={<AgentPage />} />
+            </Route>
+            <Route path="/" element={<AgentsPage />} />
           </Routes>
-        </Layout>
         <Snackbar
           open={!!snack}
           autoHideDuration={2000}

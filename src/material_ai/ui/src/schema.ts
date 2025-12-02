@@ -116,8 +116,12 @@ export type ThemeMode = 'light' | 'dark' | 'system'
 
 export interface Agent {
   name: string
-  id?: string
+  model: string
   description?: string
+}
+
+export interface AgentResponse {
+  agents: Agent[]
 }
 
 export interface HealthResponse {
