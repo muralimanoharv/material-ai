@@ -122,6 +122,7 @@ function App() {
     setPrompt: () => {},
     apiService: apiService.current,
     chatService: chatService.current,
+    historyService: historyService.current
   }
 
   const onAppLoad = async () => {

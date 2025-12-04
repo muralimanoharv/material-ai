@@ -18,7 +18,7 @@ function AgentPage() {
 }
 
 function AgentPageSection({ agent }: { agent: string }) {
-  const { apiService, setSessions, fetchSession } = useContext(
+  const { apiService, setSessions, fetchSession, historyService } = useContext(
     AppContext,
   ) as AppContextType
   const session_id = useSessionId()
@@ -29,6 +29,7 @@ function AgentPageSection({ agent }: { agent: string }) {
   }
 
   useEffect(() => {
+    historyService.clear_history()
     onAgentLoad()
   }, [agent])
 

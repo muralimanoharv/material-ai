@@ -12,6 +12,7 @@ import type {
 } from './schema'
 import { ApiService } from './service/api.service'
 import { ChatService } from './service/chat.service'
+import type { HistoryService } from './service/history.service'
 
 export interface AppContextType {
   // User State
@@ -51,6 +52,7 @@ export interface AppContextType {
   //service
   apiService: ApiService
   chatService: ChatService
+  historyService: HistoryService
 }
 
 export interface ThemeContextType {

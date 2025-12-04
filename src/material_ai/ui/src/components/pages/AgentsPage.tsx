@@ -2,22 +2,24 @@ import { useContext } from "react"
 import { withLayout } from "../../hooks"
 import { AppContext, type AppContextType } from "../../context"
 import { Box } from "@mui/material"
-import { Link } from "react-router"
+import Greeting from "../Greeting"
+import AgentList from "../AgentList"
 
 
 
 function AgentsPage() {
-    const { agents } = useContext(AppContext) as AppContextType
+    const { agents, user } = useContext(AppContext) as AppContextType
+    if(!user) {
+        return <Greeting />
+    }
     return <Box sx={{
         display: 'flex',
         flexDirection: "column",
         justifyContent: 'space-between',
         gap: '10px'
     }}>
-        {agents.map(agent => {
-            return <Link to={`/agents/${agent.name}`}>{agent.name}</Link>
-        })}
+        <AgentList agents={agents}/>
     </Box>
 }
 
-export default withLayout(AgentsPage, {showFooter: false})
+export default withLayout(AgentsPage, {showFooter: true})

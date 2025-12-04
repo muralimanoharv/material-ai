@@ -284,7 +284,21 @@ async def agents():
         model = ""
         if isinstance(base_agent, LlmAgent):
             model = base_agent.model
-        agents.append(Agent(name=agent, model=model))
+        agents.append(Agent(
+            id=agent, 
+            model=model, 
+            name=format_agent_name(agent),
+            description=base_agent.description,
+            status="active",
+        ))
     
     return AgentResponse(agents=agents)
+
+def format_agent_name(name):
+    """
+    Converts snake_case (greeting_agent) to Title Case (Greeting Agent).
+    """
+    if not name:
+        return ""
+    return name.replace('_', ' ').title()
 

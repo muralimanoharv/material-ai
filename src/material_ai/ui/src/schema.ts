@@ -115,9 +115,12 @@ export interface SendOptions {
 export type ThemeMode = 'light' | 'dark' | 'system'
 
 export interface Agent {
+  id: string
   name: string
+  description: string
+  status: 'active' | 'inactive'
   model: string
-  description?: string
+  lastUsed: string
 }
 
 export interface AgentResponse {

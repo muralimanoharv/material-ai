@@ -29,12 +29,15 @@ declare module '@mui/material/styles' {
 
   interface TypeBackground {
     card: string
+    cardHover: string
+    history: string
   }
 
   interface TypeText {
     tertiary: string
     h5: string
     tagline: string
+    selected: string
   }
 
   interface Palette {
