@@ -4,7 +4,7 @@ import os
 from typing import Optional, Mapping, Any
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.routing import APIRoute
-from google.adk.cli.fast_api import get_fast_api_app
+from google.adk.cli.fast_api import get_fast_api_app, AgentLoader
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -27,6 +27,7 @@ from . import __app_name__, __version__
 _lock = threading.Lock()
 _logger = logging.getLogger(__name__)
 _app_instance: FastAPI | None = None
+_agent_loader: AgentLoader | None = None
 _lock = threading.Lock()
 
 STATIC_DIR = f"{os.path.dirname(os.path.abspath(__file__))}/ui/dist"
@@ -223,6 +224,7 @@ def get_app(
         FastAPI: The singleton instance of the FastAPI application.
     """
     global _app_instance
+    global _agent_loader
     with _lock:
         if _app_instance is None:
             config = get_config()
@@ -235,6 +237,7 @@ def get_app(
             )
             _setup_app(app, oauth_service, ui_config_yaml, feedback_handler)
             _app_instance = app
+            _agent_loader = AgentLoader(agent_dir)
 
         return _app_instance
 
@@ -255,3 +258,7 @@ def get_endpoint_function(function_name: str):
             if route.name == function_name:
                 return route.endpoint
     return None
+
+
+def get_agent_loader() -> AgentLoader | None:
+    return _agent_loader

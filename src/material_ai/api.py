@@ -1,8 +1,9 @@
 import os
 import logging
 import psutil
-from .app import get_endpoint_function
+from .app import get_endpoint_function, get_agent_loader
 from google.adk.cli.adk_web_server import Session
+from google.adk.agents import LlmAgent
 from datetime import datetime, timezone
 from fastapi import APIRouter, Response, Request, Cookie, status, Depends
 from fastapi.responses import FileResponse, RedirectResponse
@@ -25,6 +26,7 @@ from .auth import (
 from .auth import IOAuthService, FeedbackHandler, get_user
 from .oauth import OAuthUserDetail
 from .response import UserSuccessResponse, HealthResponse, History, HistoryResponse
+from .response import Agent, AgentResponse, List
 from .ui_config import UIConfig
 
 _logger = logging.getLogger(__name__)
@@ -245,6 +247,14 @@ async def config(ui_configuration: UIConfig = Depends(get_ui_configuration)):
 async def history(app_name: str, user: OAuthUserDetail = Depends(get_user)):
     list_sessions = get_endpoint_function("list_sessions")
     get_session = get_endpoint_function("get_session")
+
+    def get_title(session_instance: Session) -> str:
+        try:
+            text_content = session_instance.events[0].content.parts[0].text
+            return text_content
+        except (IndexError, AttributeError):
+            return "..."
+
     sessions: list[Session] = await list_sessions(app_name, user.sub)
     sessions.sort(key=lambda s: s.last_update_time, reverse=True)
     history = []
@@ -253,10 +263,46 @@ async def history(app_name: str, user: OAuthUserDetail = Depends(get_user)):
         history.append(
             History(
                 id=session.id,
-                title=session_instance.events[0].content.parts[0].text,
+                title=get_title(session_instance),
                 last_update_time=session.last_update_time * 1000,
                 app_name=session.app_name,
             )
         )
 
     return HistoryResponse(history=history)
+
+
+@router.get(
+    "/agents",
+    summary="Get list of active agents",
+)
+async def agents():
+    agent_loader = get_agent_loader()
+    if not agent_loader:
+        return []
+    agents: List[Agent] = []
+
+    def format_agent_name(name):
+        """
+        Converts snake_case (greeting_agent) to Title Case (Greeting Agent).
+        """
+        if not name:
+            return ""
+        return name.replace("_", " ").title()
+
+    for agent in agent_loader.list_agents():
+        base_agent = agent_loader.load_agent(agent)
+        model = ""
+        if isinstance(base_agent, LlmAgent):
+            model = base_agent.model
+        agents.append(
+            Agent(
+                id=agent,
+                model=model,
+                name=format_agent_name(agent),
+                description=base_agent.description,
+                status="active",
+            )
+        )
+
+    return AgentResponse(agents=agents)

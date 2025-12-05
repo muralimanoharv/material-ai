@@ -59,6 +59,16 @@ body {
   transition: opacity 0.5s ease-in-out;
 }
 
+.chat-item-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-item-box:hover .actions-child {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
 .chat-item-box-model .react-markdown > * {
   animation: fadeIn 1s;
   animation-fill-mode: forwards;
