@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.14](https://github.com/muralimanoharv/material-ai/compare/v1.1.13...v1.1.14) (2025-12-05)
+
+
+### Bug Fixes
+
+* ui refactor ([fc825cd](https://github.com/muralimanoharv/material-ai/commit/fc825cd30805060bfe4c46e4b7cae0b1bfe21681))
+* UI Refactor changes ([ade4861](https://github.com/muralimanoharv/material-ai/commit/ade4861c93787c124fb39d16b1fe221e4bad3c76))
+
 ## [1.1.13](https://github.com/muralimanoharv/material-ai/compare/v1.1.12...v1.1.13) (2025-11-22)
 
 
