@@ -1,15 +1,19 @@
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
+import { Box } from '@mui/material'
 import { withLayout } from '../../hooks'
 import { AppContext, type AppContextType } from '../../context'
-import { Box } from '@mui/material'
 import Greeting from '../Greeting'
 import AgentList from '../AgentList'
 
 function AgentsPage() {
-  const { agents, user } = useContext(AppContext) as AppContextType
+  const { agents, user, setSessions } = useContext(AppContext) as AppContextType
   if (!user) {
     return <Greeting />
   }
+
+  useEffect(() => {
+    setSessions([])
+  }, [])
   return (
     <Box
       sx={{

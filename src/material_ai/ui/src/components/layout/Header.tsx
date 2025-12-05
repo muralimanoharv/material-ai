@@ -75,7 +75,12 @@ export default function Header() {
 
       {agentId && (
         <Box>
-          <Typography lineHeight={'26px'} fontSize={'16px'} sx={{ userSelect: 'none' }} variant="h4">
+          <Typography
+            lineHeight={'26px'}
+            fontSize={'16px'}
+            sx={{ userSelect: 'none' }}
+            variant="h4"
+          >
             {agents.find((agent) => agent.id == agentId)?.name}
           </Typography>
         </Box>
