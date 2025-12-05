@@ -13,7 +13,9 @@ interface ModelItemProps {
 }
 
 export default function ModelSelectMenu() {
-  const { user, config, agents } = React.useContext(AppContext) as AppContextType
+  const { user, config, agents } = React.useContext(
+    AppContext,
+  ) as AppContextType
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null)
 
@@ -51,7 +53,7 @@ export default function ModelSelectMenu() {
           width: '120px',
         }}
       >
-        {agents.find(agent => agent.name = agent_id)?.model}
+        {agents.find((agent) => agent.id == agent_id)?.model}
       </Button>
       <Menu
         id="model-menu"

@@ -75,3 +75,12 @@ export const createParts = ({
 
   return parts
 }
+
+export const formatModelName = (modelId: string) => {
+  if (!modelId) return ''
+
+  return modelId
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}

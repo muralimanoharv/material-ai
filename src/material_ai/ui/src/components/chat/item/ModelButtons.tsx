@@ -37,6 +37,7 @@ export default function ModelButtons(props: ModelButtonsProps) {
     setFeedback,
     postPostiveFeedback,
     chat,
+    chatIdx,
     setNegativeFeedbackToggle,
   } = useContext(ChatItemContext) as ChatItemContextType
 
@@ -84,7 +85,10 @@ export default function ModelButtons(props: ModelButtonsProps) {
       icon: <RefreshIcon fontSize="small" />,
       tooltip: 'Redo',
       onClick: () => {
-        const prompt = chat.prompt
+        let prompt = chat.prompt
+        if (!prompt) {
+          prompt = chatService.find_previous_prompt(chatIdx)
+        }
         chatService.send_message(prompt!, {
           session_id,
           agent,

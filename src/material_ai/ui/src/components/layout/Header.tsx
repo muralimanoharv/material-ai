@@ -7,14 +7,14 @@ import {
   type LayoutContextType,
 } from '../../context'
 import MenuIcon from '@mui/icons-material/Menu'
-import { useMobileHook } from '../../hooks'
+import { useAgentId, useMobileHook } from '../../hooks'
 import SigninButton from '../SigninButton'
 import UserAvatar from './UserAvatar'
 import { useNavigate } from 'react-router'
 
 export default function Header() {
   // We cast the context to our strict types
-  const { loading, user, health, config } = useContext(
+  const { loading, user, health, config, agents } = useContext(
     AppContext,
   ) as AppContextType
   const { setOpen } = useContext(LayoutContext) as LayoutContextType
@@ -22,6 +22,8 @@ export default function Header() {
   const navigate = useNavigate()
 
   const isMobile = useMobileHook()
+
+  const agentId = useAgentId()
 
   return (
     <Box
@@ -57,7 +59,7 @@ export default function Header() {
           sx={{ cursor: 'pointer' }}
           title={health?.version}
           onClick={() => {
-            navigate("/")
+            navigate('/agents')
           }}
         >
           <Typography
@@ -70,14 +72,29 @@ export default function Header() {
           </Typography>
         </Box>
       </Box>
-      {loading ? null : (
+
+      {agentId && (
+        <Box>
+          <Typography lineHeight={'26px'} fontSize={'16px'} sx={{ userSelect: 'none' }} variant="h4">
+            {agents.find((agent) => agent.id == agentId)?.name}
+          </Typography>
+        </Box>
+      )}
+
+      {user ? (
+        <UserAvatar />
+      ) : (
         <>
-          {user ? (
-            <UserAvatar />
-          ) : (
-            <Box>
-              <SigninButton borderRadius="4px" />
-            </Box>
+          {loading ? null : (
+            <>
+              {user ? (
+                <UserAvatar />
+              ) : (
+                <Box>
+                  <SigninButton borderRadius="4px" />
+                </Box>
+              )}
+            </>
           )}
         </>
       )}

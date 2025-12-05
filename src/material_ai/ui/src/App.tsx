@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext, useRef } from 'react'
-import { Routes, Route, useNavigate } from 'react-router'
+import { Routes, Route, useNavigate, Navigate } from 'react-router'
 import {
   AppContext,
   ThemeContext,
@@ -13,6 +13,7 @@ import { HistoryService } from './service/history.service'
 import { ChatService } from './service/chat.service'
 import AgentPage from './components/pages/AgentPage'
 import AgentsPage from './components/pages/AgentsPage'
+import PageNotFound from './components/PageNotFound'
 
 function App() {
   const { config } = useContext(ThemeContext) as ThemeContextType
@@ -31,19 +32,30 @@ function App() {
 
   const [files, setFiles] = useState<FileAttachment[]>([])
 
+  //Moving Drawer State outside of Layout
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [drawerHoverOpen, setDrawerHoverOpen] = useState(false)
+
   const navigate = useNavigate()
+
+  const setPromptRef = useRef<
+    React.Dispatch<React.SetStateAction<string>> | undefined
+  >(undefined)
 
   const ref = useRef<{
     user: User | undefined
+    history: ChatItem[]
   }>({
     user,
+    history,
   })
-  ref.current = { user }
+  ref.current = { user, history }
 
-  const historyService = useRef(new HistoryService(setHistory))
-
+  const getHitory = () => ref.current.history
   const getUser = () => ref.current.user
   const getConfig = () => config
+
+  const historyService = useRef(new HistoryService(getHitory, setHistory))
 
   const apiService = useRef(
     new ApiService({
@@ -54,8 +66,7 @@ function App() {
         setHistory([])
       },
       on404: () => {
-        setSnack(config.errorMessage)
-        navigate("/")
+        navigate('/404')
       },
     }),
   )
@@ -75,9 +86,9 @@ function App() {
   const on_new_chat = (agent?: string) => {
     historyService.current.clear_history()
 
-    if(!agent) {
-      navigate("/")
-      return;
+    if (!agent) {
+      navigate('/')
+      return
     }
 
     navigate(`/agents/${agent}`)
@@ -94,11 +105,17 @@ function App() {
       const session = await apiService.current.fetch_session(agent, session_id)
       setHistory(session?.events || [])
       input_focus()
+    } catch (e) {
+      console.error(e)
     } finally {
       setTimeout(() => {
         setLoading(false)
       }, 500)
     }
+  }
+
+  const setPrompt = (prompt: string) => {
+    if (setPromptRef.current) setPromptRef.current(prompt)
   }
 
   const appContext: AppContextType = {
@@ -119,10 +136,15 @@ function App() {
     input_focus,
     health,
     config,
-    setPrompt: () => {},
+    setPrompt,
+    drawerHoverOpen,
+    drawerOpen,
+    setDrawerHoverOpen,
+    setDrawerOpen,
+    setPromptRef,
     apiService: apiService.current,
     chatService: chatService.current,
-    historyService: historyService.current
+    historyService: historyService.current,
   }
 
   const onAppLoad = async () => {
@@ -157,12 +179,13 @@ function App() {
     <>
       <AppContext.Provider value={appContext}>
         <Routes>
-            <Route path="/agents" element={<AgentsPage />} />
-            <Route path="/agents/:agentId" element={<AgentPage />}>
-              <Route path="session/:sessionId" element={<AgentPage />} />
-            </Route>
-            <Route path="/" element={<AgentsPage />} />
-          </Routes>
+          <Route path="/agents" element={<AgentsPage />} />
+          <Route path="/agents/:agentId" element={<AgentPage />}>
+            <Route path="session/:sessionId" element={<AgentPage />} />
+          </Route>
+          <Route path="/" element={<Navigate to="/agents" replace />} />
+          <Route path="/404" element={<PageNotFound />} />
+        </Routes>
         <Snackbar
           open={!!snack}
           autoHideDuration={2000}

@@ -1,9 +1,14 @@
 import { type ChatItem } from '../schema'
 
 export class HistoryService {
+  private getHistory: () => ChatItem[]
   private setHistory: React.Dispatch<React.SetStateAction<ChatItem[]>>
-  constructor(setHistory: React.Dispatch<React.SetStateAction<ChatItem[]>>) {
+  constructor(
+    getHistory: () => ChatItem[],
+    setHistory: React.Dispatch<React.SetStateAction<ChatItem[]>>,
+  ) {
     this.setHistory = setHistory
+    this.getHistory = getHistory
   }
 
   add_history(history: ChatItem) {
@@ -28,6 +33,11 @@ export class HistoryService {
         }),
       ]
     })
+  }
+
+  get(idx: number): ChatItem | undefined {
+    const history = this.getHistory()
+    return history[idx]
   }
 
   clear_history() {

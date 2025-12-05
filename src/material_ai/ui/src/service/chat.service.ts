@@ -149,7 +149,7 @@ export class ChatService {
 
   async cancel_api(): Promise<void> {
     return new Promise(async (resolve) => {
-      if(this.controller) {
+      if (this.controller) {
         this.controller?.abort()
         this.historyService.add_history({
           content: {
@@ -159,17 +159,17 @@ export class ChatService {
           id: `${new Date().getTime()}`,
           cancelled: true,
         })
-        this.controller = undefined;
+        this.controller = undefined
         this.context.setPromptLoading(false)
       }
       if (this.reader) {
         try {
-           await this.reader.cancel()
-        } catch(e) {
+          await this.reader.cancel()
+        } catch (e) {
           console.warn('Reader cancel error:', e)
         } finally {
           this.reader = undefined
-        }        
+        }
       }
 
       if (this.loadingId) {
@@ -179,8 +179,18 @@ export class ChatService {
         this.loadingId = undefined
       }
 
-      
       resolve()
     })
+  }
+
+  find_previous_prompt(idx: number): string | undefined {
+    for (let i = idx - 1; i >= 0; i--) {
+      const prevChat = this.historyService.get(i)
+      if (!prevChat) return
+      if (prevChat.content.role == 'model') continue
+      for (let part of prevChat.content.parts) {
+        if (part.text) return part.text
+      }
+    }
   }
 }

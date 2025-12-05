@@ -1,6 +1,6 @@
 import { useContext, type MouseEvent } from 'react'
 import { AppContext, LayoutContext } from '../../context'
-import { Box, IconButton, Tooltip, Typography, useTheme } from '@mui/material'
+import { Box, IconButton, Typography, useTheme, Tooltip } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { drawerWidth } from '../material/MaterialDrawer'
 import { useNavigate } from 'react-router'
@@ -145,7 +145,7 @@ function SessionItem({ session }: SessionItemProps) {
   return (
     <Box
       className="session-history"
-      height={isDrawerOpen() ? 'auto' : 0}
+      // height={isDrawerOpen() ? 'auto' : 0}
       width={isDrawerOpen() ? drawerWidth - 35 : 0}
       onClick={async () => {
         await context.fetchSession(session.app_name, session.id)

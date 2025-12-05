@@ -9,6 +9,7 @@ import {
   type LayoutContextType,
   type ThemeContextType,
   AppContext,
+  type AppContextType,
 } from '../../context'
 import SettingsSwipeableDrawer from './drawers/SettingsSwipeableDrawer'
 import MaterialDrawer, { drawerWidth } from '../material/MaterialDrawer'
@@ -18,7 +19,8 @@ import SessionHistorySection from './SessionHistorySection'
 import NewChatButton from './buttons/NewChatButton'
 import MenuButton from './buttons/MenuButton'
 import SettingsButton from './buttons/SettingsButton'
-import { useMobileHook } from '../../hooks'
+import { useAgentId, useMobileHook } from '../../hooks'
+import AgentsButton from './buttons/AgentsButton'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -29,16 +31,23 @@ interface FlexibleDrawerProps {
   children: React.ReactNode
 }
 
-export default function Layout({children, showFooter = true}: LayoutProps) {
-  const [open, setOpen] = React.useState(false)
-  const [hoverOpen, setHoverOpen] = React.useState(false)
+export default function Layout({ children, showFooter = true }: LayoutProps) {
   const [settingsDrawerOpen, setSettingsDrawerOpen] = React.useState(false)
   const [themeDrawerOpen, setThemeDrawerOpen] = React.useState(false)
 
   const isMobile = useMobileHook()
   const theme = useTheme()
 
-  const context = React.useContext(AppContext)
+  const agentId = useAgentId()
+
+  const context = React.useContext(AppContext) as AppContextType
+
+  const {
+    drawerOpen: open,
+    drawerHoverOpen: hoverOpen,
+    setDrawerOpen: setOpen,
+    setDrawerHoverOpen: setHoverOpen,
+  } = context
 
   const { theme: currentTheme, setTheme } = React.useContext(
     ThemeContext,
@@ -100,25 +109,23 @@ export default function Layout({children, showFooter = true}: LayoutProps) {
             sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}
           >
             {!isMobile && <MenuButton />}
+            <AgentsButton />
+            {agentId && <NewChatButton />}
+
             <Box
               onMouseLeave={() => setHoverOpen(false)}
               onMouseEnter={() => setHoverOpen(true)}
-              sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
+              sx={{
+                flexGrow: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                overflowY: isDrawerOpen() ? 'auto' : 'hidden',
+                overflowX: 'hidden',
+              }}
             >
-              <NewChatButton />
-              <Box
-                sx={{
-                  flexGrow: 1,
-                  height: '60vh',
-                  display: 'flex',
-                  overflowY: 'auto',
-                  overflowX: 'hidden',
-                }}
-              >
-                <SessionHistorySection />
-              </Box>
-              <SettingsButton />
+              {agentId && <SessionHistorySection />}
             </Box>
+            <SettingsButton />
           </Box>
         </FlexibleDrawer>
         <SettingsSwipeableDrawer />

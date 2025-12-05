@@ -26,14 +26,22 @@ import FileBox from '../chat/item/FileBox'
 import { useAgentId, useSessionId } from '../../hooks'
 
 export default function PromptInput() {
-  const { promptLoading, files, setFiles, user, config, chatService } =
-    useContext(AppContext) as AppContextType
+  const {
+    promptLoading,
+    files,
+    setFiles,
+    user,
+    config,
+    chatService,
+    setPromptRef,
+  } = useContext(AppContext) as AppContextType
   const session_id = useSessionId()
   const agent = useAgentId() as string
 
   const theme = useTheme()
   const [fullScreen, setFullScreen] = useState(false)
   const [prompt, setPrompt] = useState('')
+  setPromptRef.current = setPrompt
 
   const handleSubmit = (event?: SyntheticEvent) => {
     event?.preventDefault()

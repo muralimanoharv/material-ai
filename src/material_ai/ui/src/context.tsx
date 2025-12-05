@@ -53,6 +53,15 @@ export interface AppContextType {
   apiService: ApiService
   chatService: ChatService
   historyService: HistoryService
+
+  //Drawer
+  drawerHoverOpen: boolean
+  drawerOpen: boolean
+  setDrawerHoverOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setPromptRef: React.RefObject<
+    React.Dispatch<React.SetStateAction<string>> | undefined
+  >
 }
 
 export interface ThemeContextType {
@@ -77,6 +86,7 @@ export interface LayoutContextType {
 
 export interface ChatItemContextType {
   chat: ChatItem
+  chatIdx: number
   feedback?: FeedbackDto
   setFeedback: (feedback?: FeedbackDto) => void
   postPostiveFeedback: (dto: FeedbackDto) => Promise<void>

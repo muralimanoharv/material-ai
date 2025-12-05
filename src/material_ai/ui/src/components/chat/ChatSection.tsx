@@ -48,8 +48,8 @@ export default function ChatSection() {
           },
         }}
       >
-        {history.map((chat) => {
-          return <ChatItemSection chat={chat} key={chat.id} />
+        {history.map((chat, idx) => {
+          return <ChatItemSection chat={chat} chatIdx={idx} key={chat.id} />
         })}
       </Box>
     </Box>
@@ -58,6 +58,7 @@ export default function ChatSection() {
 
 interface ChatItemSectionProps {
   chat: ChatItem
+  chatIdx: number
 }
 
 function ChatItemSection(props: ChatItemSectionProps) {
@@ -67,7 +68,7 @@ function ChatItemSection(props: ChatItemSectionProps) {
   const [feedback, setFeedback] = useState<FeedbackDto | undefined>()
   const [negativeFeedbackToggle, setNegativeFeedbackToggle] = useState(false)
 
-  const chat = props.chat
+  const { chat, chatIdx } = props
 
   const postPostiveFeedback = async ({
     feedback_category,
@@ -107,6 +108,7 @@ function ChatItemSection(props: ChatItemSectionProps) {
 
   const chatContext: ChatItemContextType = {
     chat,
+    chatIdx,
     feedback,
     negativeFeedbackToggle,
     postPostiveFeedback,

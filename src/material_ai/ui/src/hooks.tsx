@@ -14,19 +14,27 @@ export const useMobileHook = (): boolean => {
 
 export const useSessionId = (): string => {
   const params = useParams()
-  return params["sessionId"] as string
+  return params['sessionId'] as string
 }
 
 export const useAgentId = (): string => {
   const params = useParams()
-  return params["agentId"] as string
+  return params['agentId'] as string
 }
 
-
-export const withLayout = (Component: React.FC, options?: {showFooter?: boolean}) => {
+export const withLayout = (
+  Component: React.FC,
+  options?: { showFooter?: boolean },
+) => {
   return (props: any) => {
-    return <Layout showFooter={options?.showFooter == undefined ? true : options.showFooter}>
-      <Component {...props}/>
-    </Layout>
+    return (
+      <Layout
+        showFooter={
+          options?.showFooter == undefined ? true : options.showFooter
+        }
+      >
+        <Component {...props} />
+      </Layout>
+    )
   }
-} 
+}

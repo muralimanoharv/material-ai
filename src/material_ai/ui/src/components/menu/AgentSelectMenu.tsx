@@ -3,12 +3,13 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { Box, Button, Tooltip, Typography } from '@mui/material'
 import { AppContext, type AppContextType } from '../../context'
-import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined'
+import { AutoAwesome } from '@mui/icons-material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { menuNeedsLogin } from './hoc'
 import { useNavigate } from 'react-router'
 import { useAgentId } from '../../hooks'
 import type { Agent } from '../../schema'
+import { formatModelName } from '../../utils'
 
 interface AgentSelectMenuBodyProps {
   agents: Agent[]
@@ -42,7 +43,7 @@ export default function AgentSelectMenu() {
           aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
           onClick={handleClick}
-          startIcon={<AutoAwesomeOutlinedIcon fontSize="small" />}
+          startIcon={<AutoAwesome fontSize="small" />}
           sx={{
             borderRadius: '24px',
             padding: '0 16px',
@@ -86,7 +87,7 @@ export default function AgentSelectMenu() {
 const AgentSelectMenuBody = menuNeedsLogin<AgentSelectMenuBodyProps>(
   (props) => {
     return (
-      <Box sx={{ width: 300 }}>
+      <Box>
         {props.agents.map((agent) => (
           <AgentItem key={agent.name} agent={agent} />
         ))}
@@ -103,9 +104,9 @@ function AgentItem({ agent }: AgentItemProps) {
 
   return (
     <MenuItem
-      key={agent.name}
+      key={agent.id}
       onClick={async () => {
-        navigate(`/agents/${agent}`)
+        navigate(`/agents/${agent.id}`)
       }}
     >
       <Box
@@ -123,12 +124,10 @@ function AgentItem({ agent }: AgentItemProps) {
             flexDirection: 'column',
           }}
         >
-          <Typography textTransform="capitalize" variant="h5">
-            {agent.name.replaceAll('_', ' ')}
-          </Typography>
-          <Typography variant="h6">{agent.model}</Typography>
+          <Typography variant="h5">{agent.name}</Typography>
+          <Typography variant="h6">{formatModelName(agent.model)}</Typography>
         </Box>
-        {selectedAgent === agent.name ? (
+        {selectedAgent === agent.id ? (
           <Box mt={'5px'}>
             <CheckCircleIcon color="primary" />
           </Box>
