@@ -12,7 +12,6 @@ function AgentPage() {
   if (!context.agents.length) return null
 
   if (!agent_id) return null
-  //TODO: Display page for this scenario
   if (!context.agents.find((agent) => agent.id == agent_id))
     return <PageNotFound />
 

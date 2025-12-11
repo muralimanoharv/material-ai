@@ -30,6 +30,7 @@ const AgentList = ({ agents }: { agents: Agent[] }) => {
         <Typography
           variant="h5"
           sx={{ color: theme.palette.text.h5, fontWeight: 600 }}
+          data-testid="agents-page-header"
         >
           Agents
         </Typography>
@@ -81,6 +82,7 @@ const AgentList = ({ agents }: { agents: Agent[] }) => {
 
                   <Box sx={{ mt: 2 }}>
                     <Typography
+                      data-testid={`agents-page-card-${agent.id}-heading`}
                       variant="h6"
                       sx={{
                         color: theme.palette.text.primary,
@@ -90,6 +92,7 @@ const AgentList = ({ agents }: { agents: Agent[] }) => {
                       {agent.name}
                     </Typography>
                     <Typography
+                      data-testid={`agents-page-card-${agent.id}-description`}
                       variant="body2"
                       sx={{
                         mt: 1,
@@ -108,6 +111,7 @@ const AgentList = ({ agents }: { agents: Agent[] }) => {
                     sx={{ mt: 3 }}
                   >
                     <Chip
+                      data-testid={`agents-page-card-${agent.id}-model`}
                       label={formatModelName(agent.model)}
                       size="small"
                       sx={{
@@ -130,6 +134,7 @@ const AgentList = ({ agents }: { agents: Agent[] }) => {
                       />
                       <Typography
                         variant="caption"
+                        data-testid={`agents-page-card-${agent.id}-status`}
                         sx={{
                           color:
                             agent.status === 'active'

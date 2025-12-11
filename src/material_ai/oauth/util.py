@@ -55,6 +55,14 @@ def handle_httpx_errors(url: str = "Unknown API"):
                     status_code=e.response.status_code,
                     detail=response_json_or_text(e.response),
                 )
+            except httpx.ConnectTimeout as e:
+                _logger.warning(
+                    f"ERROR: Non-200 error code returned from {url}: {e}, body: {e.response.text}"
+                )
+                return OAuthErrorResponse(
+                    status_code=e.response.status_code,
+                    detail=response_json_or_text(e.response),
+                )
             except httpx.HTTPError as e:
                 _logger.error(
                     f"ERROR: Unexpected HTTP error from {url}: {e}", exc_info=e
