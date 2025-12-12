@@ -1,5 +1,5 @@
 __app_name__ = "material_ai"
-__version__ = "1.1.14"
+__version__ = "1.1.15"
 
 from .app import get_app
 from .request import FeedbackRequest
