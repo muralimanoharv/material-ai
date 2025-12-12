@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.15](https://github.com/muralimanoharv/material-ai/compare/v1.1.14...v1.1.15) (2025-12-12)
+
+
+### Bug Fixes
+
+* Json agent & terraform changes ([b8174d4](https://github.com/muralimanoharv/material-ai/commit/b8174d43d3193d05223f44b2f8312224c75f899b))
+
 ## [1.1.14](https://github.com/muralimanoharv/material-ai/compare/v1.1.13...v1.1.14) (2025-12-05)
 
 
