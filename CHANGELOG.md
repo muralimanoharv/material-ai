@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.16](https://github.com/muralimanoharv/material-ai/compare/v1.1.15...v1.1.16) (2025-12-12)
+
+
+### Bug Fixes
+
+* fix ui bug ([d9df152](https://github.com/muralimanoharv/material-ai/commit/d9df1523bc80497af8f86482072ede6e1df984dd))
+* fix ui bug 1 ([8d8a450](https://github.com/muralimanoharv/material-ai/commit/8d8a4504eea7bc5e46bb84792cd4f2d1b87f358b))
+
 ## [1.1.15](https://github.com/muralimanoharv/material-ai/compare/v1.1.14...v1.1.15) (2025-12-12)
 
 
