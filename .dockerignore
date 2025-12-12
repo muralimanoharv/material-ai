@@ -8,3 +8,9 @@
 *.db
 dist
 **/*.egg-info/
+**/*tfvars
+**/*.tfstate
+**/*.tfstate.backup
+**/.terraform
+**/.terraform.lock.hcl
+**/.terraform.tfstate.lock.info

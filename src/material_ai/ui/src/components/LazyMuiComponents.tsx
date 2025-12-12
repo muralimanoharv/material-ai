@@ -1,6 +1,11 @@
 import { lazy, type LazyExoticComponent, type ComponentType } from 'react'
+import { FormComponents } from './SmartFormComponents'
+import { DynamicForm } from './DynamicForm'
 
-type LazyComponentMap = Record<string, LazyExoticComponent<ComponentType<any>>>
+type LazyComponentMap = Record<
+  string,
+  LazyExoticComponent<ComponentType<any>> | ComponentType<any>
+>
 
 export const LazyMuiComponents: LazyComponentMap = {
   Accordion: lazy(() => import('@mui/material/Accordion')),
@@ -30,7 +35,6 @@ export const LazyMuiComponents: LazyComponentMap = {
   CardContent: lazy(() => import('@mui/material/CardContent')),
   CardHeader: lazy(() => import('@mui/material/CardHeader')),
   CardMedia: lazy(() => import('@mui/material/CardMedia')),
-  Checkbox: lazy(() => import('@mui/material/Checkbox')),
   Chip: lazy(() => import('@mui/material/Chip')),
   CircularProgress: lazy(() => import('@mui/material/CircularProgress')),
   ClickAwayListener: lazy(() => import('@mui/material/ClickAwayListener')),
@@ -48,8 +52,6 @@ export const LazyMuiComponents: LazyComponentMap = {
   Fab: lazy(() => import('@mui/material/Fab')),
   Fade: lazy(() => import('@mui/material/Fade')),
   FilledInput: lazy(() => import('@mui/material/FilledInput')),
-  FormControl: lazy(() => import('@mui/material/FormControl')),
-  FormControlLabel: lazy(() => import('@mui/material/FormControlLabel')),
   FormGroup: lazy(() => import('@mui/material/FormGroup')),
   FormHelperText: lazy(() => import('@mui/material/FormHelperText')),
   FormLabel: lazy(() => import('@mui/material/FormLabel')),
@@ -67,7 +69,6 @@ export const LazyMuiComponents: LazyComponentMap = {
   Input: lazy(() => import('@mui/material/Input')),
   InputAdornment: lazy(() => import('@mui/material/InputAdornment')),
   InputBase: lazy(() => import('@mui/material/InputBase')),
-  InputLabel: lazy(() => import('@mui/material/InputLabel')),
   LinearProgress: lazy(() => import('@mui/material/LinearProgress')),
   Link: lazy(() => import('@mui/material/Link')),
   List: lazy(() => import('@mui/material/List')),
@@ -81,7 +82,6 @@ export const LazyMuiComponents: LazyComponentMap = {
   ListItemText: lazy(() => import('@mui/material/ListItemText')),
   ListSubheader: lazy(() => import('@mui/material/ListSubheader')),
   Menu: lazy(() => import('@mui/material/Menu')),
-  MenuItem: lazy(() => import('@mui/material/MenuItem')),
   MenuList: lazy(() => import('@mui/material/MenuList')),
   MobileStepper: lazy(() => import('@mui/material/MobileStepper')),
   Modal: lazy(() => import('@mui/material/Modal')),
@@ -100,14 +100,9 @@ export const LazyMuiComponents: LazyComponentMap = {
   Popover: lazy(() => import('@mui/material/Popover')),
   Popper: lazy(() => import('@mui/material/Popper')),
   Portal: lazy(() => import('@mui/material/Portal')),
-  Radio: lazy(() => import('@mui/material/Radio')),
-  RadioGroup: lazy(() => import('@mui/material/RadioGroup')),
-  Rating: lazy(() => import('@mui/material/Rating')),
   ScopedCssBaseline: lazy(() => import('@mui/material/ScopedCssBaseline')),
-  Select: lazy(() => import('@mui/material/Select')),
   Skeleton: lazy(() => import('@mui/material/Skeleton')),
   Slide: lazy(() => import('@mui/material/Slide')),
-  Slider: lazy(() => import('@mui/material/Slider')),
   Snackbar: lazy(() => import('@mui/material/Snackbar')),
   SnackbarContent: lazy(() => import('@mui/material/SnackbarContent')),
   SpeedDial: lazy(() => import('@mui/material/SpeedDial')),
@@ -123,7 +118,6 @@ export const LazyMuiComponents: LazyComponentMap = {
   Stepper: lazy(() => import('@mui/material/Stepper')),
   SvgIcon: lazy(() => import('@mui/material/SvgIcon')),
   SwipeableDrawer: lazy(() => import('@mui/material/SwipeableDrawer')),
-  Switch: lazy(() => import('@mui/material/Switch')),
   Tab: lazy(() => import('@mui/material/Tab')),
   TabScrollButton: lazy(() => import('@mui/material/TabScrollButton')),
   Table: lazy(() => import('@mui/material/Table')),
@@ -139,7 +133,6 @@ export const LazyMuiComponents: LazyComponentMap = {
   TableRow: lazy(() => import('@mui/material/TableRow')),
   TableSortLabel: lazy(() => import('@mui/material/TableSortLabel')),
   Tabs: lazy(() => import('@mui/material/Tabs')),
-  TextField: lazy(() => import('@mui/material/TextField')),
   TextareaAutosize: lazy(() => import('@mui/material/TextareaAutosize')),
   ToggleButton: lazy(() => import('@mui/material/ToggleButton')),
   ToggleButtonGroup: lazy(() => import('@mui/material/ToggleButtonGroup')),
@@ -148,4 +141,6 @@ export const LazyMuiComponents: LazyComponentMap = {
   Typography: lazy(() => import('@mui/material/Typography')),
   Unstable_TrapFocus: lazy(() => import('@mui/material/Unstable_TrapFocus')),
   Zoom: lazy(() => import('@mui/material/Zoom')),
+  DynamicForm: DynamicForm,
+  ...FormComponents,
 }

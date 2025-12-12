@@ -21,6 +21,7 @@ import MenuButton from './buttons/MenuButton'
 import SettingsButton from './buttons/SettingsButton'
 import { useAgentId, useMobileHook } from '../../hooks'
 import AgentsButton from './buttons/AgentsButton'
+import DrawerSigninButton from '../DrawerSigninButton'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -109,7 +110,13 @@ export default function Layout({ children, showFooter = true }: LayoutProps) {
             sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}
           >
             {!isMobile && <MenuButton />}
-            <AgentsButton />
+            {context.user ? (
+              <AgentsButton />
+            ) : (
+              <Box p={1}>
+                <DrawerSigninButton />
+              </Box>
+            )}
             {agentId && <NewChatButton />}
 
             <Box

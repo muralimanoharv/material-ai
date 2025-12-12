@@ -117,10 +117,12 @@ function ChatItemSection(props: ChatItemSectionProps) {
     setNegativeFeedbackToggle,
   }
 
+  const parts = chat.content.parts || []
+
   return (
     <ChatItemContext.Provider value={chatContext} key={chat.id}>
       <React.Fragment key={chat.id}>
-        {chat.content.parts.map((part, idx) => {
+        {parts.map((part, idx) => {
           return <ChatItemSectionBody part={part} key={`${chat.id}-${idx}`} />
         })}
       </React.Fragment>
@@ -146,7 +148,7 @@ function ChatItemSectionBody({ part }: ChatItemSectionBodyProps) {
 
   // 4. Handle "Hidden" JSON Metadata (User Files)
   // We check if text exists and is valid JSON
-  if (part.text && isValidJson(part.text)) {
+  if (part.text && isValidJson(part.text) && JSON.parse(part.text)?.fileNames) {
     return <ChatUserFiles part={part as any} />
   }
 

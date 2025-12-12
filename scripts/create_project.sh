@@ -41,10 +41,11 @@ download_template_files() {
     wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.env.example
     # URLs for the scripts directory
     mkdir -p scripts
-    wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/cloudbuild.sh
     wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/setup.sh
     wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/deploy_crun.sh
     wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/teardown.sh
+    wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/main.tf
+    wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/terraform
 }
 
 
@@ -91,8 +92,6 @@ echo "📄 Generating configuration files..."
 
 touch scripts/crun_env.sh
 cat > scripts/crun_env.sh << EOF
-export CRUN_SERVICE_ACCOUNT_NAME="${PROJECT_NAME_CRUN_SANTIZED}-crun-sa-01"
-export CRUN_SERVICE_ACCOUNT="\${CRUN_SERVICE_ACCOUNT_NAME}@\${PROJECT_ID}.iam.gserviceaccount.com"
 export CRUN_SERVICE="${PROJECT_NAME_CRUN_SANTIZED}-crun"
 export CRUN_CONTAINER_REPO="${PROJECT_NAME_CRUN_SANTIZED}-crun-repository"
 export CRUN_IMAGE="${PROJECT_NAME_CRUN_SANTIZED}"
@@ -225,6 +224,11 @@ exclude = '''
   | dist
 )/
 '''
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+default = true
 EOF
 
 echo "✅ Config files created."
