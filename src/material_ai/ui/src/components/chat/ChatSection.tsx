@@ -117,7 +117,7 @@ function ChatItemSection(props: ChatItemSectionProps) {
     setNegativeFeedbackToggle,
   }
 
-  const parts = chat.content.parts || []
+  const parts = chat?.content?.parts || []
 
   return (
     <ChatItemContext.Provider value={chatContext} key={chat.id}>
