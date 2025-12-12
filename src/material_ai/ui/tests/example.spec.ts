@@ -11,7 +11,7 @@ test.describe('Agents Dashboard', () => {
     await page.context().addCookies([
       {
         name: 'access_token',
-        value: "",
+        value: '',
         domain: 'localhost',
         path: '/',
       },
@@ -20,7 +20,7 @@ test.describe('Agents Dashboard', () => {
     await page.context().addCookies([
       {
         name: 'refresh_token',
-        value: "",
+        value: '',
         domain: 'localhost',
         path: '/',
       },
@@ -29,7 +29,7 @@ test.describe('Agents Dashboard', () => {
     await page.context().addCookies([
       {
         name: 'session',
-        value: "",
+        value: '',
         domain: 'localhost',
         path: '/',
       },
@@ -38,7 +38,7 @@ test.describe('Agents Dashboard', () => {
     await page.context().addCookies([
       {
         name: 'user_details',
-        value: "",
+        value: '',
         domain: 'localhost',
         path: '/',
       },

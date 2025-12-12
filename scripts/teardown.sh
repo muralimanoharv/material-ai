@@ -3,15 +3,25 @@ set -e
 
 echo "🚀 STARTING: Teardown...."
 
+gcloud auth login
+
+gcloud auth application-default login
+
 source ./setup.sh
 
-# Delete Cloudrun
-gcloud run services delete ${CRUN_SERVICE} --region="${PROJECT_DEFAULT_LOCATION}"
+./terraform init
 
-
-# Delete Artifact Registry & corresponding images 
-gcloud artifacts repositories delete ${CRUN_CONTAINER_REPO} \
-    --location=${PROJECT_DEFAULT_LOCATION}
-
-# Delete service account
-gcloud iam service-accounts delete ${CRUN_SERVICE_ACCOUNT}
+./terraform destroy -auto-approve \
+  -var="project_id=$PROJECT_ID" \
+  -var="region=$PROJECT_DEFAULT_LOCATION" \
+  -var="repo_name=$CRUN_CONTAINER_REPO" \
+  -var="image_name=$CRUN_IMAGE" \
+  -var="service_name=$CRUN_SERVICE" \
+  -var="sso_client_id=$SSO_CLIENT_ID" \
+  -var="sso_client_secret=$SSO_CLIENT_SECRET" \
+  -var="sso_redirect_uri=$SSO_REDIRECT_URI" \
+  -var="sso_session_secret_key=$SSO_SESSION_SECRET_KEY" \
+  -var="config_path=$CONFIG_PATH" \
+  -var="google_genai_use_vertexai=$GOOGLE_GENAI_USE_VERTEXAI" \
+  -var="google_api_key=$GOOGLE_API_KEY" \
+  -var="adk_session_db_url=$ADK_SESSION_DB_URL" 

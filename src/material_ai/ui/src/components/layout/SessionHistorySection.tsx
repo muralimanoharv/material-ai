@@ -5,10 +5,10 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { drawerWidth } from '../material/MaterialDrawer'
 import { useNavigate } from 'react-router'
 import { useAgentId, useMobileHook } from '../../hooks'
-import SigninButton from '../SigninButton'
 import { type Session } from '../../schema'
 import { type AppContextType, type LayoutContextType } from '../../context'
 import { useSessionId } from '../../hooks'
+import DrawerSigninButton from '../DrawerSigninButton'
 
 interface SessionItemProps {
   session: Session
@@ -17,7 +17,6 @@ interface SessionItemProps {
 export default function SessionHistorySection() {
   const context = useContext(AppContext) as AppContextType
   const { isDrawerOpen } = useContext(LayoutContext) as LayoutContextType
-  const theme = useTheme()
 
   return (
     <>
@@ -36,42 +35,7 @@ export default function SessionHistorySection() {
             <SessionItem key={session.id} session={session} />
           ))
         ) : (
-          <Box
-            width={isDrawerOpen() ? 'auto' : 0}
-            display={isDrawerOpen() ? 'flex' : 'none'}
-            className="fade-in-animation"
-            sx={{
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              alignItems: 'flex-start',
-              gap: '25px',
-              // Cast to 'any' if 'cardHover' is not in your theme.d.ts
-              background:
-                (theme.palette.background as any).cardHover ||
-                theme.palette.grey[100],
-              borderTopLeftRadius: '24px',
-              borderTopRightRadius: '24px',
-              padding: '16px 20px',
-            }}
-          >
-            <Box
-              width="auto"
-              sx={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                flexDirection: 'column',
-                gap: '5px',
-              }}
-            >
-              <Typography variant="h5">
-                Sign in to start saving your chats
-              </Typography>
-              <Typography variant="h6" sx={{ textWrap: 'wrap' }}>
-                Once you're signed in, you can access your recent chats here.
-              </Typography>
-            </Box>
-            <SigninButton varient="text" />
-          </Box>
+          <DrawerSigninButton />
         )}
       </Box>
     </>

@@ -51,34 +51,26 @@ function TypographyParser(variant: TypographyProps['variant']) {
   )
 }
 
-
 // 3. Custom Code Block Renderer
 const CustomCodeRenderer = ({ className, children }: any) => {
   // Check if the language is 'json'
-  const match = /language-(\w+)/.exec(className || '');
-  const isJson = match && match[1] === 'json';
+  const match = /language-(\w+)/.exec(className || '')
+  const isJson = match && match[1] === 'json'
 
-  if(!isJson) return <>Invalid Response</>
+  if (!isJson) return <>Invalid Response</>
 
   try {
-      const jsonString = String(children).replace(/\n$/, '');
-      let data = JSON.parse(jsonString);
+    const jsonString = String(children).replace(/\n$/, '')
+    let data = JSON.parse(jsonString)
 
-      if (data.componentName) {
-        return (
-          <>
-            {renderDynamicUI(data)}
-          </>
-        
-      );
-      } else {
-        return <>Error: Component Name not found</>
-      }
-    } catch (error) {
-      console.warn("Failed to parse JSON for UI:", error);
+    if (data.componentName) {
+      return <>{renderDynamicUI(data)}</>
+    } else {
+      return <>Error: Component Name not found</>
     }
+  } catch (error) {
+    console.warn('Failed to parse JSON for UI:', error)
+  }
 
-  return (
-    <>{children}</>
-  );
-};
+  return <>{children}</>
+}

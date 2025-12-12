@@ -150,7 +150,7 @@ def _setup_middleware(app: FastAPI, oauth_service: IOAuthService):
         app_name=__app_name__,
         app_version=__version__,
     )
-    # app.add_middleware(AuthMiddleware, oauth_service=oauth_service)
+    app.add_middleware(AuthMiddleware, oauth_service=oauth_service)
 
 
 def _setup_app(

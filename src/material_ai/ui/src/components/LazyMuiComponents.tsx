@@ -1,8 +1,11 @@
 import { lazy, type LazyExoticComponent, type ComponentType } from 'react'
-import { FormComponents } from './SmartFormComponents';
-import { DynamicForm } from './DynamicForm';
+import { FormComponents } from './SmartFormComponents'
+import { DynamicForm } from './DynamicForm'
 
-type LazyComponentMap = Record<string, LazyExoticComponent<ComponentType<any>> | ComponentType<any>>
+type LazyComponentMap = Record<
+  string,
+  LazyExoticComponent<ComponentType<any>> | ComponentType<any>
+>
 
 export const LazyMuiComponents: LazyComponentMap = {
   Accordion: lazy(() => import('@mui/material/Accordion')),
@@ -139,5 +142,5 @@ export const LazyMuiComponents: LazyComponentMap = {
   Unstable_TrapFocus: lazy(() => import('@mui/material/Unstable_TrapFocus')),
   Zoom: lazy(() => import('@mui/material/Zoom')),
   DynamicForm: DynamicForm,
-  ...FormComponents
+  ...FormComponents,
 }

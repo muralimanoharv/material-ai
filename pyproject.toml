@@ -54,3 +54,8 @@ include-package-data = true
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+default = true
