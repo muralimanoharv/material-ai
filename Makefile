@@ -41,7 +41,7 @@ clean:
 	rm -rf build/ dist/ src/*.egg-info src/${PACKAGE_NAME}/ui/dist htmlcov/ .coverage /build
 
 build: clean build-ui
-	python -m build
+	PIP_INDEX_URL=https://pypi.org/simple/ python -m build
 
 push: build
 	twine upload dist/*
