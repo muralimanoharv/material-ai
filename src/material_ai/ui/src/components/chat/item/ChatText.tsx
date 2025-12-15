@@ -79,7 +79,7 @@ export default function ChatText({ part }: ChatItemProps) {
     <Box className={`chat-item-box chat-item-box-${chat.content.role}`}>
       <Box
         sx={{
-          display: 'flex',
+          display: chat.content.role == 'user' ?  'flex' : 'block',
           flexDirection: 'row',
           gap: '10px',
           alignSelf: alignment,

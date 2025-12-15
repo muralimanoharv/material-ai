@@ -51,14 +51,30 @@ const AgentList = ({ agents }: { agents: Agent[] }) => {
                 '&:hover': {
                   bgcolor: theme.palette.background.cardHover,
                 },
+                display: 'flex',
+                flexDirection: 'column',
               }}
             >
               <CardActionArea
                 onClick={() => {
                   navigate(`/agents/${agent.id}`)
                 }}
+                sx={{
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'stretch',
+                }}
               >
-                <CardContent>
+                <CardContent
+                  sx={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    height: '100%',
+                  }}
+                >
                   <Stack
                     direction="row"
                     justifyContent="space-between"
@@ -79,8 +95,7 @@ const AgentList = ({ agents }: { agents: Agent[] }) => {
                       <BotIcon />
                     </Avatar>
                   </Stack>
-
-                  <Box sx={{ mt: 2 }}>
+                  <Box sx={{ mt: 2, flexGrow: 1 }}>
                     <Typography
                       data-testid={`agents-page-card-${agent.id}-heading`}
                       variant="h6"
@@ -96,14 +111,16 @@ const AgentList = ({ agents }: { agents: Agent[] }) => {
                       variant="body2"
                       sx={{
                         mt: 1,
-                        minHeight: '40px',
                         color: theme.palette.text.tertiary,
+                        display: '-webkit-box',
+                        overflow: 'hidden',
+                        WebkitBoxOrient: 'vertical',
+                        WebkitLineClamp: 4,
                       }}
                     >
                       {agent.description}
                     </Typography>
                   </Box>
-
                   <Stack
                     direction="row"
                     alignItems="center"

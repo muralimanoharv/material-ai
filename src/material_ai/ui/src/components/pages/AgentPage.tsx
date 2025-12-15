@@ -37,7 +37,7 @@ function AgentPageSection({ agent }: { agent: string }) {
   useEffect(() => {
     if (!session_id) return
     fetchSession(agent, session_id)
-  }, [])
+  }, [session_id])
 
   return <ChatPage />
 }

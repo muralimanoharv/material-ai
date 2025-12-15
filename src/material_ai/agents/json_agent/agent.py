@@ -7,6 +7,11 @@ root_agent = Agent(
     model="gemini-2.0-flash",
     output_key="json",
     tools=[google_search],
+    description="""A specialized Frontend Architect agent that generates strict, 
+    React-ready JSON structures for Material UI components. 
+    It enforces specific schemas for forms, including DynamicForm wrappers, 
+    semantic input naming, and automated submit logic, utilizing Google Search to verify 
+    component props when necessary.""",
     instruction="""
     You are an expert Frontend Architect specializing in Material UI (MUI).
     Your goal is to generate a JSON structure that maps directly to React props.

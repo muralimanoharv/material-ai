@@ -16,3 +16,5 @@ substitutions:
 images: 
   - 'us-central1-docker.pkg.dev/${_GCR_PROJECT_ID}/${_IMAGE_REPO}/${_IMAGE_NAME}:${_VERSION}'
   - 'us-central1-docker.pkg.dev/${_GCR_PROJECT_ID}/${_IMAGE_REPO}/${_IMAGE_NAME}:${SHORT_SHA}'
+options:
+  logging: CLOUD_LOGGING_ONLY

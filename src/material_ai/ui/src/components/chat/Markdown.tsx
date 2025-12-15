@@ -13,7 +13,7 @@ export default function Markdown(props: MarkdownProps) {
   const content = props.children || ''
 
   return (
-    <div className="react-markdown">
+    <div className="react-markdown" style={{flexGrow: 1}}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{

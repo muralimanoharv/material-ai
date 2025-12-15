@@ -402,7 +402,7 @@ For example, try a prompt like: *"Create a professional color palette for a web 
 This project is deployed using a `Makefile` command that automates the build and deployment process.
 
 ### 1\. Provide Appropriate Permissions
-Make sure to run `chmod +x ./scripts/*.sh` and provide permissions to execute shell scripts
+Make sure to run `chmod +x ./scripts` and provide permissions to execute shell scripts
 
 
 ### 2\. Deploy the Application
@@ -412,6 +412,17 @@ Once your `.env` file is configured, run the following command to build and depl
 ```bash
 make deploy
 ```
+
+### 3\. Teardown the Application
+
+Once your `.env` file is configured, run the following command to teardown the application:
+
+```bash
+make teardown
+```
+
+### 4\. Steps to add additional roles to cloud run service account
+<!-- TODO -->
 
 ---
 ## 🐞 Reporting Issues and Feature Requests

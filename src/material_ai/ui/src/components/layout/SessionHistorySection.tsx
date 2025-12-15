@@ -112,7 +112,6 @@ function SessionItem({ session }: SessionItemProps) {
       // height={isDrawerOpen() ? 'auto' : 0}
       width={isDrawerOpen() ? drawerWidth - 35 : 0}
       onClick={async () => {
-        await context.fetchSession(session.app_name, session.id)
         await navigate(`/agents/${session.app_name}/session/${session.id}`)
         if (isMobile) setOpen(false)
       }}

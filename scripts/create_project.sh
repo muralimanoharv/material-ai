@@ -42,6 +42,7 @@ download_template_files() {
     # URLs for the scripts directory
     mkdir -p scripts
     wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/setup.sh
+    wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/auth.sh
     wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/deploy_crun.sh
     wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/teardown.sh
     wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/main.tf
