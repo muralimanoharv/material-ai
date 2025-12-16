@@ -65,6 +65,13 @@ jobs:
         run: npx playwright test
         env:
           CI: true
+          SSO_CLIENT_ID: ${{ secrets.SSO_CLIENT_ID }}
+          SSO_CLIENT_SECRET: ${{ secrets.SSO_CLIENT_SECRET }}
+          SSO_REDIRECT_URI: ${{ secrets.SSO_REDIRECT_URI }}
+          SSO_SESSION_SECRET_KEY: ${{ secrets.SSO_SESSION_SECRET_KEY }}
+          CONFIG_PATH: ${{ secrets.CONFIG_PATH }}
+          GOOGLE_GENAI_USE_VERTEXAI: ${{ secrets.GOOGLE_GENAI_USE_VERTEXAI }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
 
       - name: Upload Playwright Report
         if: always()
