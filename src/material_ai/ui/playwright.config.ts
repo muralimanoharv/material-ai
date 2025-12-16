@@ -32,18 +32,22 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    headless: false,
+    headless: !!process.env.CI,
     launchOptions: {
-      slowMo: 1000, 
+      slowMo: process.env.CI ? 0 : 1000, 
     },
   },
 
   /* Configure projects for major browsers */
   projects: [
-    // {
-    //   name: 'chromium',
-    //   use: { ...devices['Desktop Chrome'] },
-    // },
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'Google Chrome',
+      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+    },
 
     // {
     //   name: 'firefox',
@@ -70,10 +74,6 @@ export default defineConfig({
     //   name: 'Microsoft Edge',
     //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
     // },
-    {
-      name: 'Google Chrome',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    },
   ],
 
   /* Run your local dev server before starting the tests */
@@ -90,6 +90,7 @@ export default defineConfig({
     
     // 4. stdout: 'pipe' allows you to see the server logs in your CI console if it fails
     stdout: 'pipe',
+    timeout: 30 * 1000,
   },
   use: {
     // Tell Playwright tests to use this base URL
