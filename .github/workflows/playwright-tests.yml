@@ -6,13 +6,13 @@ on:
   pull_request:
     branches: [ "main" ]
 
-# 1. NEW: Required permission to allow the bot to comment on PRs
+# Permissions required for the bot to comment on PRs
 permissions:
   contents: read
   pull-requests: write
 
 jobs:
-  test:
+  playwright-test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
 
@@ -23,7 +23,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # --- 1. SETUP UV & PYTHON ---
+      # --- 1. PYTHON SETUP & CACHING (UV) ---
       - name: Install uv
         uses: astral-sh/setup-uv@v4
         with:
@@ -34,15 +34,14 @@ jobs:
       - name: Set up Python
         run: uv python install 3.13
 
-      # --- 2. INSTALL DEPENDENCIES ---
       - name: Install Project Dependencies
         run: uv sync --frozen || uv sync
 
-      # --- 3. ACTIVATE ENVIRONMENT ---
       - name: Add .venv to PATH
+        # This ensures 'uvicorn' and 'fastapi' are found by Playwright's webServer
         run: echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
-      # --- 4. FRONTEND SETUP ---
+      # --- 2. NODE SETUP & CACHING ---
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -54,13 +53,37 @@ jobs:
         working-directory: ./src/material_ai/ui
         run: npm ci
 
+      # --- 3. BROWSER CACHING & INSTALL ---
+      - name: Get installed Playwright version
+        id: playwright-version
+        working-directory: ./src/material_ai/ui
+        run: echo "PLAYWRIGHT_VERSION=$(npm ls @playwright/test --json | jq --raw-output '.dependencies["@playwright/test"].version')" >> $GITHUB_ENV
+
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
       - name: Install Playwright Browsers
         working-directory: ./src/material_ai/ui
+        # If cache is hit, this skips the big download and only checks OS libs
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
 
-      # --- 5. RUN TESTS ---
+      - name: Install Playwright OS Dependencies
+        # If cache WAS hit, we still need to ensure OS-level deps (libs) are present
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        working-directory: ./src/material_ai/ui
+        run: npx playwright install-deps chromium
+
+      # --- 4. EXECUTION ---
       - name: Run Playwright tests
         working-directory: ./src/material_ai/ui
+        # Runs only Chromium project to match the install above
         run: npx playwright test --project=chromium
         env:
           CI: true
@@ -72,6 +95,7 @@ jobs:
           GOOGLE_GENAI_USE_VERTEXAI: ${{ secrets.GOOGLE_GENAI_USE_VERTEXAI }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
 
+      # --- 5. REPORTING ---
       - name: Upload Playwright Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -80,11 +104,24 @@ jobs:
           path: ./src/material_ai/ui/playwright-report/
           retention-days: 5
 
-      # 2. NEW: Comment the link on the PR
       - name: Comment Report Link on PR
         uses: actions/github-script@v7
-        # Only run on PRs (not pushes to main) and run even if tests failed
         if: always() && github.event_name == 'pull_request'
         with:
           script: |
-            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            
+            const body = `### 🎭 Playwright E2E Results
+            
+            The full HTML report is ready for review.
+            
+            📥 **[Download Artifacts from Summary](${runUrl})**
+            
+            *(Navigate to the **Artifacts** section at the bottom of the page)*`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });
