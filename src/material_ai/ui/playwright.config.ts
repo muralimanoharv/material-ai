@@ -77,9 +77,22 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
+  webServer: {
+    // 1. The command to start your FastAPI server
+    // We use 'cd' to step out of 'ui' and into 'backend'
+    command: 'cd ../../../ && make run',
+
+    // 2. Playwright waits for this URL to return a 200 OK before starting tests
+    url: 'http://127.0.0.1:8080/health', 
+
+    // 3. Re-use local server if you are running tests locally (saves time)
+    reuseExistingServer: !process.env.CI,
+    
+    // 4. stdout: 'pipe' allows you to see the server logs in your CI console if it fails
+    stdout: 'pipe',
+  },
+  use: {
+    // Tell Playwright tests to use this base URL
+    baseURL: 'http://127.0.0.1:8080',
+  },
 });

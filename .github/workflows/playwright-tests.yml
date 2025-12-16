@@ -1,0 +1,75 @@
+name: Playwright E2E Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+
+    env:
+      # Use uv's cache directory for speed
+      UV_CACHE_DIR: /tmp/.uv-cache
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # --- 1. SETUP UV & PYTHON ---
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+          enable-cache: true
+          cache-suffix: "backend-deps"
+
+      - name: Set up Python
+        run: uv python install 3.13
+
+      # --- 2. INSTALL DEPENDENCIES (FAST) ---
+      - name: Install Project Dependencies
+        # "uv sync" reads pyproject.toml (and uv.lock if present) from the root
+        # and installs everything into a local .venv
+        run: uv sync --frozen || uv sync
+
+      # --- 3. ACTIVATE ENVIRONMENT ---
+      # This is the "magic" step. It adds the uv-created venv to the path.
+      # Now 'uvicorn', 'python', etc., are globally available to all next steps.
+      - name: Add .venv to PATH
+        run: echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
+
+      # --- 4. FRONTEND SETUP ---
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          # Pointing to the UI subfolder for the lock file
+          cache-dependency-path: ./src/material_ai/ui/package-lock.json
+
+      - name: Install Node dependencies
+        working-directory: ./src/material_ai/ui
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        working-directory: ./src/material_ai/ui
+        run: npx playwright install --with-deps
+
+      # --- 5. RUN TESTS ---
+      - name: Run Playwright tests
+        working-directory: ./src/material_ai/ui
+        run: npx playwright test
+        env:
+          CI: true
+
+      - name: Upload Playwright Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: ./src/material_ai/ui/playwright-report/
+          retention-days: 30

@@ -3,11 +3,16 @@ import { AppContext, type AppContextType } from '../../context'
 import { useAgentId, withLayout } from '../../hooks'
 import PageNotFound from '../PageNotFound'
 import AgentPageSection from '../AgentPageSection'
+import Greeting from '../Greeting'
 
 function AgentPage() {
   const context = useContext(AppContext) as AppContextType
 
   const agent_id = useAgentId()
+
+  if (!context.user) {
+    return <Greeting />
+  }
 
   if (!context.agents.length) return null
 

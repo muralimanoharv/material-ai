@@ -8,7 +8,6 @@ import { useAgentId, useMobileHook } from '../../hooks'
 import { type Session } from '../../schema'
 import { type AppContextType, type LayoutContextType } from '../../context'
 import { useSessionId } from '../../hooks'
-import DrawerSigninButton from '../DrawerSigninButton'
 
 interface SessionItemProps {
   session: Session
@@ -35,7 +34,7 @@ export default function SessionHistorySection() {
             <SessionItem key={session.id} session={session} />
           ))
         ) : (
-          <DrawerSigninButton />
+          null
         )}
       </Box>
     </>

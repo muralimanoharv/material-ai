@@ -191,6 +191,7 @@ function App() {
           </Route>
           <Route path="/" element={<Navigate to="/agents" replace />} />
           <Route path="/404" element={<PageNotFound />} />
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
         <Snackbar
           open={!!snack}
