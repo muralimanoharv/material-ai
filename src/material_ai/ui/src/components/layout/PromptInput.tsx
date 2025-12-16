@@ -207,7 +207,7 @@ export default function PromptInput() {
                   <StopRoundedIcon
                     sx={{
                       color:
-                        (theme.palette.text).selected ||
+                        theme.palette.text.selected ||
                         theme.palette.primary.main,
                     }}
                     fontSize="medium"

@@ -34,7 +34,7 @@ export function AppConfigProvider({ children }: AppConfigProviderProps) {
         }
 
         const data = (await response.json()) as AppConfig
-        
+
         sessionStorage.setItem('config', JSON.stringify(data))
         setConfig(data)
       } catch (err) {

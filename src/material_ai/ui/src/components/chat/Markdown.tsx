@@ -51,7 +51,10 @@ function TypographyParser(variant: TypographyProps['variant']) {
   )
 }
 
-const CustomCodeRenderer = ({ className, children }: React.HTMLAttributes<HTMLElement>) => {
+const CustomCodeRenderer = ({
+  className,
+  children,
+}: React.HTMLAttributes<HTMLElement>) => {
   const match = /language-(\w+)/.exec(className || '')
   const isJson = match && match[1] === 'json'
 
@@ -67,7 +70,6 @@ const CustomCodeRenderer = ({ className, children }: React.HTMLAttributes<HTMLEl
   } catch (error) {
     console.warn('Failed to parse JSON for UI:', error)
   }
-
 
   if (!isParsedSuccessfully) {
     return <>{children}</>

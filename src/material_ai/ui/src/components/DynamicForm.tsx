@@ -8,8 +8,8 @@ export const DynamicForm = ({
   children,
   submissionContext,
 }: {
-  defaultValues : Record<string, string>,
-  children: ReactNode,
+  defaultValues: Record<string, string>
+  children: ReactNode
   submissionContext: string
 }) => {
   const context = useContext(AppContext)

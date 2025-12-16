@@ -18,8 +18,7 @@ function DrawerSigninButton() {
         gap: '25px',
         // Cast to 'any' if 'cardHover' is not in your theme.d.ts
         background:
-          (theme.palette.background).cardHover ||
-          theme.palette.grey[100],
+          theme.palette.background.cardHover || theme.palette.grey[100],
         borderTopLeftRadius: '24px',
         borderTopRightRadius: '24px',
         padding: '16px 20px',

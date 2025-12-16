@@ -272,7 +272,10 @@ export class ApiService {
 
 declare global {
   interface ErrorConstructor {
-    captureStackTrace(targetObject: object, constructorOpt?: typeof HttpError): void
+    captureStackTrace(
+      targetObject: object,
+      constructorOpt?: typeof HttpError,
+    ): void
   }
 }
 

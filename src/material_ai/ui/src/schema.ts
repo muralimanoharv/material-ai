@@ -128,7 +128,6 @@ export interface AgentResponse {
   agents: Agent[]
 }
 
-
 export interface ArtifactResponse {
   inlineData: InlineData
 }
@@ -137,7 +136,6 @@ export interface DeleteSessionResponse {
   id?: string
   status?: string
 }
-
 
 export interface Health {
   status: string
@@ -157,7 +155,6 @@ export interface Health {
       used: string
       free: string
       percent_used: number
-
     }
   }
 }

@@ -9,7 +9,7 @@ function AgentsPage() {
   const { agents, user, setSessions } = useContext(AppContext) as AppContextType
 
   useEffect(() => {
-    if(!user) return
+    if (!user) return
     setSessions([])
   }, [])
 

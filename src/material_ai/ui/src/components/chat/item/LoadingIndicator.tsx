@@ -1,9 +1,9 @@
 import { Box, CircularProgress } from '@mui/material'
 import React from 'react'
 
-
-  function GradientSVG() {
-    return (<svg width={0} height={0}>
+function GradientSVG() {
+  return (
+    <svg width={0} height={0}>
       <defs>
         <linearGradient id="linearColors" x1={0} y1={0} x2={1} y2={1}>
           <stop offset="0%" stopColor="#4285F4" />
@@ -13,8 +13,9 @@ import React from 'react'
           <stop offset="100%" stopColor="#4285F4" />
         </linearGradient>
       </defs>
-    </svg>)
-  }
+    </svg>
+  )
+}
 
 function LoadingIndicator(): React.JSX.Element {
   return (

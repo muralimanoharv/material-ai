@@ -1,8 +1,6 @@
-import { Rating, type RatingProps } from "@mui/material"
-import { useSmartContext } from "./smart.context"
-import { Controller } from "react-hook-form"
-
-
+import { Rating, type RatingProps } from '@mui/material'
+import { useSmartContext } from './smart.context'
+import { Controller } from 'react-hook-form'
 
 export type SmartRatingProps = RatingProps & { name: string }
 

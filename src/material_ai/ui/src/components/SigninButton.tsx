@@ -32,8 +32,7 @@ export default function SigninButton({
               '&:hover': {
                 background: 'none',
                 color:
-                  (theme.palette.text).selected ||
-                  theme.palette.text.primary,
+                  theme.palette.text.selected || theme.palette.text.primary,
               },
             }
       }

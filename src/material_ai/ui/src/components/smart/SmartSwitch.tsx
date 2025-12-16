@@ -1,9 +1,6 @@
-import { Switch, type SwitchProps } from "@mui/material"
-import { useSmartContext } from "./smart.context"
-import { Controller } from "react-hook-form"
-
-
-
+import { Switch, type SwitchProps } from '@mui/material'
+import { useSmartContext } from './smart.context'
+import { Controller } from 'react-hook-form'
 
 export type SmartSwitchProps = SwitchProps & { name: string }
 
@@ -17,11 +14,7 @@ export const SmartSwitch = ({ name, ...props }: SmartSwitchProps) => {
       control={context.control}
       defaultValue={false}
       render={({ field: { value, ...fieldProps } }) => (
-        <Switch
-          {...props}
-          {...fieldProps}
-          checked={!!value}
-        />
+        <Switch {...props} {...fieldProps} checked={!!value} />
       )}
     />
   )

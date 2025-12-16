@@ -1,10 +1,18 @@
-import { FormControl, FormHelperText, InputLabel, Select, type SelectProps } from "@mui/material"
-import { useSmartContext } from "./smart.context"
-import { Controller, type ControllerRenderProps, type FieldError, type FieldValues } from "react-hook-form"
-import type { ReactNode } from "react"
-
-
-
+import {
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  Select,
+  type SelectProps,
+} from '@mui/material'
+import { useSmartContext } from './smart.context'
+import {
+  Controller,
+  type ControllerRenderProps,
+  type FieldError,
+  type FieldValues,
+} from 'react-hook-form'
+import type { ReactNode } from 'react'
 
 export type SmartSelectProps = SelectProps & {
   name: string
@@ -23,7 +31,7 @@ export const SmartSelect = ({
 
   const renderSelect = (
     field: Partial<ControllerRenderProps<FieldValues, string>> = {},
-    error?: FieldError
+    error?: FieldError,
   ) => (
     <FormControl
       fullWidth

@@ -5,7 +5,7 @@ import { DynamicForm } from './DynamicForm'
 
 type LazyComponentMap = Record<
   string,
-  LazyExoticComponent<ComponentType<any>> | ComponentType<any> 
+  LazyExoticComponent<ComponentType<any>> | ComponentType<any>
 >
 
 export const LazyMuiComponents: LazyComponentMap = {

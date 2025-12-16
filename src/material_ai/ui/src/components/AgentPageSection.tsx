@@ -1,7 +1,7 @@
-import { useContext, useEffect } from "react"
-import { AppContext, type AppContextType } from "../context"
-import { useSessionId } from "../hooks"
-import ChatPage from "./pages/ChatPage"
+import { useContext, useEffect } from 'react'
+import { AppContext, type AppContextType } from '../context'
+import { useSessionId } from '../hooks'
+import ChatPage from './pages/ChatPage'
 
 function AgentPageSection({ agent }: { agent: string }) {
   const { apiService, setSessions, fetchSession, historyService } = useContext(

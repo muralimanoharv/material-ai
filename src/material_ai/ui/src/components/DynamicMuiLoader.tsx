@@ -18,7 +18,9 @@ const isUINode = (value: unknown): value is UINode => {
   )
 }
 
-const resolveProps = (props: Record<string, unknown>): Record<string, unknown> => {
+const resolveProps = (
+  props: Record<string, unknown>,
+): Record<string, unknown> => {
   const processed: Record<string, unknown> = {}
 
   Object.entries(props).forEach(([key, value]) => {
@@ -41,13 +43,12 @@ const isLazyComponent = (component: ElementType): boolean => {
   )
 }
 
-export const renderDynamicUI = (
-  node: UINode,
-  index: number = 0,
-): ReactNode => {
+export const renderDynamicUI = (node: UINode, index: number = 0): ReactNode => {
   if (!node || !node.componentName) return null
 
-  const Component = (LazyMuiComponents as Record<string, ElementType>)[node.componentName]
+  const Component = (LazyMuiComponents as Record<string, ElementType>)[
+    node.componentName
+  ]
 
   if (!Component) {
     return null

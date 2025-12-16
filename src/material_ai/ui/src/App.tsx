@@ -8,7 +8,14 @@ import {
 } from './context'
 import { ApiService } from './service/api.service'
 import { Snackbar } from '@mui/material'
-import type { Agent, ChatItem, FileAttachment, Health, Session, User } from './schema'
+import type {
+  Agent,
+  ChatItem,
+  FileAttachment,
+  Health,
+  Session,
+  User,
+} from './schema'
 import { HistoryService } from './service/history.service'
 import { ChatService } from './service/chat.service'
 import AgentPage from './components/pages/AgentPage'

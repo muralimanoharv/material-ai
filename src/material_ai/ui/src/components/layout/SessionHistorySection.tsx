@@ -102,9 +102,9 @@ function SessionItem({ session }: SessionItemProps) {
   }
 
   // Type-safe access to custom theme properties
-  const historyBg = (theme.palette.background).history
-  const cardHoverBg = (theme.palette.background).cardHover
-  const selectedText = (theme.palette.text).selected
+  const historyBg = theme.palette.background.history
+  const cardHoverBg = theme.palette.background.cardHover
+  const selectedText = theme.palette.text.selected
 
   return (
     <Box

@@ -1,5 +1,11 @@
 import React from 'react'
-import type { AppConfig, ChatItem, FileAttachment, Session, User } from '../schema'
+import type {
+  AppConfig,
+  ChatItem,
+  FileAttachment,
+  Session,
+  User,
+} from '../schema'
 import { createParts } from '../utils'
 import { ApiService } from './api.service'
 import { HistoryService } from './history.service'
@@ -163,11 +169,12 @@ export class ChatService {
         this.context.setPromptLoading(false)
       }
       if (this.reader) {
-        this.reader.cancel()
-        .catch((e) => console.warn('Reader cancel error:', e))
-        .finally(() => {
-          this.reader = undefined
-        })
+        this.reader
+          .cancel()
+          .catch((e) => console.warn('Reader cancel error:', e))
+          .finally(() => {
+            this.reader = undefined
+          })
       }
 
       if (this.loadingId) {

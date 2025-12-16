@@ -1,8 +1,6 @@
-import { Checkbox, type CheckboxProps } from "@mui/material"
-import { useSmartContext } from "./smart.context"
-import { Controller } from "react-hook-form"
-
-
+import { Checkbox, type CheckboxProps } from '@mui/material'
+import { useSmartContext } from './smart.context'
+import { Controller } from 'react-hook-form'
 
 export type SmartCheckboxProps = CheckboxProps & { name: string }
 
@@ -16,11 +14,7 @@ export const SmartCheckbox = ({ name, ...props }: SmartCheckboxProps) => {
       control={context.control}
       defaultValue={false}
       render={({ field: { value, ...fieldProps } }) => (
-        <Checkbox
-          {...props}
-          {...fieldProps}
-          checked={!!value}
-        />
+        <Checkbox {...props} {...fieldProps} checked={!!value} />
       )}
     />
   )

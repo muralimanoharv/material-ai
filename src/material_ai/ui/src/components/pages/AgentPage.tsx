@@ -20,5 +20,4 @@ function AgentPage() {
 
 const AgentPageWithLayout = withLayout(AgentPage)
 
-
 export default AgentPageWithLayout
