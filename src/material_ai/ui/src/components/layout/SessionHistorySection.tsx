@@ -29,13 +29,11 @@ export default function SessionHistorySection() {
         >
           Recent
         </Typography>
-        {context.user ? (
-          context.sessions.map((session) => (
-            <SessionItem key={session.id} session={session} />
-          ))
-        ) : (
-          null
-        )}
+        {context.user
+          ? context.sessions.map((session) => (
+              <SessionItem key={session.id} session={session} />
+            ))
+          : null}
       </Box>
     </>
   )
