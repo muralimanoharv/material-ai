@@ -3,7 +3,7 @@ from google.adk.agents import Agent
 from google.adk.tools import google_search
 
 root_agent = Agent(
-    name="json_agent",
+    name="material_ai_agent",
     model="gemini-2.0-flash",
     output_key="json",
     tools=[google_search],

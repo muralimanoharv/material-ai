@@ -2,7 +2,7 @@ import { Typography, type TypographyProps } from '@mui/material'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { type ReactNode } from 'react'
-import { renderDynamicUI } from '../DynamicMuiLoader'
+import { renderDynamicUI, type UINode } from '../DynamicMuiLoader'
 
 // 1. Define Props Interface
 interface MarkdownProps {
@@ -51,26 +51,32 @@ function TypographyParser(variant: TypographyProps['variant']) {
   )
 }
 
-// 3. Custom Code Block Renderer
-const CustomCodeRenderer = ({ className, children }: any) => {
-  // Check if the language is 'json'
+const CustomCodeRenderer = ({ className, children }: React.HTMLAttributes<HTMLElement>) => {
   const match = /language-(\w+)/.exec(className || '')
   const isJson = match && match[1] === 'json'
 
   if (!isJson) return <>Invalid Response</>
 
+  let parsedData: UINode | null = null
+  let isParsedSuccessfully = false
+
   try {
     const jsonString = String(children).replace(/\n$/, '')
-    let data = JSON.parse(jsonString)
-
-    if (data.componentName) {
-      return <>{renderDynamicUI(data)}</>
-    } else {
-      return <>Error: Component Name not found</>
-    }
+    parsedData = JSON.parse(jsonString)
+    isParsedSuccessfully = true
   } catch (error) {
     console.warn('Failed to parse JSON for UI:', error)
   }
 
-  return <>{children}</>
+
+  if (!isParsedSuccessfully) {
+    return <>{children}</>
+  }
+
+  if (!parsedData?.componentName) {
+    return <>Error: Component Name not found</>
+  }
+
+  // Success
+  return <>{renderDynamicUI(parsedData)}</>
 }

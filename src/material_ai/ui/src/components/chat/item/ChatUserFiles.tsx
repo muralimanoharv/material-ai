@@ -5,9 +5,7 @@ import FilesBox from './FilesBox'
 import type { ChatPart, InlineData } from '../../../schema'
 
 interface ChatUserFilesProps {
-  part: {
-    text: string
-  }
+  part: ChatPart
 }
 
 export interface UploadedFile {
@@ -26,8 +24,9 @@ function ChatUserFiles({ part }: ChatUserFilesProps) {
     // 1. Try Parse JSON
     let json: { fileNames?: string[] } = {}
     try {
-      json = JSON.parse(part.text)
+      json = JSON.parse(part?.text || '')
     } catch (e) {
+      console.error(e)
       return null
     }
 

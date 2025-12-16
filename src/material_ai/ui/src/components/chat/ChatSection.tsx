@@ -141,15 +141,15 @@ function ChatItemSectionBody({ part }: ChatItemSectionBodyProps) {
   if (part.inlineData) return null
 
   // 2. Handle Function Calls
-  if (part.functionCall) return <ChatFunctionCall part={part as any} /> // Cast if ChatFunctionCall expects specific shape
+  if (part.functionCall) return <ChatFunctionCall part={part} /> // Cast if ChatFunctionCall expects specific shape
 
   // 3. Handle Function Responses
-  if (part.functionResponse) return <ChatFunctionResponse part={part as any} />
+  if (part.functionResponse) return <ChatFunctionResponse part={part} />
 
   // 4. Handle "Hidden" JSON Metadata (User Files)
   // We check if text exists and is valid JSON
   if (part.text && isValidJson(part.text) && JSON.parse(part.text)?.fileNames) {
-    return <ChatUserFiles part={part as any} />
+    return <ChatUserFiles part={part} />
   }
 
   // 5. Default: Render Text Message

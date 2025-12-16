@@ -7,11 +7,11 @@ import {
   type RequestPart,
   type ChatItem,
   type User,
-  type HealthResponse,
   type ArtifactResponse,
   type DeleteSessionResponse,
   type Agent,
   type AgentResponse,
+  type Health,
 } from '../schema'
 
 interface ApiServiceContext {
@@ -157,7 +157,7 @@ export class ApiService {
     return body.user_response
   }
 
-  async fetch_health(): Promise<HealthResponse> {
+  async fetch_health(): Promise<Health> {
     const response = await fetch(`${HOST}/health`, {
       method: 'GET',
       headers: {
@@ -168,7 +168,7 @@ export class ApiService {
 
     this.handle_response(response)
 
-    const body = (await response.json()) as HealthResponse
+    const body = (await response.json()) as Health
 
     return body
   }
@@ -272,7 +272,7 @@ export class ApiService {
 
 declare global {
   interface ErrorConstructor {
-    captureStackTrace(targetObject: object, constructorOpt?: Function): void
+    captureStackTrace(targetObject: object, constructorOpt?: typeof HttpError): void
   }
 }
 
@@ -361,6 +361,7 @@ export const on_message_sse = async ({
               const data = JSON.parse(jsonStr) as ChatItem
               on_message(data)
             } catch (e) {
+              console.error(e)
               console.log('Received non-JSON data:', jsonStr)
             }
           }
@@ -379,6 +380,7 @@ export const on_message_sse = async ({
     try {
       reader.releaseLock()
     } catch (e) {
+      console.error(e)
       // Ignore errors during release
     }
   }

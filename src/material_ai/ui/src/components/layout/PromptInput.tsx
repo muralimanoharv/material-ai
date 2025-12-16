@@ -5,6 +5,7 @@ import {
   type SyntheticEvent,
   type KeyboardEvent,
   type ClipboardEvent,
+  useEffect,
 } from 'react'
 import { AppContext, type AppContextType } from '../../context'
 import {
@@ -41,7 +42,9 @@ export default function PromptInput() {
   const theme = useTheme()
   const [fullScreen, setFullScreen] = useState(false)
   const [prompt, setPrompt] = useState('')
-  setPromptRef.current = setPrompt
+  useEffect(() => {
+    setPromptRef.current = setPrompt
+  }, [setPromptRef])
 
   const handleSubmit = (event?: SyntheticEvent) => {
     event?.preventDefault()
@@ -204,7 +207,7 @@ export default function PromptInput() {
                   <StopRoundedIcon
                     sx={{
                       color:
-                        (theme.palette.text as any).selected ||
+                        (theme.palette.text).selected ||
                         theme.palette.primary.main,
                     }}
                     fontSize="medium"

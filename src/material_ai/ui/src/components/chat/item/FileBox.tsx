@@ -100,9 +100,9 @@ export default function FileBox(props: FileBoxProps) {
   }
 
   const cardBg =
-    (theme.palette.background as any).card || theme.palette.grey[100]
+    (theme.palette.background).card || theme.palette.grey[100]
   const cardHoverBg =
-    (theme.palette.background as any).cardHover || theme.palette.grey[200]
+    (theme.palette.background).cardHover || theme.palette.grey[200]
 
   return (
     <Tooltip title={fileName} key={fileName}>

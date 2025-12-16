@@ -26,7 +26,7 @@ export const withLayout = (
   Component: React.FC,
   options?: { showFooter?: boolean },
 ) => {
-  return (props: any) => {
+  return (props: Record<string, string>) => {
     return (
       <Layout
         showFooter={

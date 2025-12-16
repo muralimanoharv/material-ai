@@ -46,7 +46,7 @@ export function fixBase64String(base64: string): string {
 export function isValidJson(str: string): boolean {
   try {
     JSON.parse(str)
-  } catch (e) {
+  } catch {
     return false
   }
   return true

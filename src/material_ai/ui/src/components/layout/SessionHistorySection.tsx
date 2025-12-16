@@ -78,7 +78,7 @@ function SessionItem({ session }: SessionItemProps) {
   }
 
   const truncText = (text: string) => {
-    let maxLength = 30
+    const maxLength = 30
     if (text.length > maxLength) return `${text.substring(0, maxLength)}...`
     return text
   }
@@ -102,9 +102,9 @@ function SessionItem({ session }: SessionItemProps) {
   }
 
   // Type-safe access to custom theme properties
-  const historyBg = (theme.palette.background as any).history
-  const cardHoverBg = (theme.palette.background as any).cardHover
-  const selectedText = (theme.palette.text as any).selected
+  const historyBg = (theme.palette.background).history
+  const cardHoverBg = (theme.palette.background).cardHover
+  const selectedText = (theme.palette.text).selected
 
   return (
     <Box

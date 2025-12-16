@@ -48,7 +48,7 @@ test.describe('Agents Dashboard', () => {
 
     await expect(page.getByTestId('agents-page-header')).toBeVisible()
 
-    for (let agent of ['greeting_agent', 'testing_agent']) {
+    for (const agent of ['greeting_agent', 'testing_agent']) {
       await expect(
         page.getByTestId(`agents-page-card-${agent}-heading`),
       ).toBeVisible()

@@ -1,3 +1,4 @@
+/* eslint-disable */
 // @ts-nocheck
 import { defineConfig, devices } from '@playwright/test';
 

@@ -3,7 +3,7 @@ import { useContext } from 'react'
 import { AppContext, type AppContextType } from '../context'
 
 function Greeting() {
-  let { user, config, loading, history } = useContext(
+  const { user, config, loading, history } = useContext(
     AppContext,
   ) as AppContextType
   const theme = useTheme()
