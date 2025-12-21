@@ -74,6 +74,7 @@ export default function ChatNegativeFeebackSelection() {
             return (
               <ListItem disablePadding key={category}>
                 <ListItemButton
+                  data-testid={`feedback-category-${category}`}
                   onClick={() => {
                     postNegativeFeedback({
                       ...feedback,
@@ -110,6 +111,7 @@ export default function ChatNegativeFeebackSelection() {
                 }}
               >
                 <Box
+                  data-testid={`feedback-category-other`}
                   sx={{ display: 'flex', justifyContent: 'space-between' }}
                   onClick={() => setOtherBox(!otherBox)}
                 >
@@ -120,6 +122,11 @@ export default function ChatNegativeFeebackSelection() {
                   <>
                     <Box>
                       <TextField
+                        slotProps={{
+                          htmlInput: {
+                            'data-testid': 'feedback-category-other-input',
+                          },
+                        }}
                         autoComplete="off"
                         value={feedbackText}
                         onChange={(e) => setFeedbackText(e.target.value)}
@@ -133,6 +140,7 @@ export default function ChatNegativeFeebackSelection() {
                     </Box>
                     <Box>
                       <Button
+                        data-testid="feedback-category-other-submit"
                         onClick={() => {
                           postNegativeFeedback({
                             ...feedback,

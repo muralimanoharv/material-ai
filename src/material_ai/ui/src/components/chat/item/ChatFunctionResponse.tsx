@@ -5,11 +5,12 @@ import { type ChatPart } from '../../../schema'
 
 interface ChatFunctionResponseProps {
   part: ChatPart
+  partIdx: number
 }
 
-function ChatFunctionResponse({ part }: ChatFunctionResponseProps) {
+function ChatFunctionResponse({ part, partIdx }: ChatFunctionResponseProps) {
   return (
-    <ChatItemWrapper role="model">
+    <ChatItemWrapper partIdx={`${partIdx}`} role="model">
       <Box
         sx={{
           display: 'flex',
@@ -19,7 +20,9 @@ function ChatFunctionResponse({ part }: ChatFunctionResponseProps) {
         }}
       >
         <CheckIcon />
-        {part.functionResponse?.name}
+        <span data-testid="chat-function-response">
+          {part.functionResponse?.name}
+        </span>
       </Box>
     </ChatItemWrapper>
   )

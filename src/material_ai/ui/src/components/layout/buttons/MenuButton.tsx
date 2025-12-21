@@ -10,6 +10,7 @@ export default function MenuButton() {
 
   return (
     <DrawerButton
+      dataTestid="page-menu-button"
       tooltip="Expand menu"
       icon={<MenuIcon fontSize="small" />}
       title=""

@@ -1,30 +1,22 @@
 #!/bin/bash
-set -e
 
-# Function to check Standard User Auth
-check_gcloud_auth() {
-  echo "Checking gcloud auth status..."
-  # Try to print an access token. Output is silenced.
-  if ! gcloud auth print-access-token >/dev/null 2>&1; then
-    echo "⚠️  Auth credentials expired or missing. Logging in..."
-    gcloud auth login
+check_and_update_auth() {
+  echo "Checking gcloud authentication status..."
+
+  # Check both Standard Auth AND Application Default Credentials (ADC).
+  # If EITHER fails (!), execute the login.
+  if ! gcloud auth print-access-token >/dev/null 2>&1 || \
+     ! gcloud auth application-default print-access-token >/dev/null 2>&1; then
+
+    echo "⚠️  Credentials expired or missing. Refreshing both CLI and ADC..."
+    
+    # This command sets up standard auth AND generates the ADC JSON file in one step.
+    gcloud auth login --update-adc
+    
   else
-    echo "✅  gcloud auth is active."
+    echo "✅  gcloud auth and ADC are both active."
   fi
 }
 
-# Function to check Application Default Credentials (ADC)
-check_adc_auth() {
-  echo "Checking Application Default Credentials..."
-  # Try to print an ADC token. Output is silenced.
-  if ! gcloud auth application-default print-access-token >/dev/null 2>&1; then
-    echo "⚠️  ADC expired or missing. Logging in..."
-    gcloud auth application-default login
-  else
-    echo "✅  ADC is active."
-  fi
-}
-
-# Run the checks
-check_gcloud_auth
-check_adc_auth
+# Run the check
+check_and_update_auth

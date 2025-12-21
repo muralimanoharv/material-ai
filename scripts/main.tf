@@ -104,7 +104,10 @@ resource "google_project_iam_member" "build_sa_permissions" {
   role    = each.key
   member  = "serviceAccount:${google_service_account.build_sa.email}"
   
-  depends_on = [google_project_service.enabled_apis]
+  depends_on = [
+    google_project_service.enabled_apis,
+    google_service_account.build_sa
+  ]
 }
 
 # ==============================================================================
@@ -130,6 +133,10 @@ resource "google_project_iam_member" "sa_permissions" {
   project = var.project_id
   role    = each.key
   member  = "serviceAccount:${google_service_account.app_sa.email}"
+  depends_on = [
+    google_project_service.enabled_apis,
+    google_service_account.app_sa
+  ]
 }
 
 # ==============================================================================

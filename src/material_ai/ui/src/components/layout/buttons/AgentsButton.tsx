@@ -2,8 +2,11 @@ import { useLocation, useNavigate } from 'react-router'
 import { AutoAwesome } from '@mui/icons-material'
 import DrawerButton from '../../material/DrawerButton'
 import { useTheme } from '@mui/material'
+import { useContext } from 'react'
+import { AppContext, type AppContextType } from '../../../context'
 
 export default function AgentsButton() {
+  const { promptLoading, user } = useContext(AppContext) as AppContextType
   const navigate = useNavigate()
 
   const theme = useTheme()
@@ -14,6 +17,8 @@ export default function AgentsButton() {
 
   return (
     <DrawerButton
+      dataTestid="page-agents-button"
+      disabled={promptLoading || !user}
       tooltip="Agents"
       icon={
         <AutoAwesome

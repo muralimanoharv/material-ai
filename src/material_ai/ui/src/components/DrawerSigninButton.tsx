@@ -11,6 +11,7 @@ function DrawerSigninButton() {
       width={isDrawerOpen() ? 'auto' : 0}
       display={isDrawerOpen() ? 'flex' : 'none'}
       className="fade-in-animation"
+      data-testid="drawer-signin-button"
       sx={{
         flexDirection: 'column',
         justifyContent: 'space-between',

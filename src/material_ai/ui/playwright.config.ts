@@ -90,7 +90,7 @@ export default defineConfig({
     
     // 4. stdout: 'pipe' allows you to see the server logs in your CI console if it fails
     stdout: 'pipe',
-    timeout: 30 * 1000,
+    timeout: 50 * 1000,
   },
   use: {
     // Tell Playwright tests to use this base URL

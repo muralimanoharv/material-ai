@@ -22,7 +22,7 @@ export default function ChatArtifactSection() {
   if (!files.length) return null
 
   return (
-    <ChatItemWrapper role="model">
+    <ChatItemWrapper partIdx={'artifacts'} role="model">
       <FilesBox
         alignSelf={'flex-start'}
         justifyContent={'flex-start'}

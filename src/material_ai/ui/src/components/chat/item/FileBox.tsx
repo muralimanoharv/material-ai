@@ -18,13 +18,14 @@ interface FileBoxProps {
   file: FileData
   showClear?: boolean
   onClearFile?: (fileName: string) => void
+  prefix: string
 }
 
 export default function FileBox(props: FileBoxProps) {
   const context = useContext(AppContext) as AppContextType
   const { config, apiService } = context
 
-  const { file, showClear, onClearFile } = props
+  const { file, showClear, onClearFile, prefix } = props
   const theme = useTheme()
 
   const agent = useAgentId() as string
@@ -106,6 +107,7 @@ export default function FileBox(props: FileBoxProps) {
   return (
     <Tooltip title={fileName} key={fileName}>
       <Box
+        data-testid={`${prefix}-file-${fileName}`}
         onClick={onClick}
         sx={{
           minWidth: '150px',
@@ -141,11 +143,17 @@ export default function FileBox(props: FileBoxProps) {
               position: 'relative',
             }}
           >
-            <Typography noWrap color="text.primary" variant="h5">
+            <Typography
+              data-testid="file-name"
+              noWrap
+              color="text.primary"
+              variant="h5"
+            >
               {name}
             </Typography>
             {showClear && onClearFile && (
               <IconButton
+                data-testid="clear-file"
                 onClick={(e) => {
                   e.stopPropagation()
                   onClearFile(fileName)

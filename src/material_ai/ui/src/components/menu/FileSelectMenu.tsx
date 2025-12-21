@@ -32,6 +32,7 @@ const FILE_OPTIONS = [
   {
     title: 'Upload files',
     icon: <AttachFileOutlinedIcon fontSize="small" />,
+    dataTestId: 'prompt-input-upload-files',
   },
 ]
 
@@ -104,6 +105,7 @@ function FileSelectMenu(props: FileSelectMenuProps) {
     <div>
       <Tooltip title="Add files">
         <IconButton
+          data-testid="prompt-input-file-menu"
           id="file-button"
           color="inherit"
           aria-label="add file"
@@ -146,9 +148,13 @@ function FileSelectMenu(props: FileSelectMenuProps) {
 const FileSelectMenuBody = menuNeedsLogin<FileSelectMenuBodyProps>((props) => {
   return (
     <Box sx={{ width: 200 }}>
-      {FILE_OPTIONS.map(({ title, icon }) => {
+      {FILE_OPTIONS.map(({ title, icon, dataTestId }) => {
         return (
-          <MenuItem onClick={() => props.onFileUpload()} key={title}>
+          <MenuItem
+            data-testid={dataTestId}
+            onClick={() => props.onFileUpload()}
+            key={title}
+          >
             <ListItemIcon>{icon}</ListItemIcon>
             <Typography variant="h5">{title}</Typography>
           </MenuItem>

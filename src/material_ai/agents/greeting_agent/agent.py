@@ -4,6 +4,7 @@ from google.adk.tools.tool_context import ToolContext
 from material_ai.oauth import oauth_user_details_context
 import csv
 import io
+import time
 
 
 def say_hello():
@@ -13,6 +14,14 @@ def say_hello():
 def who_am_i():
     user_details = oauth_user_details_context.get()
     return user_details
+
+def say_hi_10_after_seconds():
+    """
+    Waits for 10 seconds and then send a message
+    """
+    time.sleep(10)
+    
+    return {"description": "Hi, I waited for 10 seconds"}
 
 
 async def create_csv(tool_context: ToolContext = None) -> str:
@@ -55,6 +64,7 @@ root_agent = Agent(
     instruction="""
     Use 'say_hello' tool to greet user, If user asks about himself use 'who_am_i' tool,
     If the users ask about a csv file use 'create_csv' tool
+    If the user says 'say_10' use 'say_hi_10_after_seconds' tool and greet user
     """,
-    tools=[say_hello, who_am_i, create_csv],
+    tools=[say_hello, who_am_i, create_csv, say_hi_10_after_seconds],
 )

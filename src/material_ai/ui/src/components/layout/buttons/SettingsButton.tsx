@@ -10,6 +10,7 @@ export default function SettingsButton() {
 
   return (
     <DrawerButton
+      dataTestid="page-settings-button"
       tooltip="Settings"
       icon={<SettingsIcon fontSize="small" />}
       title="Settings & help"

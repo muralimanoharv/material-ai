@@ -26,6 +26,7 @@ interface ActionItem {
   value?: string
   tooltip: string
   onClick: () => void | Promise<void>
+  dataTestId: string
 }
 
 export default function ModelButtons(props: ModelButtonsProps) {
@@ -49,6 +50,7 @@ export default function ModelButtons(props: ModelButtonsProps) {
       icon: <ThumbUpOffAltIcon fontSize="small" />,
       filledIcon: <ThumbUpIcon fontSize="small" />,
       value: config.feedback.positive.value,
+      dataTestId: 'thumbs-up-button',
       tooltip: 'Good response',
       onClick: async () => {
         if (feedback?.feedback_category === config.feedback.positive.value) {
@@ -66,6 +68,7 @@ export default function ModelButtons(props: ModelButtonsProps) {
       icon: <ThumbDownOffAltIcon fontSize="small" />,
       filledIcon: <ThumbDownIcon fontSize="small" />,
       value: config.feedback.negative.value,
+      dataTestId: 'thumbs-down-button',
       tooltip: 'Bad response',
       onClick: async () => {
         if (feedback?.feedback_category === config.feedback.negative.value) {
@@ -84,6 +87,7 @@ export default function ModelButtons(props: ModelButtonsProps) {
     {
       icon: <RefreshIcon fontSize="small" />,
       tooltip: 'Redo',
+      dataTestId: 'redo-button',
       onClick: () => {
         let prompt = chat.prompt
         if (!prompt) {
@@ -98,6 +102,7 @@ export default function ModelButtons(props: ModelButtonsProps) {
     {
       icon: <ShareOutlinedIcon fontSize="small" />,
       tooltip: 'Share & export',
+      dataTestId: 'share-button',
       onClick: () => {
         // Implement share logic
       },
@@ -105,6 +110,7 @@ export default function ModelButtons(props: ModelButtonsProps) {
     {
       icon: <CopyAllOutlinedIcon fontSize="small" />,
       tooltip: 'Copy response',
+      dataTestId: 'copy-button',
       onClick: async () => {
         await navigator.clipboard.writeText(props.part?.text || '')
         setSnack('Copied to clipboard')
@@ -153,6 +159,7 @@ export default function ModelButtons(props: ModelButtonsProps) {
         return (
           <Tooltip key={action.tooltip} title={action.tooltip}>
             <IconButton
+              data-testid={action.dataTestId}
               color={getColor(action)}
               onClick={action.onClick}
               // It's good practice to keep key on the outermost element of map

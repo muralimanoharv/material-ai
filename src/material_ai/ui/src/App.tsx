@@ -195,9 +195,14 @@ function App() {
         </Routes>
         <Snackbar
           open={!!snack}
-          autoHideDuration={2000}
+          autoHideDuration={3000}
           onClose={() => {
             setSnack('')
+          }}
+          slotProps={{
+            content: {
+              'data-testid': 'snack-bar-message',
+            } as Record<string, string>,
           }}
           message={snack}
         />

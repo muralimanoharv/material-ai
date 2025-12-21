@@ -94,6 +94,7 @@ jobs:
           CONFIG_PATH: ${{ secrets.CONFIG_PATH }}
           GOOGLE_GENAI_USE_VERTEXAI: ${{ secrets.GOOGLE_GENAI_USE_VERTEXAI }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
 
       # --- 5. REPORTING ---
       - name: Upload Playwright Report

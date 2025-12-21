@@ -18,12 +18,13 @@ const MAX_COLLAPSED_LENGTH = 116
 
 interface ChatItemProps {
   part: ChatPart
+  partIdx: number
 }
 
-export default function ChatText({ part }: ChatItemProps) {
+export default function ChatText({ part, partIdx }: ChatItemProps) {
   const theme = useTheme()
   const { config } = useContext(AppContext) as AppContextType
-  const { feedback, negativeFeedbackToggle, chat } = useContext(
+  const { feedback, negativeFeedbackToggle, chat, chatIdx } = useContext(
     ChatItemContext,
   ) as ChatItemContextType
 
@@ -76,7 +77,10 @@ export default function ChatText({ part }: ChatItemProps) {
   }, [part, isExpanded, isUserMessage, isLargeText])
 
   return (
-    <Box className={`chat-item-box chat-item-box-${chat.content.role}`}>
+    <Box
+      data-testid={`page-chat-${chatIdx}-part-${partIdx}`}
+      className={`chat-item-box chat-item-box-${chat.content.role}`}
+    >
       <Box
         sx={{
           display: chat.content.role == 'user' ? 'flex' : 'block',
