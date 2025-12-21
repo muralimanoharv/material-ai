@@ -282,8 +282,8 @@ test.describe('Greeting Agent Chat Page', () => {
     await expect(page.getByTestId(`page-title`)).toHaveText(
       `Hello, ${user.given_name}`,
       {
-        timeout: 10000
-      }
+        timeout: 10000,
+      },
     )
     await expect(page.getByTestId(`page-subtitle`)).toHaveText(config.greeting)
     const secondPrompt = `
@@ -339,8 +339,8 @@ test.describe('Greeting Agent Chat Page', () => {
     await expect(page.getByTestId(`page-title`)).toHaveText(
       `Hello, ${user.given_name}`,
       {
-        timeout: 10000
-      }
+        timeout: 10000,
+      },
     )
     await expect(page.getByTestId('prompt-input-file-menu')).toBeVisible()
     await page.getByTestId('prompt-input-file-menu').click()
@@ -385,8 +385,8 @@ test.describe('Greeting Agent Chat Page', () => {
     await expect(page.getByTestId(`page-title`)).toHaveText(
       `Hello, ${user.given_name}`,
       {
-        timeout: 10000
-      }
+        timeout: 10000,
+      },
     )
     const fourthPrompt = 'Give me CSV'
 
@@ -407,18 +407,22 @@ test.describe('Greeting Agent Chat Page', () => {
     await expect(page.getByTestId(`page-title`)).toHaveText(
       `Hello, ${user.given_name}`,
       {
-        timeout: 10000
-      }
+        timeout: 10000,
+      },
     )
     const fifthPrompt = 'say_10'
     await promptInput.fill(fifthPrompt)
-    await submit.click({timeout: 10000})
+    await submit.click({ timeout: 10000 })
     await expect(page.getByTestId('page-prompt-input-cancel')).toBeVisible()
-    
-    await expect(page.getByTestId('page-chat-0-part-0')).toBeVisible({timeout: 10000})
+
+    await expect(page.getByTestId('page-chat-0-part-0')).toBeVisible({
+      timeout: 10000,
+    })
     await expect(page.getByTestId('page-chat-0-part-loading')).toBeVisible()
     await page.getByTestId('page-prompt-input-cancel').click()
-    await expect(page.getByTestId('page-chat-1-part-0')).toBeVisible({timeout: 10000})
+    await expect(page.getByTestId('page-chat-1-part-0')).toBeVisible({
+      timeout: 10000,
+    })
     await expect(
       page.getByTestId('page-chat-1-part-0').getByTestId('chat-text'),
     ).toHaveText('You stopped this response')
