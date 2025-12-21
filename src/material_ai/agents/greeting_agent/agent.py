@@ -15,12 +15,13 @@ def who_am_i():
     user_details = oauth_user_details_context.get()
     return user_details
 
+
 def say_hi_10_after_seconds():
     """
     Waits for 10 seconds and then send a message
     """
     time.sleep(10)
-    
+
     return {"description": "Hi, I waited for 10 seconds"}
 
 
