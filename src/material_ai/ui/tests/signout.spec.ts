@@ -11,7 +11,7 @@ test('backend health check returns 200', async ({ request }) => {
   const body = await response.json()
   expect(body.status).toBe('ok')
   expect(body.appName).toBe('material_ai')
-  expect(body.version).toBe('1.1.16') // x-release-please-version
+  expect(body.version).toBe('1.1.17') // x-release-please-version
   expect(response.status()).toBe(200)
 })
 
