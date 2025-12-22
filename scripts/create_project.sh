@@ -31,6 +31,70 @@ show_loader() {
   return $exit_status
 }
 
+download_terraform() {
+    # 1. Allow version to be passed as an argument, default to 1.9.5
+    local version="${1:-1.9.5}"
+    
+    local os_name=$(uname -s)
+    local arch_name=$(uname -m)
+    local os=""
+    local arch=""
+
+    # 2. Detect OS
+    if [[ "$os_name" == "Linux" ]]; then
+        os="linux"
+    elif [[ "$os_name" == "Darwin" ]]; then
+        os="darwin"
+    elif [[ "$os_name" == *"MINGW"* ]] || [[ "$os_name" == *"CYGWIN"* ]]; then
+        os="windows"
+    else
+        echo "❌ Error: Unsupported OS: $os_name"
+        return 1
+    fi
+
+    # 3. Detect Architecture
+    if [[ "$arch_name" == "x86_64" ]]; then
+        arch="amd64"
+    elif [[ "$arch_name" == "aarch64" ]] || [[ "$arch_name" == "arm64" ]]; then
+        arch="arm64"
+    else
+        echo "❌ Error: Unsupported Architecture: $arch_name"
+        return 1
+    fi
+
+    local zip_file="terraform_${version}_${os}_${arch}.zip"
+    local download_url="https://releases.hashicorp.com/terraform/${version}/${zip_file}"
+
+    echo "⬇️  Downloading Terraform v${version} for ${os} (${arch})..."
+
+    # 4. Download
+    if command -v curl >/dev/null 2>&1; then
+        curl -LO "$download_url"
+    elif command -v wget >/dev/null 2>&1; then
+        wget "$download_url"
+    else
+        echo "❌ Error: Neither curl nor wget found."
+        return 1
+    fi
+
+    # 5. Unzip
+    echo "📦 Extracting..."
+    if ! unzip -o "$zip_file" > /dev/null; then
+        echo "❌ Error: Unzip failed."
+        rm "$zip_file"
+        return 1
+    fi
+
+    # 6. Cleanup and Permissions
+    rm "$zip_file"
+    
+    if [[ "$os" != "windows" ]]; then
+        chmod +x terraform
+    fi
+
+    echo "✅ Success! Terraform v${version} is ready in $(pwd)"
+}
+
 download_template_files() {
     # URLs for the root directory
     wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/config.ini
@@ -46,7 +110,6 @@ download_template_files() {
     wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/deploy_crun.sh
     wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/teardown.sh
     wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/main.tf
-    wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/terraform
 }
 
 
@@ -618,6 +681,10 @@ This project uses a \`Makefile\` command to automate deployment.
     \`\`\`bash
     make deploy
     \`\`\`
+3. Steps to add additional roles to cloud run service account
+In order to add additional permissions to cloud run service account you
+can modify the crun roles under `scripts/main.tf -> search sa_permissions` and add additional roles
+as per project requirements
 
 -----
 
@@ -630,6 +697,12 @@ We welcome your contributions\! If you find a bug or have a feature request, ple
 
 Thank you for helping improve Material AI\!
 EOF
+
+cd scripts
+download_terraform "1.9.5"
+cd ..
+
+sudo chmod +x ./scripts
 
 # 5. Final Message
 echo ""

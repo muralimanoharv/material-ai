@@ -422,7 +422,8 @@ make teardown
 ```
 
 ### 4\. Steps to add additional roles to cloud run service account
-<!-- TODO -->
+In order to add additional permissions to cloud run service account you
+can modify the crun roles under `scripts/main.tf -> sa_permissions`
 
 ---
 ## 🐞 Reporting Issues and Feature Requests
