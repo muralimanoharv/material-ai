@@ -42,6 +42,7 @@ export default function SettingsSwipeableDrawer() {
           <MaterialList>
             <ListItem disablePadding>
               <ListItemButton
+                data-testid="page-theme-button"
                 sx={{
                   backgroundColor: theme.palette.background.default,
                 }}

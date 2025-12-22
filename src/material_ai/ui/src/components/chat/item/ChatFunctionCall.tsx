@@ -5,11 +5,12 @@ import { type ChatPart } from '../../../schema'
 
 interface ChatFunctionCallProps {
   part: ChatPart
+  partIdx: number
 }
 
-function ChatFunctionCall({ part }: ChatFunctionCallProps) {
+function ChatFunctionCall({ part, partIdx }: ChatFunctionCallProps) {
   return (
-    <ChatItemWrapper role="model">
+    <ChatItemWrapper partIdx={`${partIdx}`} role="model">
       <Box
         sx={{
           display: 'flex',
@@ -19,7 +20,7 @@ function ChatFunctionCall({ part }: ChatFunctionCallProps) {
         }}
       >
         <BoltIcon />
-        {part.functionCall?.name}
+        <span data-testid="chat-function-call">{part.functionCall?.name}</span>
       </Box>
     </ChatItemWrapper>
   )

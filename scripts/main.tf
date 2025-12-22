@@ -55,8 +55,8 @@ variable "gcp_services" {
     "cloudbuild.googleapis.com",
     "artifactregistry.googleapis.com",
     "run.googleapis.com",
-    "iam.googleapis.com",           # Required for Service Account management
-    "aiplatform.googleapis.com"     # Required if using Vertex AI
+    "iam.googleapis.com",
+    "aiplatform.googleapis.com"
   ]
 }
 
@@ -81,65 +81,70 @@ resource "google_artifact_registry_repository" "docker_repo" {
 }
 
 # ==============================================================================
-# 2. SERVICE ACCOUNT & IAM ROLES (FIXED)
+# 2. BUILD IDENTITY (NEW: Safe & Isolated)
 # ==============================================================================
 
-# 1. DEFINE DATA SOURCE (Required to get project number)
-data "google_project" "project" {
-  project_id = var.project_id
+# 1. Create a dedicated Service Account for the Build Process
+resource "google_service_account" "build_sa" {
+  account_id   = substr("${var.service_name}-build-sa", 0, 30)
+  display_name = "Build SA for ${var.service_name}"
+  description  = "Used exclusively by Cloud Build to build and push images for ${var.service_name}"
 }
 
-# 2. Grant Permissions to Cloud Build (Default Compute Service Account)
-resource "google_project_iam_member" "fix_cloud_build_permissions" {
-  # We use for_each to assign multiple roles to the same account
+# 2. Grant permissions ONLY to this new Build Service Account
+resource "google_project_iam_member" "build_sa_permissions" {
   for_each = toset([
-    # 1. REQUIRED: To download the source code zip file from the hidden GCS bucket
-    "roles/storage.objectViewer",
-    
-    # 2. REQUIRED: To push the built Docker image to Artifact Registry
-    "roles/artifactregistry.writer"
+    "roles/logging.logWriter",       
+    "roles/storage.objectViewer",    
+    "roles/artifactregistry.writer",
+    "roles/storage.objectViewer"
   ])
 
   project = var.project_id
   role    = each.key
-
-  # This targets the Default Compute Service Account, which Cloud Build uses by default
-  member  = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+  member  = "serviceAccount:${google_service_account.build_sa.email}"
   
-  depends_on = [google_project_service.enabled_apis]
+  depends_on = [
+    google_project_service.enabled_apis,
+    google_service_account.build_sa
+  ]
 }
 
-# 3. Create the Custom Service Account
+# ==============================================================================
+# 3. RUNTIME IDENTITY (Application Service Account)
+# ==============================================================================
+
+# 1. Create the Custom Service Account for the Application
 resource "google_service_account" "app_sa" {
-  account_id   = var.service_name
+  # Truncate service_name to 30 characters to meet GCP constraints
+  account_id   = substr(var.service_name, 0, 30)
   display_name = "Service Account for ${var.service_name}"
-  
-  # FIX: Correct dependency syntax
-  depends_on = [google_project_iam_member.fix_cloud_build_permissions]
 }
 
-# 4. Grant permissions to the Custom Service Account
+# 2. Grant permissions to the Runtime Service Account
 resource "google_project_iam_member" "sa_permissions" {
   for_each = toset([
-    "roles/logging.logWriter",       
-    "roles/aiplatform.user",         
-    "roles/datastore.user",          
-    "roles/storage.objectViewer"     
+    "roles/logging.logWriter",        
+    "roles/aiplatform.user",          
+    "roles/datastore.user",           
+    "roles/storage.objectViewer"      
   ])
-  
+   
   project = var.project_id
   role    = each.key
   member  = "serviceAccount:${google_service_account.app_sa.email}"
+  depends_on = [
+    google_project_service.enabled_apis,
+    google_service_account.app_sa
+  ]
 }
 
 # ==============================================================================
-# 3. BUILD & PUSH IMAGE
+# 4. BUILD & PUSH IMAGE
 # ==============================================================================
 
 resource "null_resource" "build_and_push" {
-  
-  # Trigger: This ensures the build runs on every 'terraform apply'. 
-  # Without this, Terraform would only build the image once and never again.
+   
   triggers = {
     always_run = timestamp()
   }
@@ -152,20 +157,24 @@ resource "null_resource" "build_and_push" {
       
       echo "Starting Cloud Build submit with tag: $COMMIT_SHA"
 
+      # UPDATED: Added --service-account flag to use our safe, dedicated build account
       gcloud builds submit .. \
         --config=../cloudbuild.yaml \
         --project=${var.project_id} \
+        --service-account=${google_service_account.build_sa.name} \
         --substitutions=_GCR_PROJECT_ID=${var.project_id},_IMAGE_REPO=${google_artifact_registry_repository.docker_repo.name},_IMAGE_NAME=${var.image_name},_VERSION='latest',SHORT_SHA=$COMMIT_SHA
     EOT
   }
+
   depends_on = [
     google_artifact_registry_repository.docker_repo,      
-    google_project_iam_member.fix_cloud_build_permissions
+    google_project_iam_member.build_sa_permissions, # Wait for build permissions to propagate
+    google_project_service.enabled_apis
   ]
 }
 
 # ==============================================================================
-# 4. CLOUD RUN DEPLOYMENT
+# 5. CLOUD RUN DEPLOYMENT
 # ==============================================================================
 
 resource "google_cloud_run_v2_service" "app_service" {
@@ -176,7 +185,6 @@ resource "google_cloud_run_v2_service" "app_service" {
   deletion_protection = false
 
   template {
-    # Force Revision: Ensures Cloud Run updates even if the image tag (:latest) is the same.
     annotations = {
       "run.googleapis.com/client-name" = "terraform"
       "revision-trigger"               = null_resource.build_and_push.id 

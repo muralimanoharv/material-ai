@@ -46,6 +46,7 @@ export default function ThemeSwipeableDrawer() {
             return (
               <ListItem disablePadding key={themeType}>
                 <ListItemButton
+                  data-testid={`page-theme-${value}-button`}
                   sx={{
                     backgroundColor: theme.palette.background.default,
                   }}
@@ -55,7 +56,10 @@ export default function ThemeSwipeableDrawer() {
                 >
                   <ListItemText primary={themeType} />
                   {currentTheme === value ? (
-                    <CheckCircleOutlineIcon fontSize="small" />
+                    <CheckCircleOutlineIcon
+                      data-testid={`page-theme-${value}-selected`}
+                      fontSize="small"
+                    />
                   ) : null}
                 </ListItemButton>
               </ListItem>

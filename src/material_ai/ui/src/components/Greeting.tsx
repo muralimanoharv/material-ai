@@ -3,7 +3,7 @@ import { useContext } from 'react'
 import { AppContext, type AppContextType } from '../context'
 
 function Greeting() {
-  let { user, config, loading, history } = useContext(
+  const { user, config, loading, history } = useContext(
     AppContext,
   ) as AppContextType
   const theme = useTheme()
@@ -37,6 +37,7 @@ function Greeting() {
               color: 'transparent',
               userSelect: 'none',
             }}
+            data-testid="page-title"
           >
             Hello, {user?.given_name}
           </Typography>
@@ -47,6 +48,7 @@ function Greeting() {
             variant="h1"
             className="tagline-text"
             sx={{ userSelect: 'none' }}
+            data-testid="page-subtitle"
           >
             {config.greeting}
           </Typography>
@@ -58,6 +60,7 @@ function Greeting() {
             variant="h1"
             fontWeight={500}
             fontSize={'45px'}
+            data-testid="page-title"
             sx={{
               color: theme.palette.text.primary,
               userSelect: 'none',
@@ -71,6 +74,7 @@ function Greeting() {
             color={theme.palette.text.primary}
             fontWeight={500}
             fontSize={'45px'}
+            data-testid="page-subtitle"
             variant="h1"
             className="tagline-text"
           >

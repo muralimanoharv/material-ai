@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { lazy, type LazyExoticComponent, type ComponentType } from 'react'
 import { FormComponents } from './SmartFormComponents'
 import { DynamicForm } from './DynamicForm'

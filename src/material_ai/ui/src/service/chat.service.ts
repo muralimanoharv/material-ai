@@ -1,5 +1,11 @@
 import React from 'react'
-import type { AppConfig, FileAttachment, Session, User } from '../schema'
+import type {
+  AppConfig,
+  ChatItem,
+  FileAttachment,
+  Session,
+  User,
+} from '../schema'
 import { createParts } from '../utils'
 import { ApiService } from './api.service'
 import { HistoryService } from './history.service'
@@ -64,16 +70,17 @@ export class ChatService {
       }
 
       if (!session_id) return
+      const url = `/agents/${agent}/session/${session_id}?is_new_session=${is_new_session}`
+      await this.context.navigate(url)
       await this.cancel_api()
 
       this.controller = new AbortController()
 
-      const parts = createParts({ prompt, files })
-
+      const [requestParts, chatParts] = createParts({ prompt, files })
       this.historyService.add_history({
         content: {
           role: 'user',
-          parts,
+          parts: chatParts,
         },
         prompt,
         id,
@@ -85,11 +92,11 @@ export class ChatService {
 
       const reader = await this.apiService.send_message({
         session_id,
-        parts,
+        parts: requestParts,
         controller: this.controller,
         sub: user.sub,
         app_name: agent,
-        on_message: (message: any) => {
+        on_message: (message: ChatItem) => {
           if (message.error) {
             this.on_send_error(message.error)
             return
@@ -148,7 +155,7 @@ export class ChatService {
   }
 
   async cancel_api(): Promise<void> {
-    return new Promise(async (resolve) => {
+    return new Promise((resolve) => {
       if (this.controller) {
         this.controller?.abort()
         this.historyService.add_history({
@@ -163,13 +170,12 @@ export class ChatService {
         this.context.setPromptLoading(false)
       }
       if (this.reader) {
-        try {
-          await this.reader.cancel()
-        } catch (e) {
-          console.warn('Reader cancel error:', e)
-        } finally {
-          this.reader = undefined
-        }
+        this.reader
+          .cancel()
+          .catch((e) => console.warn('Reader cancel error:', e))
+          .finally(() => {
+            this.reader = undefined
+          })
       }
 
       if (this.loadingId) {
@@ -188,7 +194,7 @@ export class ChatService {
       const prevChat = this.historyService.get(i)
       if (!prevChat) return
       if (prevChat.content.role == 'model') continue
-      for (let part of prevChat.content.parts) {
+      for (const part of prevChat.content.parts) {
         if (part.text) return part.text
       }
     }

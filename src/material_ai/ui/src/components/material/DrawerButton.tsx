@@ -11,6 +11,7 @@ interface DrawerButtonProps {
   onClick: () => void
   tooltip?: string
   disabled?: boolean
+  dataTestid: string
 }
 
 export default function DrawerButton({
@@ -19,6 +20,7 @@ export default function DrawerButton({
   onClick,
   tooltip = '',
   disabled = false,
+  dataTestid,
 }: DrawerButtonProps) {
   const { isDrawerOpen } = useContext(LayoutContext) as LayoutContextType
 
@@ -28,6 +30,7 @@ export default function DrawerButton({
     <List>
       <ListItem disablePadding sx={{ display: 'block' }}>
         <ListItemButton
+          data-testid={dataTestid}
           onClick={onClick}
           disableRipple
           disabled={disabled}

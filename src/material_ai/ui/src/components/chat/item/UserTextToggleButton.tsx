@@ -13,7 +13,10 @@ export default function UserTextToggleButton({
 }: UserTextToggleButtonProps) {
   return (
     <Tooltip title={textExpand ? 'Collapse text' : 'Expand text'}>
-      <IconButton onClick={textExpandToggle}>
+      <IconButton
+        data-testid="user-text-toggle-button"
+        onClick={textExpandToggle}
+      >
         {textExpand ? (
           <KeyboardArrowUpOutlinedIcon />
         ) : (

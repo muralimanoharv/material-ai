@@ -108,6 +108,36 @@ const getComponentOverrides = (palette: Palette): ThemeOptions => ({
         root: {
           color: palette.text.tertiary,
         },
+        contained: {
+          color: palette.background.default,
+          backgroundColor: palette.primary.main,
+          '&:hover': {
+            backgroundColor: palette.primary.dark,
+          },
+        },
+      },
+    },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          color: palette.background.default,
+          '& .MuiTypography-root': {
+            color: 'inherit',
+          },
+          '& .MuiSvgIcon-root': {
+            color: 'inherit',
+          },
+          '& .MuiButton-root': {
+            color: 'inherit',
+          },
+        },
+      },
+    },
+    MuiToolbar: {
+      styleOverrides: {
+        root: {
+          color: palette.background.default,
+        },
       },
     },
     MuiTooltip: {

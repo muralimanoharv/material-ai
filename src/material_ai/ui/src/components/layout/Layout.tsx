@@ -117,7 +117,7 @@ export default function Layout({ children, showFooter = true }: LayoutProps) {
                 <DrawerSigninButton />
               </Box>
             )}
-            {agentId && <NewChatButton />}
+            {context.user && agentId && <NewChatButton />}
 
             <Box
               onMouseLeave={() => setHoverOpen(false)}
@@ -130,7 +130,7 @@ export default function Layout({ children, showFooter = true }: LayoutProps) {
                 overflowX: 'hidden',
               }}
             >
-              {agentId && <SessionHistorySection />}
+              {context.user && agentId && <SessionHistorySection />}
             </Box>
             <SettingsButton />
           </Box>

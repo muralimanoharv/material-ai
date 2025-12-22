@@ -3,9 +3,7 @@ set -e
 
 echo "🚀 STARTING: Teardown...."
 
-gcloud auth login
-
-gcloud auth application-default login
+source ./auth.sh
 
 source ./setup.sh
 

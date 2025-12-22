@@ -11,6 +11,7 @@ function DrawerSigninButton() {
       width={isDrawerOpen() ? 'auto' : 0}
       display={isDrawerOpen() ? 'flex' : 'none'}
       className="fade-in-animation"
+      data-testid="drawer-signin-button"
       sx={{
         flexDirection: 'column',
         justifyContent: 'space-between',
@@ -18,8 +19,7 @@ function DrawerSigninButton() {
         gap: '25px',
         // Cast to 'any' if 'cardHover' is not in your theme.d.ts
         background:
-          (theme.palette.background as any).cardHover ||
-          theme.palette.grey[100],
+          theme.palette.background.cardHover || theme.palette.grey[100],
         borderTopLeftRadius: '24px',
         borderTopRightRadius: '24px',
         padding: '16px 20px',

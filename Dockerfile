@@ -8,10 +8,6 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y make
 RUN apt-get update && apt-get install -y curl gnupg
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-
-# Install Node.js and npm
-RUN apt-get install -y nodejs
 
 COPY Makefile .
 
@@ -26,8 +22,6 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Comment the below line for local development hot reloading to work
 COPY src/ src/
 
-RUN make build-ui
-
 COPY config.ini .
 
 # Make port 8080 available to the world outside this container
@@ -36,13 +30,5 @@ EXPOSE 8080
 ENV PYTHONPATH="src"
 ENV GENERAL_DEBUG=false
 ENV CONFIG_PATH=config.ini
-# ENV SSO_CLIENT_ID=
-# ENV SSO_CLIENT_SECRET=
-# ENV SSO_REDIRECT_URI=
-# ENV SSO_SESSION_SECRET_KEY=
-# ENV CONFIG_PATH=
-# ENV GOOGLE_GENAI_USE_VERTEXAI=
-# ENV GOOGLE_API_KEY=
-# ENV ADK_SESSION_DB_URL=
 
 CMD ["make", "preview"]

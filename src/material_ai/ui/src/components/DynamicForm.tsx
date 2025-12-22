@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, type ReactNode } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { AppContext } from '../context'
 import { useAgentId, useSessionId } from '../hooks'
@@ -7,14 +7,18 @@ export const DynamicForm = ({
   defaultValues,
   children,
   submissionContext,
-}: any) => {
+}: {
+  defaultValues: Record<string, string>
+  children: ReactNode
+  submissionContext: string
+}) => {
   const context = useContext(AppContext)
   const methods = useForm({ defaultValues })
 
   const agentId = useAgentId()
   const sessionId = useSessionId()
 
-  const onSubmit = (formData: any) => {
+  const onSubmit = (formData: Record<string, string>) => {
     context?.chatService.send_message(
       `
         ${submissionContext}

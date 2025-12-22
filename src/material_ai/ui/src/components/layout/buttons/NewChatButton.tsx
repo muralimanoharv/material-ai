@@ -21,6 +21,7 @@ export default function NewChatButton() {
 
   return (
     <DrawerButton
+      dataTestid="page-newchat-button"
       disabled={promptLoading || !user}
       tooltip="New Chat (Ctrl+Shift+O)"
       icon={<AddCommentOutlinedIcon fontSize="small" />}

@@ -15,3 +15,5 @@ build/
 **/.terraform
 **/.terraform.lock.hcl
 **/.terraform.tfstate.lock.info
+uploaded_files.txt
+tests.txt

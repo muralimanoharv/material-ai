@@ -5,9 +5,8 @@ import FilesBox from './FilesBox'
 import type { ChatPart, InlineData } from '../../../schema'
 
 interface ChatUserFilesProps {
-  part: {
-    text: string
-  }
+  part: ChatPart
+  partIdx: number
 }
 
 export interface UploadedFile {
@@ -18,7 +17,7 @@ export interface UploadedFile {
 }
 
 // 2. Component
-function ChatUserFiles({ part }: ChatUserFilesProps) {
+function ChatUserFiles({ part, partIdx }: ChatUserFilesProps) {
   const { chat } = useContext(ChatItemContext) as unknown as ChatItemContextType
 
   // Memoize the heavy lifting: parsing JSON and mapping arrays
@@ -26,8 +25,9 @@ function ChatUserFiles({ part }: ChatUserFilesProps) {
     // 1. Try Parse JSON
     let json: { fileNames?: string[] } = {}
     try {
-      json = JSON.parse(part.text)
+      json = JSON.parse(part?.text || '')
     } catch (e) {
+      console.error(e)
       return null
     }
 
@@ -66,7 +66,7 @@ function ChatUserFiles({ part }: ChatUserFilesProps) {
   if (!files) return null
 
   return (
-    <ChatItemWrapper alignment="flex-end">
+    <ChatItemWrapper partIdx={`${partIdx}`} alignment="flex-end">
       <FilesBox
         alignSelf={'flex-start'}
         justifyContent={'flex-start'}

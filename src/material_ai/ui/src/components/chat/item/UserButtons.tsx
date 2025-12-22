@@ -24,6 +24,7 @@ export default function UserButtons(props: UserButtonsProps) {
     >
       <Tooltip title="Copy prompt">
         <IconButton
+          data-testid="copy-prompt-button"
           onClick={async () => {
             await navigator.clipboard.writeText(props.text)
             setSnack('Prompt copied')
@@ -34,6 +35,7 @@ export default function UserButtons(props: UserButtonsProps) {
       </Tooltip>
       <Tooltip title="Edit prompt">
         <IconButton
+          data-testid="edit-prompt-button"
           onClick={() => {
             setPrompt(props.text)
             input_focus()

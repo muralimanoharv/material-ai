@@ -23,7 +23,7 @@ export default function FilesBox(props: FilesBoxProps) {
       }}
     >
       {props.files.map((file) => (
-        <FileBox key={file.name} file={file} />
+        <FileBox key={file.name} file={file} prefix="chat" />
       ))}
     </Box>
   )

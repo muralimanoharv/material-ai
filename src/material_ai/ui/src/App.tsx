@@ -8,7 +8,14 @@ import {
 } from './context'
 import { ApiService } from './service/api.service'
 import { Snackbar } from '@mui/material'
-import type { Agent, ChatItem, FileAttachment, Session, User } from './schema'
+import type {
+  Agent,
+  ChatItem,
+  FileAttachment,
+  Health,
+  Session,
+  User,
+} from './schema'
 import { HistoryService } from './service/history.service'
 import { ChatService } from './service/chat.service'
 import AgentPage from './components/pages/AgentPage'
@@ -20,7 +27,7 @@ function App() {
 
   // const [session, setSession] = useState<string | undefined>()
   const [user, setUser] = useState<User | undefined>(undefined)
-  const [health, setHealth] = useState<any>(undefined)
+  const [health, setHealth] = useState<Health | undefined>(undefined)
 
   const [history, setHistory] = useState<ChatItem[]>([])
   const [sessions, setSessions] = useState<Session[]>([])
@@ -172,7 +179,6 @@ function App() {
 
   useEffect(() => {
     onAppLoad()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -185,12 +191,18 @@ function App() {
           </Route>
           <Route path="/" element={<Navigate to="/agents" replace />} />
           <Route path="/404" element={<PageNotFound />} />
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
         <Snackbar
           open={!!snack}
-          autoHideDuration={2000}
+          autoHideDuration={3000}
           onClose={() => {
             setSnack('')
+          }}
+          slotProps={{
+            content: {
+              'data-testid': 'snack-bar-message',
+            } as Record<string, string>,
           }}
           message={snack}
         />

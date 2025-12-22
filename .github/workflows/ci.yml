@@ -1,16 +1,12 @@
-# .github/workflows/ci.yml
-
 name: Lint, Test, and Report
 
 on:
   pull_request:
     branches: [ main ]
 
-# Add permissions for the actions to write PR comments and checks
 permissions:
   contents: read
-  pull-requests: write
-  checks: write
+  pull-requests: write # <--- REQUIRED to post the comment
 
 jobs:
   build-and-test:
@@ -35,40 +31,44 @@ jobs:
       - name: Run tests and generate reports
         env:
           CONFIG_PATH: config.ini
-        id: run-tests # Give the step an ID to reference its output later
         run: |
-          # Generate JUnit XML for test results and a text summary for coverage
-          # The 'tee' command outputs to the console and saves to a file
           pytest --cov=./ \
                  --cov-report=term \
-                 --cov-report=xml \
+                 --cov-report=html \
                  --cov-fail-under=90 \
                  --junitxml=pytest.xml | tee coverage-summary.txt
-        # 'continue-on-error' allows subsequent steps to run even if tests fail,
-        # so the report is always published. The job will still fail in the end.
-        continue-on-error: true
 
-      - name: Post Test Summary
-        uses: dorny/test-reporter@v1
-        if: success() || failure() # Always run this step to post results
+      - name: Upload Test Results
+        id: upload-artifact # <--- Give this an ID (optional, but good practice)
+        uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: 🧪 Unit Test Results
-          path: pytest.xml
-          reporter: jest-junit
-          # This ensures the overall job status reflects the test outcome
-          fail-on-error: true
+          name: test-results
+          path: |
+            pytest.xml
+            coverage-summary.txt
+            htmlcov/
+          retention-days: 5
 
-      - name: Post Coverage Summary as a PR Comment
+      # NEW: Post a clean link to the artifacts
+      - name: Comment Report Link on PR
         uses: actions/github-script@v7
-        if: always() # Always run
+        if: always() # Run even if tests fail
         with:
           script: |
-            const fs = require('fs');
-            // Read the text summary file generated in the test step
-            const coverageSummary = fs.readFileSync('coverage-summary.txt', 'utf8');
+            // 1. Construct the URL to the Workflow Run
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            
+            // 2. Create the comment body
+            const body = `### 📊 Test Results Available
+            
+            The HTML Coverage report and test logs have been generated.
+            
+            📥 **[Download Report from Actions Summary](${runUrl})**
+            
+            *(Navigate to the **Artifacts** section at the bottom of the page)*`;
 
-            const body = `### 📊 Code Coverage Summary\n\n\`\`\`\n${coverageSummary}\n\`\`\``;
-
+            // 3. Post the comment
             github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,

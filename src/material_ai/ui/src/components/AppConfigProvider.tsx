@@ -8,48 +8,48 @@ interface AppConfigProviderProps {
 }
 
 export function AppConfigProvider({ children }: AppConfigProviderProps) {
-  const [config, setConfig] = useState<AppConfig | undefined>()
-
-  const fetch_config = async (): Promise<AppConfig> => {
-    const response = await fetch(`${HOST}/config`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch config: ${response.statusText}`)
-    }
-
-    const body = (await response.json()) as AppConfig
-
-    return body
-  }
-
-  const getConfig = async () => {
+  const [config, setConfig] = useState<AppConfig | undefined>(() => {
     try {
       const storedConfig = sessionStorage.getItem('config')
-
-      if (storedConfig) {
-        setConfig(JSON.parse(storedConfig) as AppConfig)
-        return
-      }
-
-      const config_response = await fetch_config()
-
-      sessionStorage.setItem('config', JSON.stringify(config_response))
-      setConfig(config_response)
-    } catch (e) {
-      console.error(e)
-      alert('Some error has occurred, Please try again later')
+      return storedConfig ? JSON.parse(storedConfig) : undefined
+    } catch {
+      return undefined
     }
-  }
+  })
+
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    getConfig()
+    const initConfig = async () => {
+      if (config) return
+
+      try {
+        const response = await fetch(`${HOST}/config`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        })
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch config: ${response.statusText}`)
+        }
+
+        const data = (await response.json()) as AppConfig
+
+        sessionStorage.setItem('config', JSON.stringify(data))
+        setConfig(data)
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message)
+        } else {
+          setError('Unknown error')
+        }
+      }
+    }
+
+    initConfig()
   }, [])
 
+  if (error) return <div>Error loading application: {error}</div>
   if (!config) return null
 
   return <AppThemeProvider config={config}>{children}</AppThemeProvider>

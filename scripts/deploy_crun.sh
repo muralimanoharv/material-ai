@@ -3,9 +3,7 @@ set -e
 ENVIRONMENT=$1
 echo "🚀 STARTING: Deployment...."
 
-gcloud auth login
-
-gcloud auth application-default login
+source ./auth.sh
 
 source ./setup.sh
 

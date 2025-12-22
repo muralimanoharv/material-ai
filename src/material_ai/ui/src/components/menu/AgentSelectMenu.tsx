@@ -13,10 +13,12 @@ import { formatModelName } from '../../utils'
 
 interface AgentSelectMenuBodyProps {
   agents: Agent[]
+  handleClose: () => void
 }
 
 interface AgentItemProps {
   agent: Agent
+  handleClose: () => void
 }
 
 export default function AgentSelectMenu() {
@@ -39,6 +41,7 @@ export default function AgentSelectMenu() {
       <Tooltip title="Add files">
         <Button
           id="agent-button"
+          data-testid="prompt-input-agent-menu"
           aria-controls={open ? 'agent-menu' : undefined}
           aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
@@ -78,7 +81,7 @@ export default function AgentSelectMenu() {
           </Typography>
         </Box>
 
-        <AgentSelectMenuBody agents={agents} />
+        <AgentSelectMenuBody agents={agents} handleClose={handleClose} />
       </Menu>
     </div>
   )
@@ -89,7 +92,11 @@ const AgentSelectMenuBody = menuNeedsLogin<AgentSelectMenuBodyProps>(
     return (
       <Box>
         {props.agents.map((agent) => (
-          <AgentItem key={agent.name} agent={agent} />
+          <AgentItem
+            key={agent.name}
+            agent={agent}
+            handleClose={props.handleClose}
+          />
         ))}
       </Box>
     )
@@ -97,7 +104,7 @@ const AgentSelectMenuBody = menuNeedsLogin<AgentSelectMenuBodyProps>(
   'Sign in to select agents',
 )
 
-function AgentItem({ agent }: AgentItemProps) {
+function AgentItem({ agent, handleClose }: AgentItemProps) {
   const navigate = useNavigate()
 
   const selectedAgent = useAgentId()
@@ -107,7 +114,9 @@ function AgentItem({ agent }: AgentItemProps) {
       key={agent.id}
       onClick={async () => {
         navigate(`/agents/${agent.id}`)
+        handleClose()
       }}
+      data-testid={`prompt-input-agent-${agent.id}`}
     >
       <Box
         sx={{

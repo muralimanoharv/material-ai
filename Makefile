@@ -29,7 +29,7 @@ debug: build-ui
 preview:
 	uv run --frozen uvicorn --host 0.0.0.0 --port 8080 --workers 1 --factory src.${PACKAGE_NAME}.app:get_app
 
-deploy:
+deploy: clean build-ui
 	@echo "Deploying to cloud run...🚀"
 	cd scripts && ./deploy_crun.sh
 
@@ -51,4 +51,7 @@ test: clean
 
 test-cov: clean
 	pytest --cov=src/material_ai --cov-report=html
+
+build-context-files:
+	gcloud meta list-files-for-upload > uploaded_files.txt
 

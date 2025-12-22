@@ -48,6 +48,7 @@ export default function Header() {
       >
         {isMobile && (
           <IconButton
+            data-testid="page-menu-button"
             onClick={() => {
               setOpen(true)
             }}
@@ -67,6 +68,7 @@ export default function Header() {
             fontSize={'22px'}
             lineHeight={'26px'}
             variant="h4"
+            data-testid="page-header"
           >
             {config.title}
           </Typography>
@@ -76,6 +78,7 @@ export default function Header() {
       {agentId && (
         <Box>
           <Typography
+            data-testid="page-agent-name"
             lineHeight={'26px'}
             fontSize={'16px'}
             sx={{ userSelect: 'none' }}

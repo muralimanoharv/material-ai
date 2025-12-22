@@ -6,6 +6,7 @@ import type {
   ChatItem,
   FeedbackDto,
   FileAttachment,
+  Health,
   Session,
   ThemeMode,
   User,
@@ -46,7 +47,7 @@ export interface AppContextType {
   setPrompt: (text: string) => void
 
   // Configuration & Meta
-  health: any
+  health: Health | undefined
   config: AppConfig
 
   //service

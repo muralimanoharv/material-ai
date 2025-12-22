@@ -10,7 +10,7 @@ function ChatLoading(): React.JSX.Element | null {
   if (!chat.loading) return null
 
   return (
-    <ChatItemWrapper role="model">
+    <ChatItemWrapper partIdx="loading" role="model">
       <Box
         className="gemini-loader-container"
         sx={{

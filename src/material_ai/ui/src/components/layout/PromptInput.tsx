@@ -5,6 +5,7 @@ import {
   type SyntheticEvent,
   type KeyboardEvent,
   type ClipboardEvent,
+  useEffect,
 } from 'react'
 import { AppContext, type AppContextType } from '../../context'
 import {
@@ -41,7 +42,9 @@ export default function PromptInput() {
   const theme = useTheme()
   const [fullScreen, setFullScreen] = useState(false)
   const [prompt, setPrompt] = useState('')
-  setPromptRef.current = setPrompt
+  useEffect(() => {
+    setPromptRef.current = setPrompt
+  }, [setPromptRef])
 
   const handleSubmit = (event?: SyntheticEvent) => {
     event?.preventDefault()
@@ -115,6 +118,7 @@ export default function PromptInput() {
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
           {files.map((file) => (
             <FileBox
+              prefix="prompt-input"
               key={file.name}
               file={file}
               showClear
@@ -155,6 +159,7 @@ export default function PromptInput() {
             }
             inputProps={{
               'aria-label': `Ask ${config.title}`,
+              'data-testid': 'page-prompt-input',
               style: {
                 height: fullScreen ? '500px' : undefined,
               },
@@ -196,6 +201,7 @@ export default function PromptInput() {
             {promptLoading ? (
               <Tooltip title="Stop response">
                 <IconButton
+                  data-testid="page-prompt-input-cancel"
                   onClick={() => chatService.cancel_api()}
                   sx={{ backgroundColor: theme.palette.background.paper }}
                   color="primary"
@@ -204,7 +210,7 @@ export default function PromptInput() {
                   <StopRoundedIcon
                     sx={{
                       color:
-                        (theme.palette.text as any).selected ||
+                        theme.palette.text.selected ||
                         theme.palette.primary.main,
                     }}
                     fontSize="medium"
@@ -215,6 +221,7 @@ export default function PromptInput() {
               <Tooltip title="Submit">
                 <IconButton
                   disabled={!prompt || !user}
+                  data-testid="page-prompt-input-submit"
                   // We can pass the event handler directly
                   onClick={handleSubmit}
                   sx={{ backgroundColor: theme.palette.background.paper }}

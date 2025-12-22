@@ -22,6 +22,7 @@ export default function ChatSection() {
 
   return (
     <Box
+      data-testid="page-chat-section"
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -123,7 +124,13 @@ function ChatItemSection(props: ChatItemSectionProps) {
     <ChatItemContext.Provider value={chatContext} key={chat.id}>
       <React.Fragment key={chat.id}>
         {parts.map((part, idx) => {
-          return <ChatItemSectionBody part={part} key={`${chat.id}-${idx}`} />
+          return (
+            <ChatItemSectionBody
+              partIdx={idx}
+              part={part}
+              key={`${chat.id}-${idx}`}
+            />
+          )
         })}
       </React.Fragment>
       <ChatArtifactSection />
@@ -134,24 +141,27 @@ function ChatItemSection(props: ChatItemSectionProps) {
 
 interface ChatItemSectionBodyProps {
   part: ChatPart
+  partIdx: number
 }
 
-function ChatItemSectionBody({ part }: ChatItemSectionBodyProps) {
+function ChatItemSectionBody({ part, partIdx }: ChatItemSectionBodyProps) {
   // 1. Skip inline data (images/files are usually handled inside other wrappers or skipped here)
   if (part.inlineData) return null
 
   // 2. Handle Function Calls
-  if (part.functionCall) return <ChatFunctionCall part={part as any} /> // Cast if ChatFunctionCall expects specific shape
+  if (part.functionCall)
+    return <ChatFunctionCall partIdx={partIdx} part={part} /> // Cast if ChatFunctionCall expects specific shape
 
   // 3. Handle Function Responses
-  if (part.functionResponse) return <ChatFunctionResponse part={part as any} />
+  if (part.functionResponse)
+    return <ChatFunctionResponse partIdx={partIdx} part={part} />
 
   // 4. Handle "Hidden" JSON Metadata (User Files)
   // We check if text exists and is valid JSON
   if (part.text && isValidJson(part.text) && JSON.parse(part.text)?.fileNames) {
-    return <ChatUserFiles part={part as any} />
+    return <ChatUserFiles partIdx={partIdx} part={part} />
   }
 
   // 5. Default: Render Text Message
-  return <ChatText part={part} />
+  return <ChatText partIdx={partIdx} part={part} />
 }

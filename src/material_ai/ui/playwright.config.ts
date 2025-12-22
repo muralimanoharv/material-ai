@@ -1,3 +1,4 @@
+/* eslint-disable */
 // @ts-nocheck
 import { defineConfig, devices } from '@playwright/test';
 
@@ -8,7 +9,7 @@ import { defineConfig, devices } from '@playwright/test';
 // import dotenv from 'dotenv';
 // import path from 'path';
 // dotenv.config({ path: path.resolve(__dirname, '.env') });
-
+const TIMEOUT = 30 * 10000
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -24,6 +25,10 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
+  timeout: TIMEOUT,
+  expect: {
+    timeout: TIMEOUT,
+  },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
@@ -31,18 +36,23 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    headless: false,
+    headless: !!process.env.CI,
+    actionTimeout: 10 * 1000,
     launchOptions: {
-      slowMo: 1000, 
+      slowMo: process.env.CI ? 0 : 1000, 
     },
   },
 
   /* Configure projects for major browsers */
   projects: [
-    // {
-    //   name: 'chromium',
-    //   use: { ...devices['Desktop Chrome'] },
-    // },
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'Google Chrome',
+      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+    },
 
     // {
     //   name: 'firefox',
@@ -69,16 +79,26 @@ export default defineConfig({
     //   name: 'Microsoft Edge',
     //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
     // },
-    {
-      name: 'Google Chrome',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    },
   ],
 
   /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
+  webServer: {
+    // 1. The command to start your FastAPI server
+    // We use 'cd' to step out of 'ui' and into 'backend'
+    command: 'cd ../../../ && make run',
+
+    // 2. Playwright waits for this URL to return a 200 OK before starting tests
+    url: 'http://127.0.0.1:8080/health', 
+
+    // 3. Re-use local server if you are running tests locally (saves time)
+    reuseExistingServer: !process.env.CI,
+    
+    // 4. stdout: 'pipe' allows you to see the server logs in your CI console if it fails
+    stdout: 'pipe',
+    timeout: 50 * 1000,
+  },
+  use: {
+    // Tell Playwright tests to use this base URL
+    baseURL: 'http://127.0.0.1:8080',
+  },
 });

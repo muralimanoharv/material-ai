@@ -8,10 +8,10 @@ import { useAgentId, useMobileHook } from '../../hooks'
 import { type Session } from '../../schema'
 import { type AppContextType, type LayoutContextType } from '../../context'
 import { useSessionId } from '../../hooks'
-import DrawerSigninButton from '../DrawerSigninButton'
 
 interface SessionItemProps {
   session: Session
+  sessionIdx: number
 }
 
 export default function SessionHistorySection() {
@@ -30,21 +30,23 @@ export default function SessionHistorySection() {
         >
           Recent
         </Typography>
-        {context.user ? (
-          context.sessions.map((session) => (
-            <SessionItem key={session.id} session={session} />
-          ))
-        ) : (
-          <DrawerSigninButton />
-        )}
+        {context.user
+          ? context.sessions.map((session, idx) => (
+              <SessionItem
+                key={session.id}
+                session={session}
+                sessionIdx={idx}
+              />
+            ))
+          : null}
       </Box>
     </>
   )
 }
 
-function SessionItem({ session }: SessionItemProps) {
+function SessionItem({ session, sessionIdx }: SessionItemProps) {
   const context = useContext(AppContext) as AppContextType
-  const { config, apiService } = context
+  const { config, apiService, promptLoading } = context
 
   const theme = useTheme()
   const navigate = useNavigate()
@@ -59,6 +61,7 @@ function SessionItem({ session }: SessionItemProps) {
   const isSelected = session_id === session.id
 
   const deleteSession = async (e: MouseEvent) => {
+    if (promptLoading) return
     e?.stopPropagation()
     try {
       await apiService.delete_session(agent, session.id)
@@ -78,7 +81,7 @@ function SessionItem({ session }: SessionItemProps) {
   }
 
   const truncText = (text: string) => {
-    let maxLength = 30
+    const maxLength = 30
     if (text.length > maxLength) return `${text.substring(0, maxLength)}...`
     return text
   }
@@ -102,23 +105,24 @@ function SessionItem({ session }: SessionItemProps) {
   }
 
   // Type-safe access to custom theme properties
-  const historyBg = (theme.palette.background as any).history
-  const cardHoverBg = (theme.palette.background as any).cardHover
-  const selectedText = (theme.palette.text as any).selected
+  const historyBg = theme.palette.background.history
+  const cardHoverBg = theme.palette.background.cardHover
+  const selectedText = theme.palette.text.selected
 
   return (
     <Box
       className="session-history"
+      data-testid={`session-history-${sessionIdx}`}
       // height={isDrawerOpen() ? 'auto' : 0}
       width={isDrawerOpen() ? drawerWidth - 35 : 0}
       onClick={async () => {
-        await context.fetchSession(session.app_name, session.id)
+        if (promptLoading) return
         await navigate(`/agents/${session.app_name}/session/${session.id}`)
         if (isMobile) setOpen(false)
       }}
       sx={{
         opacity: isDrawerOpen() ? '1' : '0',
-        cursor: 'pointer',
+        cursor: promptLoading ? undefined : 'pointer',
         padding: '8px 8px 8px 12px',
         borderRadius: '16px',
         display: 'flex',
@@ -155,8 +159,9 @@ function SessionItem({ session }: SessionItemProps) {
               },
             }}
           >
-            <>
+            <Box>
               <Typography
+                data-testid="session-text"
                 sx={{ flexGrow: 1 }}
                 color={isSelected ? selectedText : undefined}
                 fontWeight={500}
@@ -167,6 +172,7 @@ function SessionItem({ session }: SessionItemProps) {
                 {truncText(session.title!)}
               </Typography>
               <Typography
+                data-testid="session-timestamp"
                 sx={{ flexGrow: 1 }}
                 color={isSelected ? selectedText : undefined}
                 fontWeight={300}
@@ -177,13 +183,15 @@ function SessionItem({ session }: SessionItemProps) {
               >
                 {formatTimestamp(session.last_update_time)}
               </Typography>
-            </>
+            </Box>
           </Tooltip>
         </Box>
       ) : null}
 
       <IconButton
+        data-testid="session-delete-button"
         onClick={deleteSession}
+        disabled={promptLoading}
         className="session-trash-button session-history"
         sx={{
           opacity: '0',

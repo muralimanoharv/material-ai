@@ -6,19 +6,24 @@ interface ChatItemWrapperProps {
   children: ReactNode
   alignment?: 'flex-start' | 'flex-end'
   role?: string
+  partIdx: string
 }
 
 function ChatItemWrapper({
   children,
   alignment = 'flex-start',
   role,
+  partIdx,
 }: ChatItemWrapperProps) {
-  const { chat } = useContext(ChatItemContext) as ChatItemContextType
+  const { chat, chatIdx } = useContext(ChatItemContext) as ChatItemContextType
 
   const effectiveRole = role || chat.content.role
 
   return (
-    <Box className={`chat-item-box chat-item-box-${effectiveRole}`}>
+    <Box
+      data-testid={`page-chat-${chatIdx}-part-${partIdx}`}
+      className={`chat-item-box chat-item-box-${effectiveRole}`}
+    >
       <Box
         sx={{
           display: 'flex',

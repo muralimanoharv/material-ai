@@ -77,6 +77,7 @@ export interface ChatItem {
   cancelled?: boolean
   prompt?: string
   id: string
+  error?: string
 }
 
 export interface ArtifactFile {
@@ -127,11 +128,6 @@ export interface AgentResponse {
   agents: Agent[]
 }
 
-export interface HealthResponse {
-  status?: string
-  version?: string
-}
-
 export interface ArtifactResponse {
   inlineData: InlineData
 }
@@ -139,4 +135,26 @@ export interface ArtifactResponse {
 export interface DeleteSessionResponse {
   id?: string
   status?: string
+}
+
+export interface Health {
+  status: string
+  uptime: string
+  debug: boolean
+  appName: string
+  version: string
+  system: {
+    cpu_percent_used: number
+    memory: {
+      total: string
+      available: string
+      percent_used: number
+    }
+    disk: {
+      total: string
+      used: string
+      free: string
+      percent_used: number
+    }
+  }
 }

@@ -7,13 +7,16 @@ import AgentList from '../AgentList'
 
 function AgentsPage() {
   const { agents, user, setSessions } = useContext(AppContext) as AppContextType
+
+  useEffect(() => {
+    if (!user) return
+    setSessions([])
+  }, [])
+
   if (!user) {
     return <Greeting />
   }
 
-  useEffect(() => {
-    setSessions([])
-  }, [])
   return (
     <Box
       sx={{
@@ -28,4 +31,6 @@ function AgentsPage() {
   )
 }
 
-export default withLayout(AgentsPage, { showFooter: true })
+const AgentsPageWithLayout = withLayout(AgentsPage, { showFooter: false })
+
+export default AgentsPageWithLayout
