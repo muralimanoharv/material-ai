@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.17](https://github.com/muralimanoharv/material-ai/compare/v1.1.16...v1.1.17) (2025-12-22)
+
+
+### Bug Fixes
+
+* Fix deployment 1 ([113d877](https://github.com/muralimanoharv/material-ai/commit/113d8772024dac7ccaffeb70f790f71e26787884))
+* fix version mismatch in playwright ([91abe0d](https://github.com/muralimanoharv/material-ai/commit/91abe0d29b47979e9798a2e5a2c3f725bf9875ff))
+* fix version mismatch in playwright ([3f040af](https://github.com/muralimanoharv/material-ai/commit/3f040af4f5c6cce8f4205ee40f6d147ac1c263a1))
+* wip fixing deployment using terraform ([9300da3](https://github.com/muralimanoharv/material-ai/commit/9300da3318b36d0bed2726bd3efda150d41a7f2a))
+
 ## [1.1.16](https://github.com/muralimanoharv/material-ai/compare/v1.1.15...v1.1.16) (2025-12-12)
 
 
