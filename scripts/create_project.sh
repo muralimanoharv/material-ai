@@ -92,7 +92,7 @@ download_terraform() {
         chmod +x terraform
     fi
 
-    echo "✅ Success! Terraform v${version} is ready in $(pwd)"
+    echo "✅ Success! Terraform v${version} is ready"
 }
 
 download_template_files() {
@@ -683,8 +683,18 @@ This project uses a \`Makefile\` command to automate deployment.
     \`\`\`
 3. Steps to add additional roles to cloud run service account
 In order to add additional permissions to cloud run service account you
-can modify the crun roles under `scripts/main.tf -> search sa_permissions` and add additional roles
+can modify the crun roles under "scripts/main.tf -> search sa_permissions" and add additional roles
 as per project requirements
+4. In order to add additional environment variables you will have to modify "scripts/main.tf" to
+pass these env variables to cloud run in below format
+variable "custom_env_variable" { type = string }
+env {
+        name  = "NAME OF ENV"
+        value = var.custom_env_variable
+}
+Next modify "scripts/deploy_crun.sh" to pass this env variable to terraform
+./terraform apply \
+  -var="custom_env_variable=hello world"
 
 -----
 
@@ -702,7 +712,8 @@ cd scripts
 download_terraform "1.9.5"
 cd ..
 
-sudo chmod +x ./scripts
+sudo chmod +x ./scripts/*.sh
+sudo chmod +x ./scripts/terraform
 
 # 5. Final Message
 echo ""

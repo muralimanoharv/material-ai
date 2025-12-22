@@ -97,7 +97,6 @@ resource "google_project_iam_member" "build_sa_permissions" {
     "roles/logging.logWriter",       
     "roles/storage.objectViewer",    
     "roles/artifactregistry.writer",
-    "roles/storage.objectViewer"
   ])
 
   project = var.project_id
@@ -156,6 +155,12 @@ resource "null_resource" "build_and_push" {
       COMMIT_SHA=$(git rev-parse --short HEAD 2>/dev/null || date -u +"%Y%m%dT%H%M%SZ")
       
       echo "Starting Cloud Build submit with tag: $COMMIT_SHA"
+
+      # --- ADDED DELAY HERE ---
+      # Force wait for IAM permissions (which are "eventually consistent") to propagate
+      echo "Waiting 60 seconds for IAM permissions to propagate globally..."
+      sleep 60
+      # ------------------
 
       # UPDATED: Added --service-account flag to use our safe, dedicated build account
       gcloud builds submit .. \
