@@ -5,7 +5,8 @@
       "extra-files": [
             "scripts/create_project.sh",
             "pyproject.toml",
-            "README.md"
+            "README.md",
+            "src/material_ai/ui/tests/signout.spec.ts"
        ]
     }
   }
