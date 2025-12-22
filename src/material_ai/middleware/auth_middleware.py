@@ -35,6 +35,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
             "/icon.svg",
             "/favicon.ico",
             "/.well-known/appspecific/com.chrome.devtools.json",
+            "/gemini.svg"
         ]
         EXCLUDED_PREFIXES = ["/assets/"]
         is_excluded_path = route in EXCLUDED_PATHS or any(
@@ -87,7 +88,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 if user_id and user_id != uid:
                     raise UnauthorizedException()
 
-            if route != "/run":
+            if not route in ["/run_sse", "/run"]: 
                 return await call_next(request)
 
             user_details_cookie = cookies.get("user_details")

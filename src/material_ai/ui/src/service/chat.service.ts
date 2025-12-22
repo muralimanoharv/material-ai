@@ -70,16 +70,17 @@ export class ChatService {
       }
 
       if (!session_id) return
+      let url =`/agents/${agent}/session/${session_id}?is_new_session=${is_new_session}`
+      await this.context.navigate(url)
       await this.cancel_api()
 
       this.controller = new AbortController()
 
-      const parts = createParts({ prompt, files })
-
+      const [requestParts, chatParts] = createParts({ prompt, files })
       this.historyService.add_history({
         content: {
           role: 'user',
-          parts,
+          parts: chatParts,
         },
         prompt,
         id,
@@ -91,7 +92,7 @@ export class ChatService {
 
       const reader = await this.apiService.send_message({
         session_id,
-        parts,
+        parts: requestParts,
         controller: this.controller,
         sub: user.sub,
         app_name: agent,

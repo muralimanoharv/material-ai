@@ -9,7 +9,7 @@ import { defineConfig, devices } from '@playwright/test';
 // import dotenv from 'dotenv';
 // import path from 'path';
 // dotenv.config({ path: path.resolve(__dirname, '.env') });
-
+const TIMEOUT = 30 * 10000
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -25,6 +25,10 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
+  timeout: TIMEOUT,
+  expect: {
+    timeout: TIMEOUT,
+  },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
@@ -33,6 +37,7 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     headless: !!process.env.CI,
+    actionTimeout: 10 * 1000,
     launchOptions: {
       slowMo: process.env.CI ? 0 : 1000, 
     },

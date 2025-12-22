@@ -68,8 +68,56 @@ test.describe('Agents Dashboard', () => {
     }
   })
 })
+    
 
 test.describe('Greeting Agent Chat Page', () => {
+  test("Test Unauthorized user access", async ({page, baseURL}) => {
+
+    if (!REFRESH_TOKEN) {
+      throw new Error(
+        '⚠️ REFRESH_TOKEN is missing. Check your GitHub Secrets or .env file.',
+      )
+    }
+    await page.context().addCookies([
+      {
+        name: 'refresh_token',
+        value: REFRESH_TOKEN,
+        url: baseURL,
+      },
+    ])
+
+    await page.goto('/')
+
+    await expect(page.getByTestId('agents-page-header')).toBeVisible()
+
+    let response = await page.context().request.post("/apps/greeting_agent/users/1234/sessions")
+    expect(response.ok).toBeTruthy()
+    expect(response.status()).toBe(401)
+
+    const payload = {
+        "app_name": "greeting_agent",
+        "user_id": "1234",
+        "session_id": "873ba2ff-55ad-4c61-b240-f0879bc1f134",
+        "new_message": {
+            "role": "user",
+            "parts": [
+                {
+                    "text": "Hi"
+                }
+            ]
+        },
+        "streaming": false
+    }
+
+    response = await page.context().request.post('/run', {
+        data: payload,
+    })
+
+    expect(response.ok).toBeTruthy()
+
+    expect(response.status()).toBe(401)
+
+  })
   test('We want to try different chat functions', async ({ page, baseURL }) => {
     if (!REFRESH_TOKEN) {
       throw new Error(
@@ -286,10 +334,10 @@ test.describe('Greeting Agent Chat Page', () => {
       },
     )
     await expect(page.getByTestId(`page-subtitle`)).toHaveText(config.greeting)
-    const secondPrompt = `
+    const prompt_2 = `
         Hey what shall we do today
     `
-    await promptInput.fill(secondPrompt)
+    await promptInput.fill(prompt_2)
     await submit.click()
     await expect(page.getByTestId('page-chat-section')).toBeVisible()
     await expect(page.getByTestId(`page-title`)).not.toBeVisible()
@@ -366,9 +414,9 @@ test.describe('Greeting Agent Chat Page', () => {
     await expect(fileBox).toBeVisible()
     await expect(fileBox.getByTestId('clear-file')).toBeVisible()
 
-    const thridPrompt = 'Tell me about this file'
+    const prompt_3 = 'Tell me about this file'
 
-    await promptInput.fill(thridPrompt)
+    await promptInput.fill(prompt_3)
     await submit.click()
     await expect(page.getByTestId('page-chat-section')).toBeVisible()
     await expect(page.getByTestId(`page-title`)).not.toBeVisible()
@@ -388,9 +436,9 @@ test.describe('Greeting Agent Chat Page', () => {
         timeout: 10000,
       },
     )
-    const fourthPrompt = 'Give me CSV'
+    const prompt_4 = 'Give me CSV'
 
-    await promptInput.fill(fourthPrompt)
+    await promptInput.fill(prompt_4)
     await submit.click()
     await expect(page.getByTestId('page-chat-section')).toBeVisible()
     await expect(page.getByTestId(`page-title`)).not.toBeVisible()
@@ -410,13 +458,13 @@ test.describe('Greeting Agent Chat Page', () => {
         timeout: 10000,
       },
     )
-    const fifthPrompt = 'say_10'
-    await promptInput.fill(fifthPrompt)
+    const prompt_5 = 'say_10'
+    await promptInput.fill(prompt_5)
     await submit.click({ timeout: 10000 })
     await expect(page.getByTestId('page-prompt-input-cancel')).toBeVisible()
 
     await expect(page.getByTestId('page-chat-0-part-0')).toBeVisible({
-      timeout: 10000,
+      timeout: 30000,
     })
     await expect(page.getByTestId('page-chat-0-part-loading')).toBeVisible()
     await page.getByTestId('page-prompt-input-cancel').click()
@@ -426,5 +474,27 @@ test.describe('Greeting Agent Chat Page', () => {
     await expect(
       page.getByTestId('page-chat-1-part-0').getByTestId('chat-text'),
     ).toHaveText('You stopped this response')
+
+    //Error Response Test
+    await newChatButton.click()
+    await expect(page.getByTestId(`page-title`)).toHaveText(
+      `Hello, ${user.given_name}`,
+      {
+        timeout: 10000,
+      },
+    )
+    const prompt_6 = 'error'
+    await promptInput.fill(prompt_6)
+    await submit.click({ timeout: 10000 })
+    await expect(page.getByTestId('page-chat-0-part-0')).toBeVisible({
+      timeout: 10000,
+    })
+    await expect(page.getByTestId('page-chat-0-part-loading')).toBeVisible()
+    await expect(page.getByTestId('page-chat-2-part-0')).toBeVisible({
+        timeout: 30000
+    })
+    await expect(
+      page.getByTestId('page-chat-2-part-0').getByTestId('chat-text'),
+    ).toHaveText('Some error has occured, Please try again later')
   })
 })

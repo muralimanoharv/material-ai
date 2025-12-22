@@ -15,6 +15,10 @@ def who_am_i():
     user_details = oauth_user_details_context.get()
     return user_details
 
+def throw_error():
+    raise Exception("Error: Tool execution timed out or failed")
+
+
 
 def say_hi_10_after_seconds():
     """
@@ -66,6 +70,7 @@ root_agent = Agent(
     Use 'say_hello' tool to greet user, If user asks about himself use 'who_am_i' tool,
     If the users ask about a csv file use 'create_csv' tool
     If the user says 'say_10' use 'say_hi_10_after_seconds' tool and greet user
+    If the user says 'error' use 'throw_error' tool
     """,
-    tools=[say_hello, who_am_i, create_csv, say_hi_10_after_seconds],
+    tools=[say_hello, who_am_i, create_csv, say_hi_10_after_seconds, throw_error],
 )

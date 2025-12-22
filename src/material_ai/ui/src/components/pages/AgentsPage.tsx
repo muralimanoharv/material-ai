@@ -31,6 +31,6 @@ function AgentsPage() {
   )
 }
 
-const AgentsPageWithLayout = withLayout(AgentsPage, { showFooter: true })
+const AgentsPageWithLayout = withLayout(AgentsPage, { showFooter: false })
 
 export default AgentsPageWithLayout

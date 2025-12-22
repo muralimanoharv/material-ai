@@ -1,4 +1,4 @@
-import { type FileAttachment, type RequestPart } from './schema'
+import { type ChatPart, type FileAttachment, type RequestPart } from './schema'
 
 export interface Base64FileResult {
   data: string
@@ -54,25 +54,38 @@ export function isValidJson(str: string): boolean {
 
 export const createParts = ({
   prompt,
-  files,
+  files = [],
 }: {
   prompt: string
-  files: FileAttachment[]
-}): RequestPart[] => {
-  const parts: RequestPart[] = [{ text: prompt }]
-  if (!files?.length) return parts
+  files?: FileAttachment[]
+}): [RequestPart[], ChatPart[]] => {
+  const promptPart = { text: prompt }
 
-  const fileParts = files.map((file) => ({
-    inline_data: {
-      ...file.inlineData,
-    },
-  }))
+  // 1. Early return if no files (cleaner guard clause)
+  if (files.length === 0) {
+    return [[promptPart], [promptPart]]
+  }
 
-  const fileNames = files.map((file) => file.name)
-  parts.push(...fileParts)
-  parts.push({ text: JSON.stringify({ fileNames }) })
+  // 2. Prepare the shared metadata part
+  const metaPart = { 
+    text: JSON.stringify({ fileNames: files.map((f) => f.name) }) 
+  }
 
-  return parts
+  // 3. Construct Request Parts (snake_case for API)
+  const requestParts: RequestPart[] = [
+    promptPart,
+    ...files.map((file) => ({ inline_data: file.inlineData })),
+    metaPart,
+  ]
+
+  // 4. Construct Chat Parts (camelCase for Internal/UI)
+  const chatParts: ChatPart[] = [
+    promptPart,
+    ...files.map((file) => ({ inlineData: file.inlineData })),
+    metaPart,
+  ]
+
+  return [requestParts, chatParts]
 }
 
 export const formatModelName = (modelId: string) => {

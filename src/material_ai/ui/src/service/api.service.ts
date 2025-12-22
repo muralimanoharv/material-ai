@@ -330,7 +330,7 @@ interface SseHandlerArgs {
   on_finish: () => void
 }
 
-export const on_message_sse = async ({
+const on_message_sse = async ({
   reader,
   on_message,
   on_finish,
@@ -364,8 +364,9 @@ export const on_message_sse = async ({
               const data = JSON.parse(jsonStr) as ChatItem
               on_message(data)
             } catch (e) {
-              console.error(e)
-              console.log('Received non-JSON data:', jsonStr)
+              const error = `Received non-JSON data: ${jsonStr}`
+              console.error(error)
+              on_message({error} as ChatItem)
             }
           }
         }
