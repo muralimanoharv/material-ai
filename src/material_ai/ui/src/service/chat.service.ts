@@ -70,7 +70,7 @@ export class ChatService {
       }
 
       if (!session_id) return
-      let url =`/agents/${agent}/session/${session_id}?is_new_session=${is_new_session}`
+      const url = `/agents/${agent}/session/${session_id}?is_new_session=${is_new_session}`
       await this.context.navigate(url)
       await this.cancel_api()
 

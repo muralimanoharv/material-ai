@@ -365,8 +365,8 @@ const on_message_sse = async ({
               on_message(data)
             } catch (e) {
               const error = `Received non-JSON data: ${jsonStr}`
-              console.error(error)
-              on_message({error} as ChatItem)
+              console.error(error, e)
+              on_message({ error } as ChatItem)
             }
           }
         }

@@ -67,8 +67,8 @@ export const createParts = ({
   }
 
   // 2. Prepare the shared metadata part
-  const metaPart = { 
-    text: JSON.stringify({ fileNames: files.map((f) => f.name) }) 
+  const metaPart = {
+    text: JSON.stringify({ fileNames: files.map((f) => f.name) }),
   }
 
   // 3. Construct Request Parts (snake_case for API)

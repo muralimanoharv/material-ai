@@ -68,11 +68,9 @@ test.describe('Agents Dashboard', () => {
     }
   })
 })
-    
 
 test.describe('Greeting Agent Chat Page', () => {
-  test("Test Unauthorized user access", async ({page, baseURL}) => {
-
+  test('Test Unauthorized user access', async ({ page, baseURL }) => {
     if (!REFRESH_TOKEN) {
       throw new Error(
         '⚠️ REFRESH_TOKEN is missing. Check your GitHub Secrets or .env file.',
@@ -90,33 +88,34 @@ test.describe('Greeting Agent Chat Page', () => {
 
     await expect(page.getByTestId('agents-page-header')).toBeVisible()
 
-    let response = await page.context().request.post("/apps/greeting_agent/users/1234/sessions")
+    let response = await page
+      .context()
+      .request.post('/apps/greeting_agent/users/1234/sessions')
     expect(response.ok).toBeTruthy()
     expect(response.status()).toBe(401)
 
     const payload = {
-        "app_name": "greeting_agent",
-        "user_id": "1234",
-        "session_id": "873ba2ff-55ad-4c61-b240-f0879bc1f134",
-        "new_message": {
-            "role": "user",
-            "parts": [
-                {
-                    "text": "Hi"
-                }
-            ]
-        },
-        "streaming": false
+      app_name: 'greeting_agent',
+      user_id: '1234',
+      session_id: '873ba2ff-55ad-4c61-b240-f0879bc1f134',
+      new_message: {
+        role: 'user',
+        parts: [
+          {
+            text: 'Hi',
+          },
+        ],
+      },
+      streaming: false,
     }
 
     response = await page.context().request.post('/run', {
-        data: payload,
+      data: payload,
     })
 
     expect(response.ok).toBeTruthy()
 
     expect(response.status()).toBe(401)
-
   })
   test('We want to try different chat functions', async ({ page, baseURL }) => {
     if (!REFRESH_TOKEN) {
@@ -491,7 +490,7 @@ test.describe('Greeting Agent Chat Page', () => {
     })
     await expect(page.getByTestId('page-chat-0-part-loading')).toBeVisible()
     await expect(page.getByTestId('page-chat-2-part-0')).toBeVisible({
-        timeout: 30000
+      timeout: 30000,
     })
     await expect(
       page.getByTestId('page-chat-2-part-0').getByTestId('chat-text'),

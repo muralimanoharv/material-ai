@@ -15,9 +15,9 @@ def who_am_i():
     user_details = oauth_user_details_context.get()
     return user_details
 
+
 def throw_error():
     raise Exception("Error: Tool execution timed out or failed")
-
 
 
 def say_hi_10_after_seconds():
