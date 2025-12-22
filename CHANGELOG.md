@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.18](https://github.com/muralimanoharv/material-ai/compare/v1.1.17...v1.1.18) (2025-12-22)
+
+
+### Bug Fixes
+
+* fix deployment scripts ([0c46a4e](https://github.com/muralimanoharv/material-ai/commit/0c46a4e150d597a02d2d413900ca834587571025))
+* fix deployment scripts ([f43d8d2](https://github.com/muralimanoharv/material-ai/commit/f43d8d2481091ac709c36d3a0bf599dbdbcefae3))
+
 ## [1.1.17](https://github.com/muralimanoharv/material-ai/compare/v1.1.16...v1.1.17) (2025-12-22)
 
 
