@@ -1,0 +1,16 @@
+{
+  "name": "@material-ai/types",
+  "version": "1.0.0",
+  "description": "Shared interfaces for Host and Micro-frontends",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
