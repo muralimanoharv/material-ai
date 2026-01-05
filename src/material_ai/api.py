@@ -308,16 +308,19 @@ async def agents():
     return AgentResponse(agents=agents)
 
 
-@router.get("/apps/{app_name}/ui",)
+@router.get(
+    "/apps/{app_name}/ui",
+)
 async def get_agent_ui(app_name: str):
     agent_loader = get_agent_loader()
     if not agent_loader:
         return Response(status_code=404, content="Agent directory not found")
-    
+
     AGENT_UI_PATH = f"{agent_loader.agents_dir}/{app_name}/ui/dist"
     if not os.path.exists(f"{AGENT_UI_PATH}/index.js"):
         return Response(status_code=404, content="Agent ui not found")
-    
+
     return FileResponse(
-        path=os.path.join(AGENT_UI_PATH, "index.js"), media_type="application/javascript"
-    ) 
+        path=os.path.join(AGENT_UI_PATH, "index.js"),
+        media_type="application/javascript",
+    )

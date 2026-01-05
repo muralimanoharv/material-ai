@@ -22,7 +22,7 @@ export default function ChatSection({
   build,
 }: {
   maxWidth?: string
-  build?: (json: any) => ReactNode | null
+  build?: (json: Record<string, string>) => ReactNode | null
 }) {
   const context = useContext(AppContext) as AppContextType
   const history = useMemo(() => context.history, [context.history])

@@ -2,7 +2,7 @@ import { Box, Typography, useTheme } from '@mui/material'
 import { useContext } from 'react'
 import { AppContext, type AppContextType } from '../context'
 
-function Greeting({greeting}: {greeting?: string}) {
+function Greeting({ greeting }: { greeting?: string }) {
   const { user, config, loading, history } = useContext(
     AppContext,
   ) as AppContextType

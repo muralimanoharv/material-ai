@@ -64,5 +64,5 @@ export interface MFEProps {
     maxWidth?: string
     build: (data: any) => ReactNode | null
   }>
-  Greeting: React.FC<{greeting?: string}>
+  Greeting: React.FC<{ greeting?: string }>
 }

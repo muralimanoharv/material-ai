@@ -105,5 +105,5 @@ export const LayoutContext = createContext<LayoutContextType | null>(null)
 export const ChatItemContext = createContext<ChatItemContextType | null>(null)
 
 export const CustomRendererContext = createContext<{
-  build?: (json: any) => ReactNode | null
+  build?: (json: Record<string, string>) => ReactNode | null
 }>({})

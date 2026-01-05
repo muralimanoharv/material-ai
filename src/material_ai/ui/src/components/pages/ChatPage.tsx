@@ -8,9 +8,9 @@ import { AppContext, type AppContextType } from '../../context'
 import { useAgentId } from '../../hooks'
 
 window.React = React
-// @ts-ignore
+// @ts-expect-error we get and error here when we assign to window object
 window.MaterialUI = MaterialUI
-// @ts-ignore
+// @ts-expect-error we get and error here when we assign to window object
 window.MaterialUIIcons = MaterialUIIcons
 
 export default function ChatPage() {
@@ -36,8 +36,8 @@ export default function ChatPage() {
             <ChatSection />
           </>
         ) : (
-          <MicroFrontendAgentComponent 
-            {...context} 
+          <MicroFrontendAgentComponent
+            {...context}
             ChatSection={ChatSection}
             Greeting={Greeting}
           />
