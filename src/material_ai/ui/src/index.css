@@ -78,3 +78,12 @@ body {
   white-space: pre-wrap;
   word-wrap: break-word;
 }
+
+pre {
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  width: 100%;
+}

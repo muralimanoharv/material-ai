@@ -1,3 +1,0 @@
-interface MFEProps {
-  name?: string;
-}

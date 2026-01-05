@@ -15,7 +15,18 @@ check-format:
 
 .PHONY: build-ui dev prod
 
-build-ui:
+build-mf:
+	@echo "Building Microfrontend"
+	@for d in src/${PACKAGE_NAME}/agents/*/ui; do \
+		if [ -d "$$d" ]; then \
+			echo "Building module in $$d..."; \
+			(cd "$$d" && $(REACT_BUILD_CMD)) || exit 1; \
+		fi; \
+	done
+	@echo "Microfrontend build complete.✅"
+
+
+build-ui: build-mf
 	@echo "Building UI...🚀"
 	@cd src/${PACKAGE_NAME}/ui && $(REACT_BUILD_CMD)
 	@echo "UI build complete.✅"

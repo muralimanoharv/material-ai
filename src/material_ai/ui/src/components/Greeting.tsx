@@ -2,7 +2,7 @@ import { Box, Typography, useTheme } from '@mui/material'
 import { useContext } from 'react'
 import { AppContext, type AppContextType } from '../context'
 
-function Greeting() {
+function Greeting({greeting}: {greeting?: string}) {
   const { user, config, loading, history } = useContext(
     AppContext,
   ) as AppContextType
@@ -50,7 +50,7 @@ function Greeting() {
             sx={{ userSelect: 'none' }}
             data-testid="page-subtitle"
           >
-            {config.greeting}
+            {greeting ? greeting : config.greeting}
           </Typography>
         </>
       ) : (

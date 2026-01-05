@@ -1,4 +1,4 @@
-import { createContext } from 'react'
+import React, { createContext, type ReactNode } from 'react'
 import { type Theme } from '@mui/material/styles'
 import type {
   Agent,
@@ -103,3 +103,7 @@ export const ThemeContext = createContext<ThemeContextType | null>(null)
 export const LayoutContext = createContext<LayoutContextType | null>(null)
 
 export const ChatItemContext = createContext<ChatItemContextType | null>(null)
+
+export const CustomRendererContext = createContext<{
+  build?: (json: any) => ReactNode | null
+}>({})

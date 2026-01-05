@@ -1,10 +1,11 @@
-import React, { useContext, useMemo, useState } from 'react'
+import React, { useContext, useMemo, useState, type ReactNode } from 'react'
 import { Box } from '@mui/material'
 import {
   ChatItemContext,
   AppContext,
   type AppContextType,
   type ChatItemContextType,
+  CustomRendererContext,
 } from '../../context'
 import { CHAT_SECTION_WIDTH } from '../../assets/themes'
 import { isValidJson } from '../../utils'
@@ -16,44 +17,52 @@ import ChatUserFiles from './item/ChatUserFiles'
 import type { ChatItem, ChatPart, FeedbackDto } from '../../schema'
 import ChatText from './item/ChatText'
 
-export default function ChatSection() {
+export default function ChatSection({
+  maxWidth = CHAT_SECTION_WIDTH,
+  build,
+}: {
+  maxWidth?: string
+  build?: (json: any) => ReactNode | null
+}) {
   const context = useContext(AppContext) as AppContextType
   const history = useMemo(() => context.history, [context.history])
 
   return (
-    <Box
-      data-testid="page-chat-section"
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: '100%',
-        alignItems: 'center',
-        position: 'relative',
-      }}
-    >
+    <CustomRendererContext.Provider value={{ build }}>
       <Box
-        className="chat-items"
+        data-testid="page-chat-section"
         sx={{
           display: 'flex',
-          gap: '10px',
           flexDirection: 'column',
           width: '100%',
-          maxWidth: CHAT_SECTION_WIDTH,
-          // CSS trick to show actions only on the very last message
-          '& .chat-item-box:last-of-type .actions-child-model': {
-            opacity: '1',
-          },
-          // Add spacing at bottom for the fixed footer input
-          '& .chat-item-box:last-of-type': {
-            marginBottom: '500px',
-          },
+          alignItems: 'center',
+          position: 'relative',
         }}
       >
-        {history.map((chat, idx) => {
-          return <ChatItemSection chat={chat} chatIdx={idx} key={chat.id} />
-        })}
+        <Box
+          className="chat-items"
+          sx={{
+            display: 'flex',
+            gap: '10px',
+            flexDirection: 'column',
+            width: '100%',
+            maxWidth,
+            // CSS trick to show actions only on the very last message
+            '& .chat-item-box:last-of-type .actions-child-model': {
+              opacity: '1',
+            },
+            // Add spacing at bottom for the fixed footer input
+            '& .chat-item-box:last-of-type': {
+              marginBottom: '500px',
+            },
+          }}
+        >
+          {history.map((chat, idx) => {
+            return <ChatItemSection chat={chat} chatIdx={idx} key={chat.id} />
+          })}
+        </Box>
       </Box>
-    </Box>
+    </CustomRendererContext.Provider>
   )
 }
 

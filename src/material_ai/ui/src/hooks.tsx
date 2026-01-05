@@ -1,6 +1,8 @@
 import { useMediaQuery, useTheme } from '@mui/material'
 import { useParams } from 'react-router'
 import Layout from './components/layout/Layout'
+import { useContext } from 'react'
+import { AppContext, type AppContextType } from './context'
 
 export const useMobileHook = (): boolean => {
   const theme = useTheme()
@@ -27,10 +29,15 @@ export const withLayout = (
   options?: { showFooter?: boolean },
 ) => {
   return (props: Record<string, string>) => {
+    const context = useContext(AppContext) as AppContextType
     return (
       <Layout
         showFooter={
-          options?.showFooter == undefined ? true : options.showFooter
+          context.user
+            ? options?.showFooter == undefined
+              ? true
+              : options.showFooter
+            : true
         }
       >
         <Component {...props} />

@@ -141,7 +141,7 @@ export class ChatService {
     }
   }
 
-  on_send_error(e: Error | unknown) {
+  private on_send_error(e: Error | unknown) {
     console.error(e)
     this.historyService.add_history({
       content: {
