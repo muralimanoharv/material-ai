@@ -1,12 +1,13 @@
-import React from 'react'
-import { type MFEProps } from './types'
 import { EmbeddingChart } from './Embeddings'
 
-const VectorAgentUI: React.FC<MFEProps> = ({ ChatSection, Greeting }) => {
+const VectorAgentUI = (props) => {
+  const { ChatSection, Greeting } = props
   return (
     <>
       <Greeting greeting="Ready to understand vectors" />
-      <ChatSection
+        
+        
+        <ChatSection
         mfeMarkdownJsonRenderer={(data) => {
           return <EmbeddingChart coords={data} />
         }}

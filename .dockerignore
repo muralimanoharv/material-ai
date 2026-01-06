@@ -86,7 +86,9 @@ temp.txt
 # 4. BLOCK ALL UI SOURCE CODE (The Strict Rule)
 # First, ignore the ENTIRE ui directory
 src/material_ai/ui/*
+src/material_ai/agents/*/ui/*
 
 # 5. WHITELIST: ONLY ALLOW DIST
 # Now, explicitly bring back ONLY the dist folder
 !src/material_ai/ui/dist/
+!src/material_ai/agents/*/dist

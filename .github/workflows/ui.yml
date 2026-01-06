@@ -1,45 +1,33 @@
-name: UI Code Quality
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
 jobs:
-  ui-build-and-test:
+  find-ui-dirs:
     runs-on: ubuntu-latest
+    outputs:
+      dirs: ${{ steps.set-dirs.outputs.dirs }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: set-dirs
+        run: |
+          # Find directories and format as a JSON array for the matrix
+          DIRS=$(find src/material_ai/ui src/material_ai/agents/*/ui -maxdepth 1 -name "package.json" -exec dirname {} \; | jq -R -s -c 'split("\n") | del(.[] | select(. == ""))')
+          echo "dirs=$DIRS" >> $GITHUB_OUTPUT
 
+  ui-quality-matrix:
+    needs: find-ui-dirs
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ui_path: ${{ fromJson(needs.find-ui-dirs.outputs.dirs) }}
     defaults:
       run:
-        working-directory: ./src/material_ai/ui
-
+        working-directory: ${{ matrix.ui_path }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
-
-      # NEW: Cache node_modules explicitly
-      - name: Cache node_modules
-        id: cache-node-modules
-        uses: actions/cache@v3
-        with:
-          path: ./src/material_ai/ui/node_modules
-          key: ${{ runner.os }}-build-${{ hashFiles('src/material_ai/ui/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-
-
-      - name: Install dependencies
-        # This condition skips installation if we hit a cache match, saving time
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci
-
-      - name: Check Formatting
-        run: npm run format:check
-
-      - name: Check Linting
-        run: npm run lint
+          cache: 'npm'
+          cache-dependency-path: '${{ matrix.ui_path }}/package-lock.json'
+      
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint

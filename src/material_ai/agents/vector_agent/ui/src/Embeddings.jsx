@@ -12,7 +12,7 @@ ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend)
 
 const distanceLinePlugin = {
   id: 'distanceLines',
-  beforeDraw: (chart: any) => {
+  beforeDraw: (chart) => {
     const {
       ctx,
       scales: { x, y },
@@ -27,7 +27,7 @@ const distanceLinePlugin = {
     ctx.font = '12px Arial'
     ctx.fillStyle = '#666'
 
-    connections.forEach((link: any) => {
+    connections.forEach((link) => {
       // 1. Get Pixel Coordinates
       const sX = x.getPixelForValue(link.from.x)
       const sY = y.getPixelForValue(link.from.y)
@@ -68,7 +68,7 @@ const distanceLinePlugin = {
 
 ChartJS.register(distanceLinePlugin)
 
-export const EmbeddingChart = ({ coords }: { coords: any }) => {
+export const EmbeddingChart = ({ coords }) => {
   const data = {
     datasets: [
       {
@@ -85,7 +85,7 @@ export const EmbeddingChart = ({ coords }: { coords: any }) => {
     plugins: {
       tooltip: {
         callbacks: {
-          label: (context: any) => context.raw.label,
+          label: (context) => context.raw.label,
         },
       },
       distanceLines: {

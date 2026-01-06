@@ -1,3 +1,4 @@
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
@@ -8,7 +9,7 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: 'src/main.tsx',
+      entry: 'src/main.jsx',
       name: 'VectorAgentUI',
       formats: ['es'],
       fileName: 'index'
@@ -24,8 +25,6 @@ export default defineConfig({
         '@emotion/styled'
       ],
       output: {
-        // This ensures that when your code says 'import React from "react"',
-        // it maps to the version already loaded by the main app.
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',

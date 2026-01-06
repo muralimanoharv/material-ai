@@ -1,1 +1,1 @@
-A React Project to show how micro frontend works with material ai
+Vector React App used to explain text emmeddings and vectorization
