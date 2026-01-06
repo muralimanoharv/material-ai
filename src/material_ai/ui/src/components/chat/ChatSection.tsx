@@ -1,11 +1,12 @@
-import React, { useContext, useMemo, useState, type ReactNode } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import { Box } from '@mui/material'
 import {
   ChatItemContext,
   AppContext,
   type AppContextType,
   type ChatItemContextType,
-  CustomRendererContext,
+  ChatSectionContext,
+  type MfeMarkdownJsonRendererFn,
 } from '../../context'
 import { CHAT_SECTION_WIDTH } from '../../assets/themes'
 import { isValidJson } from '../../utils'
@@ -19,16 +20,16 @@ import ChatText from './item/ChatText'
 
 export default function ChatSection({
   maxWidth = CHAT_SECTION_WIDTH,
-  build,
+  mfeMarkdownJsonRenderer,
 }: {
   maxWidth?: string
-  build?: (json: Record<string, string>) => ReactNode | null
+  mfeMarkdownJsonRenderer?: MfeMarkdownJsonRendererFn
 }) {
   const context = useContext(AppContext) as AppContextType
   const history = useMemo(() => context.history, [context.history])
 
   return (
-    <CustomRendererContext.Provider value={{ build }}>
+    <ChatSectionContext.Provider value={{ mfeMarkdownJsonRenderer }}>
       <Box
         data-testid="page-chat-section"
         sx={{
@@ -62,7 +63,7 @@ export default function ChatSection({
           })}
         </Box>
       </Box>
-    </CustomRendererContext.Provider>
+    </ChatSectionContext.Provider>
   )
 }
 

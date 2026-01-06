@@ -62,7 +62,7 @@ export interface MFEProps {
   chatService: ChatService
   ChatSection: React.FC<{
     maxWidth?: string
-    build: (data: any) => ReactNode | null
+    mfeMarkdownJsonRenderer: (data: any) => ReactNode | null
   }>
   Greeting: React.FC<{ greeting?: string }>
 }

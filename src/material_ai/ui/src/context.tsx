@@ -104,6 +104,10 @@ export const LayoutContext = createContext<LayoutContextType | null>(null)
 
 export const ChatItemContext = createContext<ChatItemContextType | null>(null)
 
-export const CustomRendererContext = createContext<{
-  build?: (json: Record<string, string>) => ReactNode | null
+export type MfeMarkdownJsonRendererFn = (
+  json: Record<string, string> | null,
+) => ReactNode | null
+
+export const ChatSectionContext = createContext<{
+  mfeMarkdownJsonRenderer?: MfeMarkdownJsonRendererFn
 }>({})

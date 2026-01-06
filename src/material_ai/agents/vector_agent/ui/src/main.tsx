@@ -7,7 +7,7 @@ const VectorAgentUI: React.FC<MFEProps> = ({ ChatSection, Greeting }) => {
     <>
       <Greeting greeting="Ready to understand vectors" />
       <ChatSection
-        build={(data) => {
+        mfeMarkdownJsonRenderer={(data) => {
           return <EmbeddingChart coords={data} />
         }}
       />

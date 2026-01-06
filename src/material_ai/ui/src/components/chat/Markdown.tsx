@@ -13,7 +13,7 @@ import { useContext, type ReactNode } from 'react'
 import { renderDynamicUI, type UINode } from '../DynamicMuiLoader'
 import {
   AppContext,
-  CustomRendererContext,
+  ChatSectionContext,
   type AppContextType,
 } from '../../context'
 
@@ -56,14 +56,14 @@ const CustomCodeRenderer = ({
   className,
   children,
 }: React.HTMLAttributes<HTMLElement>) => {
-  const { build } = useContext(CustomRendererContext)
+  const { mfeMarkdownJsonRenderer } = useContext(ChatSectionContext)
   const match = /language-(\w+)/.exec(className || '')
   const isJson = match && match[1] === 'json'
   const { setSnack } = useContext(AppContext) as AppContextType
 
   if (!isJson) return <PreBlock>{children}</PreBlock>
 
-  let parsedData: UINode | null = null
+  let parsedData: Record<string, string> | null = null
   let isParsedSuccessfully = false
 
   try {
@@ -77,12 +77,12 @@ const CustomCodeRenderer = ({
   if (!isParsedSuccessfully) {
     return <PreBlock>{children}</PreBlock>
   }
+  if (mfeMarkdownJsonRenderer) {
+    const node = mfeMarkdownJsonRenderer(parsedData)
+    if (node) return node
+  }
 
   if (!parsedData?.componentName) {
-    if (build) {
-      const node = build(parsedData)
-      if (node) return node
-    }
     return (
       <PreBlock
         onCopy={async () => {
@@ -98,7 +98,7 @@ const CustomCodeRenderer = ({
   }
 
   // Success
-  return <>{renderDynamicUI(parsedData)}</>
+  return <>{renderDynamicUI(parsedData as UINode)}</>
 }
 
 function PreBlock(props: { children: ReactNode; onCopy?: () => void }) {
