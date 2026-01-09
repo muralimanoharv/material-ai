@@ -45,7 +45,7 @@ export default function ChatText({ part, partIdx }: ChatItemProps) {
 
   const showUserActions = isUserMessage
   const showModelActions = isModelMessage
-  const showGeminiIcon = isModelMessage
+  const showGeminiIcon = false
   const showToggleBtn = isUserMessage && isLargeText
 
   const showNegativeFeedback =
@@ -59,7 +59,7 @@ export default function ChatText({ part, partIdx }: ChatItemProps) {
     borderTopRightRadius: isUserMessage ? '0px' : undefined,
     borderTopLeftRadius: !isUserMessage ? '0px' : undefined,
     maxWidth: isUserMessage ? '452px' : undefined,
-    padding: isUserMessage ? '12px 16px' : '2px 16px',
+    padding: isUserMessage ? '12px 16px' : undefined,
     display: 'flex',
     alignItems: 'flex-start',
     gap: '20px',

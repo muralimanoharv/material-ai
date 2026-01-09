@@ -1,4 +1,9 @@
-import { type ChatPart, type FileAttachment, type RequestPart } from './schema'
+import {
+  type ChatItem,
+  type ChatPart,
+  type FileAttachment,
+  type RequestPart,
+} from './schema'
 
 export interface Base64FileResult {
   data: string
@@ -95,4 +100,14 @@ export const formatModelName = (modelId: string) => {
     .split('-')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ')
+}
+
+export function does_chat_has_func(chat: ChatItem) {
+  const parts = chat?.content?.parts
+  if (!parts) return false
+  for (let i = 0; i < parts.length; i++) {
+    if (parts[i].functionCall) return true
+    if (parts[i].functionResponse) return true
+  }
+  return false
 }

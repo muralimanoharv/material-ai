@@ -9,11 +9,9 @@ import {
   type MfeMarkdownJsonRendererFn,
 } from '../../context'
 import { CHAT_SECTION_WIDTH } from '../../assets/themes'
-import { isValidJson } from '../../utils'
+import { does_chat_has_func, isValidJson } from '../../utils'
 import ChatArtifactSection from './item/ChatArtifactSection'
 import ChatLoading from './item/ChatLoading'
-import ChatFunctionCall from './item/ChatFunctionCall'
-import ChatFunctionResponse from './item/ChatFunctionResponse'
 import ChatUserFiles from './item/ChatUserFiles'
 import type { ChatItem, ChatPart, FeedbackDto } from '../../schema'
 import ChatText from './item/ChatText'
@@ -44,7 +42,7 @@ export default function ChatSection({
           className="chat-items"
           sx={{
             display: 'flex',
-            gap: '10px',
+            gap: '2px',
             flexDirection: 'column',
             width: '100%',
             maxWidth,
@@ -58,9 +56,11 @@ export default function ChatSection({
             },
           }}
         >
-          {history.map((chat, idx) => {
-            return <ChatItemSection chat={chat} chatIdx={idx} key={chat.id} />
-          })}
+          {history
+            .filter((chat) => !does_chat_has_func(chat))
+            .map((chat, idx) => {
+              return <ChatItemSection chat={chat} chatIdx={idx} key={chat.id} />
+            })}
         </Box>
       </Box>
     </ChatSectionContext.Provider>
@@ -159,12 +159,10 @@ function ChatItemSectionBody({ part, partIdx }: ChatItemSectionBodyProps) {
   if (part.inlineData) return null
 
   // 2. Handle Function Calls
-  if (part.functionCall)
-    return <ChatFunctionCall partIdx={partIdx} part={part} /> // Cast if ChatFunctionCall expects specific shape
+  if (part.functionCall) return null // Cast if ChatFunctionCall expects specific shape
 
   // 3. Handle Function Responses
-  if (part.functionResponse)
-    return <ChatFunctionResponse partIdx={partIdx} part={part} />
+  if (part.functionResponse) return null
 
   // 4. Handle "Hidden" JSON Metadata (User Files)
   // We check if text exists and is valid JSON

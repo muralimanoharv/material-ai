@@ -19,7 +19,11 @@ import SendIcon from '@mui/icons-material/Send'
 import StopRoundedIcon from '@mui/icons-material/StopRounded'
 import FullscreenOutlinedIcon from '@mui/icons-material/FullscreenOutlined'
 import FullscreenExitOutlinedIcon from '@mui/icons-material/FullscreenExitOutlined'
-import { CHAT_SECTION_WIDTH } from '../../assets/themes'
+import {
+  CHAT_SECTION_WIDTH,
+  DARK_BORDER,
+  LIGHT_BORDER,
+} from '../../assets/themes'
 // import ModelSelectMenu from '../menu/ModelSelectMenu'
 import FileSelectMenu from '../menu/FileSelectMenu'
 import AgentSelectMenu from '../menu/AgentSelectMenu'
@@ -77,9 +81,9 @@ export default function PromptInput() {
     boxShadow = '0 -25px 15px -5px rgba(19, 19, 20, 0.5)'
   }
 
-  let border = '1px solid #c4c7c5'
+  let border = `1px solid ${LIGHT_BORDER}`
   if (theme.palette.mode === 'dark') {
-    border = '1px solid #4a5050'
+    border = `1px solid ${DARK_BORDER}`
   }
 
   const handlePaste = (e: ClipboardEvent<HTMLDivElement>) => {

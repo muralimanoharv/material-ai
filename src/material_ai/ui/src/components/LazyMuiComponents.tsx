@@ -2,6 +2,8 @@
 import { lazy, type LazyExoticComponent, type ComponentType } from 'react'
 import { FormComponents } from './SmartFormComponents'
 import { DynamicForm } from './DynamicForm'
+import 'chart.js/auto'
+import { Chart } from 'react-chartjs-2'
 
 type LazyComponentMap = Record<
   string,
@@ -144,4 +146,6 @@ export const LazyMuiComponents: LazyComponentMap = {
   Zoom: lazy(() => import('@mui/material/Zoom')),
   DynamicForm: DynamicForm,
   ...FormComponents,
+  // Chart Components
+  Chart: Chart,
 }

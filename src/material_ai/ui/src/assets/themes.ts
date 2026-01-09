@@ -8,6 +8,9 @@ import React from 'react'
 
 import { type ThemeConfig } from '../schema'
 
+export const DARK_BORDER = '#4a5050'
+export const LIGHT_BORDER = '#c4c7c5'
+
 declare module '@mui/material/styles' {
   interface Theme {
     app: {

@@ -48,10 +48,14 @@ export interface ArtifactDelta {
 
 export interface FunctionCallPart {
   name: string
+  args: Record<string, unknown>
 }
 
 export interface FunctionResponsePart {
   name: string
+  response: {
+    result: unknown
+  }
 }
 export interface InlineData {
   mimeType: string
@@ -74,10 +78,15 @@ export interface ChatItem {
     parts: ChatPart[]
   }
   loading?: boolean
+  loading_message?: string | null
+  loading_finished?: boolean
+  loading_id?: string
+  chat_history?: ChatItem[]
   cancelled?: boolean
   prompt?: string
   id: string
   error?: string
+  invocationId?: string
 }
 
 export interface ArtifactFile {

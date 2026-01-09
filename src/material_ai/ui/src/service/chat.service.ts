@@ -6,7 +6,7 @@ import type {
   Session,
   User,
 } from '../schema'
-import { createParts } from '../utils'
+import { createParts, does_chat_has_func } from '../utils'
 import { ApiService } from './api.service'
 import { HistoryService } from './history.service'
 import type { NavigateFunction } from 'react-router'
@@ -85,6 +85,9 @@ export class ChatService {
         prompt,
         id,
         loading: true,
+        loading_message: 'Loading...',
+        loading_id: id,
+        chat_history: [],
       })
       this.loadingId = id
       if (options.setPrompt) options.setPrompt('')
@@ -101,22 +104,28 @@ export class ChatService {
             this.on_send_error(message.error)
             return
           }
+          this.update_history(id, message)
           this.historyService.add_history({
             ...message,
             prompt,
+            loading_id: id,
+            chat_history: [],
           })
         },
         on_finish: () => {
           this.controller = undefined
           this.context.setPromptLoading(false)
-          this.historyService.update_history(id, { loading: false })
+          this.historyService.update_history(id, {
+            loading_finished: true,
+            loading_message: '',
+          })
           if (!is_new_session) return
           this.context.navigate(`/agents/${agent}/session/${session_id}`)
         },
       })
       this.reader = reader
     } catch (e) {
-      this.historyService.update_history(id, { loading: false })
+      this.historyService.update_history(id, { loading_finished: true })
 
       if (e instanceof Error) {
         if (e.name === 'AbortError') return
@@ -141,14 +150,42 @@ export class ChatService {
     }
   }
 
+  private update_history(id: string, message: ChatItem) {
+    const history = this.historyService.get_by_id(id)
+    if (!history) return
+    const chat_history = history.chat_history || []
+    const messsage = this.get_loading_message(message)
+    this.historyService.update_history(id, {
+      chat_history: [...chat_history, message],
+      loading_message: messsage || history.loading_message,
+    })
+  }
+
+  private get_loading_message(message: ChatItem): string | null {
+    if (!does_chat_has_func(message)) return null
+    const parts = message.content.parts
+    for (const part of parts) {
+      if (part.functionCall) {
+        return `Calling ${part.functionCall.name}`
+      }
+      if (part.functionResponse) {
+        return `Recieved response from ${part.functionResponse.name}`
+      }
+    }
+    return null
+  }
+
   private on_send_error(e: Error | unknown) {
     console.error(e)
+    const id = `${new Date().getTime()}`
     this.historyService.add_history({
       content: {
         role: 'model',
         parts: [{ text: this.context.getConfig().errorMessage }],
       },
-      id: `${new Date().getTime()}`,
+      id,
+      loading_id: id,
+      chat_history: [],
       cancelled: true,
     })
     this.context.setSnack(this.context.getConfig().errorMessage)
@@ -158,12 +195,15 @@ export class ChatService {
     return new Promise((resolve) => {
       if (this.controller) {
         this.controller?.abort()
+        const id = `${new Date().getTime()}`
         this.historyService.add_history({
           content: {
             role: 'model',
             parts: [{ text: 'You stopped this response' }],
           },
-          id: `${new Date().getTime()}`,
+          id,
+          loading_id: id,
+          chat_history: [],
           cancelled: true,
         })
         this.controller = undefined
@@ -180,7 +220,7 @@ export class ChatService {
 
       if (this.loadingId) {
         this.historyService.update_history(this.loadingId, {
-          loading: false,
+          loading_finished: true,
         })
         this.loadingId = undefined
       }
@@ -198,5 +238,46 @@ export class ChatService {
         if (part.text) return part.text
       }
     }
+  }
+  async fetch_session(agent: string, session_id: string): Promise<Session> {
+    const session = await this.apiService.fetch_session(agent, session_id)
+    const events = session.events || []
+    const invokation_id_map = new Map<string, ChatItem[]>()
+    for (const event of events) {
+      const invocationId = event.invocationId
+      if (!invocationId) continue
+      if (!invokation_id_map.has(invocationId)) {
+        invokation_id_map.set(invocationId, [])
+      }
+      invokation_id_map.get(invocationId)?.push(event)
+    }
+    this.historyService.clear_history()
+    for (const id of invokation_id_map.keys()) {
+      const chat_history = invokation_id_map.get(id) || []
+      for (const event of chat_history) {
+        if (event.content.role == 'user') {
+          this.historyService.add_history({ ...event, loading_id: id })
+        }
+      }
+      this.historyService.add_history({
+        content: {
+          role: 'user',
+          parts: [],
+        },
+        prompt: undefined,
+        id,
+        loading: true,
+        loading_finished: true,
+        loading_id: id,
+        chat_history,
+      })
+      for (const event of chat_history) {
+        if (event.content.role == 'model') {
+          this.historyService.add_history({ ...event, loading_id: id })
+        }
+      }
+    }
+
+    return session
   }
 }

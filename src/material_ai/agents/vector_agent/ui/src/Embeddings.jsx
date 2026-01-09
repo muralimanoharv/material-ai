@@ -104,7 +104,7 @@ export const EmbeddingChart = ({ coords }) => {
       style={{
         position: 'relative',
         height: '300px',
-        width: '99%',
+        width: '100%',
         overflow: 'scroll',
       }}
     >

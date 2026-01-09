@@ -61,13 +61,12 @@ const CustomCodeRenderer = ({
   const isJson = match && match[1] === 'json'
   const { setSnack } = useContext(AppContext) as AppContextType
 
-  if (!isJson) return <PreBlock>{children}</PreBlock>
+  if (!isJson) return <code>{children}</code>
 
   let parsedData: Record<string, string> | null = null
   let isParsedSuccessfully = false
-
+  const jsonString = String(children).replace(/\n$/, '')
   try {
-    const jsonString = String(children).replace(/\n$/, '')
     parsedData = JSON.parse(jsonString)
     isParsedSuccessfully = true
   } catch (error) {
@@ -75,7 +74,16 @@ const CustomCodeRenderer = ({
   }
 
   if (!isParsedSuccessfully) {
-    return <PreBlock>{children}</PreBlock>
+    return (
+      <PreBlock
+        onCopy={async () => {
+          await navigator.clipboard.writeText(`${jsonString}`)
+          setSnack('Copied to clipboard')
+        }}
+      >
+        {children}
+      </PreBlock>
+    )
   }
   if (mfeMarkdownJsonRenderer) {
     const node = mfeMarkdownJsonRenderer(parsedData)
@@ -89,7 +97,7 @@ const CustomCodeRenderer = ({
           await navigator.clipboard.writeText(
             JSON.stringify(parsedData, null, 2),
           )
-          setSnack('Text copied to clipboard')
+          setSnack('Copied to clipboard')
         }}
       >
         {JSON.stringify(parsedData, null, 2)}
@@ -97,7 +105,6 @@ const CustomCodeRenderer = ({
     )
   }
 
-  // Success
   return <>{renderDynamicUI(parsedData as UINode)}</>
 }
 
@@ -105,12 +112,10 @@ function PreBlock(props: { children: ReactNode; onCopy?: () => void }) {
   const theme = useTheme()
   return (
     <Box
-      component={'pre'}
       sx={{
-        fontSize: '14px',
         backgroundColor: theme.palette.background.card,
-        padding: '8px',
         position: 'relative',
+        width: props.onCopy ? '100%' : undefined,
         '&:hover .json-copy': {
           opacity: '1',
         },
@@ -120,7 +125,9 @@ function PreBlock(props: { children: ReactNode; onCopy?: () => void }) {
         <Tooltip title="Copy">
           <IconButton
             className="json-copy"
-            onClick={async () => {}}
+            onClick={async () => {
+              if (props.onCopy) props.onCopy()
+            }}
             sx={{
               position: 'absolute',
               right: 10,

@@ -74,16 +74,28 @@ body {
   animation-fill-mode: forwards;
 }
 
+.animate-loading-text {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
 .chat-item-box-model .react-markdown > pre {
-  white-space: pre-wrap;
   word-wrap: break-word;
 }
 
 pre {
+  display: inline-block;
   white-space: pre-wrap;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  margin: 0;
+  width: 100%;
+}
+
+.truc-text {
+  white-space: pre-wrap;
+  word-wrap: break-word;
   word-break: break-all;
   overflow-wrap: break-word;
   overflow-x: hidden;
   box-sizing: border-box;
-  width: 100%;
 }

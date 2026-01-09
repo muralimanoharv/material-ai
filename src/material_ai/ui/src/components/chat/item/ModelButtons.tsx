@@ -149,7 +149,6 @@ export default function ModelButtons(props: ModelButtonsProps) {
     <Box
       className="actions-child actions-child-model"
       sx={{
-        marginLeft: '60px',
         // Check if feedback exists to determine opacity
         opacity: feedback ? '1' : '0',
         transition: 'opacity 0.5s ease',

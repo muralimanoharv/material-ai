@@ -109,8 +109,7 @@ function App() {
   const fetchSession = async (agent: string, session_id: string) => {
     try {
       setLoading(true)
-      const session = await apiService.current.fetch_session(agent, session_id)
-      setHistory(session?.events || [])
+      chatService.current.fetch_session(agent, session_id)
       input_focus()
     } catch (e) {
       console.error(e)

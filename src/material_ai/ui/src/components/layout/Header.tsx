@@ -75,7 +75,7 @@ export default function Header() {
         </Box>
       </Box>
 
-      {agentId && (
+      {!isMobile && agentId && (
         <Box>
           <Typography
             data-testid="page-agent-name"

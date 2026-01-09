@@ -7,6 +7,7 @@ interface ChatItemWrapperProps {
   alignment?: 'flex-start' | 'flex-end'
   role?: string
   partIdx: string
+  isThinkingSection?: boolean
 }
 
 function ChatItemWrapper({
@@ -14,6 +15,7 @@ function ChatItemWrapper({
   alignment = 'flex-start',
   role,
   partIdx,
+  isThinkingSection,
 }: ChatItemWrapperProps) {
   const { chat, chatIdx } = useContext(ChatItemContext) as ChatItemContextType
 
@@ -22,7 +24,7 @@ function ChatItemWrapper({
   return (
     <Box
       data-testid={`page-chat-${chatIdx}-part-${partIdx}`}
-      className={`chat-item-box chat-item-box-${effectiveRole}`}
+      className={`${isThinkingSection ? 'chat-item-box-thinking' : 'chat-item-box'} chat-item-box-${effectiveRole}`}
     >
       <Box
         sx={{
@@ -35,13 +37,7 @@ function ChatItemWrapper({
           alignItems: 'flex-start',
         }}
       >
-        <Box
-          sx={{
-            padding: '2px 16px',
-          }}
-        >
-          {children}
-        </Box>
+        <Box>{children}</Box>
       </Box>
     </Box>
   )

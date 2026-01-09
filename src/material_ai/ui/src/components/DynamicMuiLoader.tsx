@@ -1,6 +1,6 @@
 import React, { Suspense, type ReactNode, type ElementType } from 'react'
 import { LazyMuiComponents } from './LazyMuiComponents'
-import { CircularProgress } from '@mui/material'
+import { Box, CircularProgress } from '@mui/material'
 
 export interface UINode {
   componentName: string
@@ -46,12 +46,12 @@ const isLazyComponent = (component: ElementType): boolean => {
 export const renderDynamicUI = (node: UINode, index: number = 0): ReactNode => {
   if (!node || !node.componentName) return null
 
-  const Component = (LazyMuiComponents as Record<string, ElementType>)[
+  let Component = (LazyMuiComponents as Record<string, ElementType>)[
     node.componentName
   ]
 
   if (!Component) {
-    return null
+    Component = Box
   }
 
   let children: ReactNode = null

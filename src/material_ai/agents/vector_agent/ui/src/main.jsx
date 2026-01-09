@@ -5,9 +5,7 @@ const VectorAgentUI = (props) => {
   return (
     <>
       <Greeting greeting="Ready to understand vectors" />
-        
-        
-        <ChatSection
+      <ChatSection
         mfeMarkdownJsonRenderer={(data) => {
           return <EmbeddingChart coords={data} />
         }}
