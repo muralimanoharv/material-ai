@@ -1,5 +1,6 @@
 from __future__ import annotations
 import textwrap
+from typing import Optional, Mapping, Any
 from google.adk.agents import Agent
 from google.adk.tools import google_search
 
@@ -43,6 +44,26 @@ class MaiAgent(Agent):
         
         - **COMPONENT NAME**: Must be the PascalCase MUI component name.
           - Examples: `Grid`, `Typography`, `Card`, `CardContent`, `Button`, 'Chart'.
+          - Examples: `Accordion`, `AccordionActions`, `AccordionDetails`, `AccordionSummary`, 
+            `Alert`, `AlertTitle`, `AppBar`, `Autocomplete`, `Avatar`, `AvatarGroup`,
+            `Backdrop`, `Badge`, `BottomNavigation`, `BottomNavigationAction`, `Box`, 
+            `Breadcrumbs`, `Button`, `ButtonBase`, `ButtonGroup`, `Card`, `CardActionArea`, 
+            `CardActions`, `CardContent`, `CardHeader`, `CardMedia`, `Chip`, `CircularProgress`, 
+            `ClickAwayListener`, `Collapse`, `DefaultPropsProvider`, `Dialog`, `DialogActions`,
+            `DialogContent`, `DialogContentText`, `DialogTitle`, `Divider`, `Drawer`, `Fab`, `Fade`, 
+            `FilledInput`, `FormGroup`, `FormHelperText`, `FormLabel`, `Grid`, `GridLegacy`, `Grow`, 
+            `Icon`, `IconButton`, `ImageList`, `ImageListItem`, `ImageListItemBar`,
+            `InitColorSchemeScript`, `Input`, `InputAdornment`, `InputBase`, `LinearProgress`, 
+            `Link`, `List`, `ListItem`, `ListItemAvatar`, `ListItemButton`, `ListItemIcon`, 
+            `ListItemSecondaryAction`, `ListItemText`, `ListSubheader`, `Menu`, `MenuList`, 
+            `MobileStepper`, `Modal`, `NativeSelect`, `OutlinedInput`, `Pagination`, 
+            `PaginationItem`, `Paper`, `PigmentContainer`, `PigmentGrid`, `PigmentStack`, `Popover`, 
+            `Popper`, `Portal`, `ScopedCssBaseline`, `Skeleton`, `Slide`, `Snackbar`, `SnackbarContent`,
+            `SpeedDial`, `SpeedDialAction`, `SpeedDialIcon`, `Stack`, `Step`, `StepButton`, 
+            `StepConnector`, `StepContent`, `StepIcon`, `StepLabel`, `Stepper`, `SvgIcon`, `SwipeableDrawer`, `Tab`, `TabScrollButton`, 
+            `Table`, `TableBody`, `TableCell`, `TableContainer`, `TableFooter`, `TableHead`, `TablePagination`, 
+            `TablePaginationActions`, `TableRow`, `TableSortLabel`, `Tabs`, `TextareaAutosize`, 
+            `ToggleButton`, `ToggleButtonGroup`, `Toolbar`, `Tooltip`, `Typography`, `Unstable_TrapFocus`, `Zoom`
     """
     )
 
@@ -53,13 +74,16 @@ class MaiAgent(Agent):
                                         
 
         **Layout & Sizing (CRITICAL):**
-        - **Height**: NEVER default to `100vh` or fixed pixel heights. 
-          - Components must take only as much height as they need (intrinsic height).
-          - Do not add `height` or `minHeight` to `style` unless the user explicitly asks for "full screen".
+          **Height**: NEVER default to `100vh` or fixed pixel heights. 
+            - Components must take only as much height as they need (intrinsic height).
+            - Do not add `height` or `minHeight` to `style` unless the user explicitly asks for "full screen".
         
         **Grid Systems:**
         - Always use a container `Grid` followed by item `Grid`s.
         - Props: `container` (boolean), `item` (boolean), `spacing` (number), `xs` (number).
+
+        **Table:**
+        - Always make sure `Table` component is always inside a `Grid` and takes full width i.e xs=12
         
         **Forms (DynamicForm):**
         - If input is required, the ROOT node must be `DynamicForm`.
@@ -75,6 +99,9 @@ class MaiAgent(Agent):
         - Use 'google_search' tool to query for react-chartjs-2 version 5 component structure 
         - Use the UINode to build props for charts some examples are provided below
         - You can build all the charts using the <Chart /> component.
+        - Always make sure `Chart` component is always inside a `Grid` and takes full width i.e xs=12, unless specified
+        - Make sure to give the chart a decent height like around 400px so that it looks good on UI.
+        - Make sure width is always equal to '100%' we dont want any horizontal scroll due to fixed width
     """
     )
 
@@ -200,6 +227,7 @@ class MaiAgent(Agent):
         name: str,
         model: str,
         additional_instructions: str = "",
+        agent_kwargs: Optional[Mapping[str, Any]] = {},
     ):
         full_instruction = (
             f"{MaiAgent._IDENTITY}\n\n"
@@ -221,4 +249,5 @@ class MaiAgent(Agent):
             instruction=full_instruction,
             description="Generates recursive UINode JSON trees for Material UI.",
             tools=[google_search],
+            **agent_kwargs,
         )

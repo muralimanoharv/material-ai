@@ -1,5 +1,5 @@
 from __future__ import annotations
-from material_ai.adk.tools import MaiAgent
+from material_ai.adk.agents import MaiAgent
 
 root_agent = MaiAgent(
     name="material_ai_agent",

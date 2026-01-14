@@ -62,6 +62,7 @@ body {
 .chat-item-box {
   display: flex;
   flex-direction: column;
+  gap: 8px;
 }
 
 .chat-item-box:hover .actions-child {
@@ -98,4 +99,7 @@ pre {
   overflow-wrap: break-word;
   overflow-x: hidden;
   box-sizing: border-box;
+}
+code {
+  white-space: pre-wrap !important;
 }

@@ -1,21 +1,21 @@
 from __future__ import annotations
 from google.adk.agents import SequentialAgent, Agent
-from google.adk.tools import AgentTool
-from material_ai.adk.agents.nl2sql import Nl2SqlAgent
-from material_ai.adk.tools import MaiAgent
+from material_ai.adk.agents import Nl2SqlAgent
+from material_ai.adk.agents import MaiAgent
 
+BQ_URL = "bigquery://healthcare-indsoln-arg-481412/sports_analytics_ds"
+PG_URL = "postgresql://admin:password123@localhost:5432/my_database"
+SQLITE_URL = "sqlite:///sports_analytics.db"
 
 data_retriever = Nl2SqlAgent(
     name="data_retriever",
-    db_url="sqlite:///pro_sports_analytics.db",
+    db_url=SQLITE_URL,
     model="gemini-2.0-flash",
     additional_instructions="""
         CRITICAL: Provide a high level overview of what sort of data you received.
     """,
     additional_column_instructions={
-        "attendees": {
-            "gender": "Only Values 'F' & 'M' are allowed, 'F' for Female, 'M' for Male."
-        }
+        "users": {"gender": "Only Values 'Male', 'Non-binary', 'Female'"}
     },
     description="Specialist for querying the sports database and retrieving attendee analytics.",
 )
@@ -56,19 +56,26 @@ root_agent = Agent(
     name="sports_analytics_agent",
     model="gemini-3-flash-preview",
     sub_agents=[analytics_pipeline],
-    description="The main interface for sports analytics queries.",
+    description="Interface for sports analytics queries and UI styling requests.",
     instruction="""
-    You are the public interface for the Sports Analytics system.
+    You are the primary interface for a Sports Analytics system that handles both data analysis and UI/UX styling.
+    You can visualize data and also provide differnet UI themes.
+    ### YOUR CORE OBJECTIVES:
+    1. **Context Extraction**: When a user provides a prompt, identify two components:
+       - **The Analytical Query**: (e.g., "favorite sports distribution")
+       - **The UI/UX Preference**: (e.g., "cyberpunk theme", "pie chart", "dark mode")
     
-    ### YOUR TOOLBOX:
-    You have access to a tool named `analytics_pipeline`. 
-    This tool handles the entire process of fetching data and generating UI.
+    2. **Delegate with Context**: Call the `analytics_pipeline` agent. You MUST pass the user's full request, including all styling and visualization preferences (like "cyberpunk theme" or "pie chart"), to ensure the pipeline generates the correct UI and chart types.
 
-    ### YOUR JOB:
-    1. **Delegate**: When the user asks a question, immediately call `analytics_pipeline`.
-    2. **Passthrough**: Wait for `analytics_pipeline` to finish.
-    3. **Filter**: 
-       - The `analytics_pipeline` might return intermediate logs or thoughts. IGNORE THEM.
-       - You must **ONLY** return the final Markdown JSON structure provided by the pipeline.
+    3. **Final Response Formatting**: 
+       - Wait for the `analytics_pipeline` to complete its 4-step process.
+       - IGNORE all internal logs, reasoning, or SQL execution steps.
+       - **ONLY** return the final Markdown JSON structure. 
+       - Ensure the final JSON reflects the requested UI theme and chart type.
+
+    ### EXAMPLE BEHAVIOR:
+    - User: "Show me a pie chart of favorite sports in a cyberpunk theme."
+    - Action: Call `analytics_pipeline` with the full string.
+    - Output: Only the JSON containing the 'pie' chart type and 'cyberpunk' styling data.
     """,
 )

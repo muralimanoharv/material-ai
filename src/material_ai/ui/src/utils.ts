@@ -111,3 +111,26 @@ export function does_chat_has_func(chat: ChatItem) {
   }
   return false
 }
+
+export function scroll_to_view() {
+  const parent = document.querySelector('.chat-items')
+  if (parent) {
+    const children = parent.children
+    let lastUserMessage: Element | null = null
+
+    for (let i = children.length - 1; i >= 0; i--) {
+      if (children[i].classList.contains('chat-item-box-user')) {
+        lastUserMessage = children[i]
+        break
+      }
+    }
+
+    if (!lastUserMessage) return
+
+    lastUserMessage.scrollIntoView({
+      behavior: 'smooth',
+      inline: 'start',
+      block: 'start',
+    })
+  }
+}

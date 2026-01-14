@@ -34,7 +34,7 @@ function LoadingIndicator(): React.JSX.Element {
         sx={{
           top: 0,
           left: 0,
-          bottom: 0,
+          bottom: '4px',
           right: 0,
           position: 'absolute',
           display: 'flex',

@@ -21,7 +21,7 @@ export default function ChatPage() {
   const MicroFrontendAgentComponent = useMemo(() => {
     return lazy(() =>
       import(/* @vite-ignore */ REMOTE_URL).catch((err) => {
-        console.error('MFE Load Failed:', err)
+        console.warn('MFE Load Failed:', err)
         setHasRemoteError(true)
         return { default: () => null }
       }),

@@ -10,6 +10,7 @@ class ColumnSchema(BaseModel):
     nullable: bool
     allowed_values: Optional[List[str]] = None
     instruction: Optional[str] = None
+    description: Optional[str] = None
     additional_instructions: Optional[str] = None
 
 
@@ -22,6 +23,7 @@ class JoinHint(BaseModel):
 
 class TableSchema(BaseModel):
     table_name: str
+    description: Optional[str] = None
     columns: List[ColumnSchema]
     join_hints: List[JoinHint]
 

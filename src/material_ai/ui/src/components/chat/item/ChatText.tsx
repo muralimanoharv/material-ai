@@ -34,6 +34,7 @@ export default function ChatText({ part, partIdx }: ChatItemProps) {
   const role = chat.content.role
   const isUserMessage = role === 'user'
   const isModelMessage = role === 'model'
+  const isCancelled = !!chat.cancelled
 
   const isLargeText = text.length > MAX_COLLAPSED_LENGTH
 
@@ -71,10 +72,11 @@ export default function ChatText({ part, partIdx }: ChatItemProps) {
         textExpand={isExpanded}
         isUser={isUserMessage}
         isLargeText={() => isLargeText}
+        isCancelled={isCancelled}
         part={part}
       />
     )
-  }, [part, isExpanded, isUserMessage, isLargeText])
+  }, [part, isExpanded, isUserMessage, isLargeText, isCancelled])
 
   return (
     <Box

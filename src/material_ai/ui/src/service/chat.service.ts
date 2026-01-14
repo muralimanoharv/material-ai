@@ -6,7 +6,7 @@ import type {
   Session,
   User,
 } from '../schema'
-import { createParts, does_chat_has_func } from '../utils'
+import { createParts, does_chat_has_func, scroll_to_view } from '../utils'
 import { ApiService } from './api.service'
 import { HistoryService } from './history.service'
 import type { NavigateFunction } from 'react-router'
@@ -85,10 +85,13 @@ export class ChatService {
         prompt,
         id,
         loading: true,
-        loading_message: 'Loading...',
+        loading_message: '',
         loading_id: id,
         chat_history: [],
       })
+      setTimeout(() => {
+        scroll_to_view()
+      }, 100)
       this.loadingId = id
       if (options.setPrompt) options.setPrompt('')
       this.context.setFiles([])
@@ -119,6 +122,9 @@ export class ChatService {
             loading_finished: true,
             loading_message: '',
           })
+          setTimeout(() => {
+            scroll_to_view()
+          }, 100)
           if (!is_new_session) return
           this.context.navigate(`/agents/${agent}/session/${session_id}`)
         },

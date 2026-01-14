@@ -7,10 +7,19 @@ interface ChatTextRendererProps {
   part?: ChatPart
   isLargeText?: () => boolean
   textExpand?: boolean
+  isCancelled?: boolean
 }
 
 export default function ChatTextRenderer(props: ChatTextRendererProps) {
   if (props.isUser) return <UserMarkdownRenderer {...props} />
+  if (props.isCancelled)
+    return (
+      <Box sx={{ flexGrow: 1 }} data-testid="chat-text">
+        <Typography fontStyle="italic" fontWeight={300}>
+          {props.part?.text}
+        </Typography>
+      </Box>
+    )
 
   return (
     <Box sx={{ flexGrow: 1 }} data-testid="chat-text">

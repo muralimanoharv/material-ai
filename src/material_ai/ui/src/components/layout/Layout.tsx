@@ -61,32 +61,6 @@ export default function Layout({ children, showFooter = true }: LayoutProps) {
     return open || hoverOpen
   }
 
-  React.useEffect(() => {
-    if (scrollableBoxRef.current) {
-      const parent = document.querySelector('.chat-items')
-
-      if (parent) {
-        const children = parent.children
-        let lastUserMessage: Element | null = null
-
-        for (let i = children.length - 1; i >= 0; i--) {
-          if (children[i].classList.contains('chat-item-box-user')) {
-            lastUserMessage = children[i]
-            break
-          }
-        }
-
-        if (!lastUserMessage) return
-
-        lastUserMessage.scrollIntoView({
-          behavior: 'smooth',
-          inline: 'start',
-          block: 'start',
-        })
-      }
-    }
-  }, [context?.history])
-
   return (
     <LayoutContext.Provider
       value={{

@@ -42,7 +42,7 @@ export default function ChatSection({
           className="chat-items"
           sx={{
             display: 'flex',
-            gap: '2px',
+            gap: '4px',
             flexDirection: 'column',
             width: '100%',
             maxWidth,

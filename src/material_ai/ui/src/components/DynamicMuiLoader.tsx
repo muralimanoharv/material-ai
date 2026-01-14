@@ -68,8 +68,9 @@ export const renderDynamicUI = (node: UINode, index: number = 0): ReactNode => {
     }
   }
 
-  const { ...rawProps } = node
+  const { componentName, ...rawProps } = node
   const resolvedProps = resolveProps(rawProps)
+  resolvedProps['componentname'] = componentName
 
   if (!isLazyComponent(Component)) {
     return (

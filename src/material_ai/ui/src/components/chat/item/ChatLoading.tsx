@@ -1,6 +1,6 @@
 import { Box, Button, Collapse, useTheme } from '@mui/material'
 import LoadingIndicator from './LoadingIndicator'
-import { useContext, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { ChatItemContext, type ChatItemContextType } from '../../../context'
 import ChatItemWrapper from './ChatItemWrapper'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
@@ -11,12 +11,11 @@ import ChatFunctionResponse from './ChatFunctionResponse'
 import ChatFunctionCall from './ChatFunctionCall'
 import ChatTextRenderer from './ChatTextRenderer'
 import { DARK_BORDER, LIGHT_BORDER } from '../../../assets/themes'
+import LoadingDots from './LoadingDots'
 
 function ChatLoading(): React.JSX.Element | null {
   const { chat } = useContext(ChatItemContext) as ChatItemContextType
-  const [showThinking, setShowThinking] = useState(
-    chat.loading_finished || !!chat.chat_history?.length,
-  )
+  const [showThinking, setShowThinking] = useState(false)
   const theme = useTheme()
 
   if (!chat.loading) return null
@@ -25,11 +24,13 @@ function ChatLoading(): React.JSX.Element | null {
   if (theme.palette.mode === 'dark') {
     border = `1px solid ${DARK_BORDER}`
   }
-  const loadingText = chat.loading_finished
-    ? 'Show thinking'
-    : chat.loading_message
-      ? chat.loading_message
-      : 'Loading...'
+  const loadingText = chat.loading_finished ? (
+    'Show thinking'
+  ) : chat.loading_message ? (
+    chat.loading_message
+  ) : (
+    <LoadingDots />
+  )
 
   return (
     <ChatItemWrapper partIdx="loading" role="model">
@@ -61,6 +62,7 @@ function ChatLoading(): React.JSX.Element | null {
                   borderRadius: '50px',
                   fontWeight: 500,
                   color: theme.palette.text.primary,
+                  padding: '8px 16px',
                 }}
                 onClick={() => setShowThinking(!showThinking)}
                 endIcon={
@@ -101,15 +103,19 @@ function ChatLoading(): React.JSX.Element | null {
                       if (does_chat_has_func(chat)) return true
                       return false
                     })
-                    .map((chat) => {
+                    .map((chat, idx) => {
                       return (
-                        <>
+                        <React.Fragment key={idx}>
                           {chat.content.parts.map((part, idx) => {
                             return (
-                              <ChatLoadingSection part={part} partIdx={idx} />
+                              <ChatLoadingSection
+                                part={part}
+                                partIdx={idx}
+                                key={idx}
+                              />
                             )
                           })}
-                        </>
+                        </React.Fragment>
                       )
                     })}
                 </Box>

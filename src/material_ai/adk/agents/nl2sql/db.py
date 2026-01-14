@@ -71,7 +71,7 @@ class DatabaseService(abc.ABC):
             logger.error(f"Error listing tables: {str(e)}")
             return [f"Error listing tables: {str(e)}"]
 
-    async def get_table_schema(self, table_name: str) -> TableSchema:
+    async def get_table_schema(self, table_name: str) -> TableSchema | None:
         """
         Reflects the database at runtime to provide a detailed schema.
 
@@ -109,6 +109,7 @@ class DatabaseService(abc.ABC):
                         instruction=(
                             f"Restrict values to {allowed}" if allowed else None
                         ),
+                        description=col.get("comment", None),
                     )
                 )
 
@@ -131,10 +132,19 @@ class DatabaseService(abc.ABC):
                     )
 
             # 4. Return as Pydantic for the LLM
+            try:
+                table_description = inspector.get_table_comment(table_name)
+            except NotImplementedError:
+                table_description = {}
+
             schema = TableSchema(
-                table_name=table_name, columns=columns_data, join_hints=join_hints
+                table_name=table_name,
+                columns=columns_data,
+                join_hints=join_hints,
+                description=table_description.get("text", None),
             )
             return schema
 
         except Exception as e:
-            return f"Error reflecting table '{table_name}': {str(e)}"
+            logger.error(f"Error reflecting table '{table_name}': {str(e)}")
+            return None

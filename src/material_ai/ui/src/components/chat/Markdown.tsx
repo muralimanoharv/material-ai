@@ -1,12 +1,4 @@
-import {
-  Box,
-  IconButton,
-  Tooltip,
-  Typography,
-  useTheme,
-  type TypographyProps,
-} from '@mui/material'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import { Typography, type TypographyProps } from '@mui/material'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { useContext, type ReactNode } from 'react'
@@ -16,6 +8,7 @@ import {
   ChatSectionContext,
   type AppContextType,
 } from '../../context'
+import CustomCode from './CustomCode'
 
 // 1. Define Props Interface
 interface MarkdownProps {
@@ -75,14 +68,16 @@ const CustomCodeRenderer = ({
 
   if (!isParsedSuccessfully) {
     return (
-      <PreBlock
+      <CustomCode
+        content={jsonString}
+        title="TEXT"
         onCopy={async () => {
-          await navigator.clipboard.writeText(`${jsonString}`)
+          await navigator.clipboard.writeText(
+            JSON.stringify(parsedData, null, 2),
+          )
           setSnack('Copied to clipboard')
         }}
-      >
-        {children}
-      </PreBlock>
+      />
     )
   }
   if (mfeMarkdownJsonRenderer) {
@@ -92,56 +87,18 @@ const CustomCodeRenderer = ({
 
   if (!parsedData?.componentName) {
     return (
-      <PreBlock
+      <CustomCode
+        content={JSON.stringify(parsedData, null, 2)}
+        title="JSON"
         onCopy={async () => {
           await navigator.clipboard.writeText(
             JSON.stringify(parsedData, null, 2),
           )
           setSnack('Copied to clipboard')
         }}
-      >
-        {JSON.stringify(parsedData, null, 2)}
-      </PreBlock>
+      />
     )
   }
 
   return <>{renderDynamicUI(parsedData as UINode)}</>
-}
-
-function PreBlock(props: { children: ReactNode; onCopy?: () => void }) {
-  const theme = useTheme()
-  return (
-    <Box
-      sx={{
-        backgroundColor: theme.palette.background.card,
-        position: 'relative',
-        width: props.onCopy ? '100%' : undefined,
-        '&:hover .json-copy': {
-          opacity: '1',
-        },
-      }}
-    >
-      {props.onCopy && (
-        <Tooltip title="Copy">
-          <IconButton
-            className="json-copy"
-            onClick={async () => {
-              if (props.onCopy) props.onCopy()
-            }}
-            sx={{
-              position: 'absolute',
-              right: 10,
-              top: 10,
-              fontSize: '8px',
-              opacity: '0',
-              transition: 'opacity 0.2s ease',
-            }}
-          >
-            <ContentCopyIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      )}
-      {props.children}
-    </Box>
-  )
 }
