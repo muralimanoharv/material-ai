@@ -1,7 +1,6 @@
 from __future__ import annotations
 from google.adk.agents import Agent
 
-
 root_agent = Agent(
     name="vector_agent",
     model="gemini-2.0-flash",

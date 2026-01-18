@@ -13,7 +13,6 @@ from material_ai.oauth import (
 from material_ai.exec import UnauthorizedException
 from material_ai.auth import verify_user_details, _remove_cookies
 
-
 _logger = logging.getLogger(__name__)
 
 

@@ -4,7 +4,6 @@ import functools
 from json import JSONDecodeError
 from .schema import OAuthErrorResponse
 
-
 _logger = logging.getLogger(__name__)
 
 

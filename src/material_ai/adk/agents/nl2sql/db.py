@@ -4,7 +4,6 @@ from sqlalchemy import create_engine, text, Engine, inspect
 from typing import List, Dict, Any
 from .base import ColumnSchema, JoinHint, TableSchema
 
-
 # Configure service-specific logger
 logger = logging.getLogger("sports_analytics.db_service")
 

@@ -12,17 +12,14 @@ class MaiAgent(Agent):
     """
 
     # 1. CORE IDENTITY
-    _IDENTITY = textwrap.dedent(
-        """
+    _IDENTITY = textwrap.dedent("""
         You are an expert Frontend Architect.
         Your output MUST be a strict JSON tree where EVERY object adheres to the 'UINode' interface.
         You map user requests directly to Material UI (MUI) component trees and also react-chartjs-2 Charts.
-    """
-    )
+    """)
 
     # 2. THE UNIVERSAL NODE PROTOCOL (The Interface)
-    _INTERFACE_RULES = textwrap.dedent(
-        """
+    _INTERFACE_RULES = textwrap.dedent("""
         ### 1. THE UNIVERSAL DATA STRUCTURE
         Every single object in your JSON output MUST follow this strict TypeScript interface:
 
@@ -64,12 +61,10 @@ class MaiAgent(Agent):
             `Table`, `TableBody`, `TableCell`, `TableContainer`, `TableFooter`, `TableHead`, `TablePagination`, 
             `TablePaginationActions`, `TableRow`, `TableSortLabel`, `Tabs`, `TextareaAutosize`, 
             `ToggleButton`, `ToggleButtonGroup`, `Toolbar`, `Tooltip`, `Typography`, `Unstable_TrapFocus`, `Zoom`
-    """
-    )
+    """)
 
     # 3. SPECIFIC COMPONENT PATTERNS
-    _COMPONENT_PATTERNS = textwrap.dedent(
-        """
+    _COMPONENT_PATTERNS = textwrap.dedent("""
         ### 3. COMPONENT GUIDELINES
                                         
 
@@ -102,12 +97,10 @@ class MaiAgent(Agent):
         - Always make sure `Chart` component is always inside a `Grid` and takes full width i.e xs=12, unless specified
         - Make sure to give the chart a decent height like around 400px so that it looks good on UI.
         - Make sure width is always equal to '100%' we dont want any horizontal scroll due to fixed width
-    """
-    )
+    """)
 
     # 4. FEW-SHOT EXAMPLES (The Truth)
-    _EXAMPLES = textwrap.dedent(
-        """
+    _EXAMPLES = textwrap.dedent("""
           ### EXAMPLE: SIMPLE CARD (Display)
           ```json
           {
@@ -219,8 +212,7 @@ class MaiAgent(Agent):
             }
           }
           ```
-      """
-    )
+      """)
 
     def __init__(
         self,

@@ -20,8 +20,7 @@ def create_db():
 
         # 1. Create Tables
         # PostgreSQL uses SERIAL for auto-incrementing primary keys
-        cursor.execute(
-            """
+        cursor.execute("""
             DROP TABLE IF EXISTS activity_logs;
             DROP TABLE IF EXISTS registrations;
             DROP TABLE IF EXISTS user_stats;
@@ -71,8 +70,7 @@ def create_db():
                 calories_burned INTEGER,
                 active_minutes INTEGER
             );
-        """
-        )
+        """)
 
         # 2. Synthetic Data Components
         first_names = [

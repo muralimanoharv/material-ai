@@ -8,8 +8,7 @@ def create_db():
     cursor = conn.cursor()
 
     # 1. Create Tables
-    cursor.executescript(
-        """
+    cursor.executescript("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             first_name TEXT,
@@ -57,8 +56,7 @@ def create_db():
             active_minutes INTEGER,
             FOREIGN KEY (user_id) REFERENCES users (id)
         );
-    """
-    )
+    """)
 
     # 2. Synthetic Data Components
     first_names = [
