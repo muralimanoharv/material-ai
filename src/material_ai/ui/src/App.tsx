@@ -21,6 +21,7 @@ import { ChatService } from './service/chat.service'
 import AgentPage from './components/pages/AgentPage'
 import AgentsPage from './components/pages/AgentsPage'
 import PageNotFound from './components/PageNotFound'
+import HealthPage from './components/pages/HealthPage'
 
 function App() {
   const { config } = useContext(ThemeContext) as ThemeContextType
@@ -188,6 +189,7 @@ function App() {
           <Route path="/agents/:agentId" element={<AgentPage />}>
             <Route path="session/:sessionId" element={<AgentPage />} />
           </Route>
+          <Route path="/health" element={<HealthPage />} />
           <Route path="/" element={<Navigate to="/agents" replace />} />
           <Route path="/404" element={<PageNotFound />} />
           <Route path="*" element={<PageNotFound />} />

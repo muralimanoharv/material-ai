@@ -4,6 +4,7 @@
 .env
 **/__pycache__/
 *.db
+!sports_analytics.db
 dist
 **/*.egg-info/
 .coverage

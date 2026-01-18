@@ -6,11 +6,13 @@ import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
+import MonitorHeartIcon from '@mui/icons-material/MonitorHeart'
 import PaletteIcon from '@mui/icons-material/Palette'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
 import ThemeSwipeableDrawer from './ThemeSwipeableDrawer'
 import { LayoutContext } from '../../../context'
 import MaterialList from '../../material/MaterialList'
+import { useNavigate } from 'react-router'
 
 // Define the Context shape
 interface LayoutContextType {
@@ -24,6 +26,7 @@ export default function SettingsSwipeableDrawer() {
     React.useContext(LayoutContext) as unknown as LayoutContextType
 
   const theme = useTheme()
+  const navigate = useNavigate()
 
   return (
     <>
@@ -52,6 +55,24 @@ export default function SettingsSwipeableDrawer() {
                   <PaletteIcon />
                 </ListItemIcon>
                 <ListItemText primary={'Theme'} />
+                <ArrowRightIcon />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton
+                data-testid="page-health-button"
+                sx={{
+                  backgroundColor: theme.palette.background.default,
+                }}
+                onClick={() => {
+                  setSettingsDrawerOpen(false)
+                  navigate('/health')
+                }}
+              >
+                <ListItemIcon>
+                  <MonitorHeartIcon />
+                </ListItemIcon>
+                <ListItemText primary={'Health'} />
                 <ArrowRightIcon />
               </ListItemButton>
             </ListItem>

@@ -37,10 +37,13 @@ function ChatFunctionCall({
         }}
       >
         <BoltIcon />
-        <span data-testid="chat-function-call" className="truc-text">
+        <span data-testid="chat-function-call-name" className="truc-text">
           {part.functionCall?.name}
         </span>
-        <IconButton onClick={() => setToggle(!toggle)}>
+        <IconButton
+          data-testid="chat-function-call-toggle"
+          onClick={() => setToggle(!toggle)}
+        >
           {toggle ? (
             <KeyboardArrowUpIcon fontSize="small" />
           ) : (
@@ -49,7 +52,7 @@ function ChatFunctionCall({
         </IconButton>
       </Box>
       <Collapse in={toggle} timeout="auto" sx={{ marginLeft: '35px' }}>
-        <span className="truc-text">
+        <span data-testid="chat-function-call-args" className="truc-text">
           {part.functionCall?.name}
           {`(${args.join(', ')})`}
         </span>

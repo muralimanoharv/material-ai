@@ -102,7 +102,10 @@ export const formatModelName = (modelId: string) => {
     .join(' ')
 }
 
-export function does_chat_has_func(chat: ChatItem) {
+export function does_chat_has_func(chat: ChatItem, needArtifaces = false) {
+  if (needArtifaces) {
+    if (Object.keys(chat.actions?.artifactDelta || {}).length) return false
+  }
   const parts = chat?.content?.parts
   if (!parts) return false
   for (let i = 0; i < parts.length; i++) {

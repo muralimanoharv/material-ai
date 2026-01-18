@@ -58,6 +58,7 @@ function ChatLoading(): React.JSX.Element | null {
             </Box>
             <Box display="flex">
               <Button
+                data-testid="chat-loading-toggle"
                 sx={{
                   borderRadius: '50px',
                   fontWeight: 500,
@@ -103,19 +104,14 @@ function ChatLoading(): React.JSX.Element | null {
                       if (does_chat_has_func(chat)) return true
                       return false
                     })
-                    .map((chat, idx) => {
+                    .flatMap((chat) => chat.content.parts)
+                    .map((part, partIdx) => {
                       return (
-                        <React.Fragment key={idx}>
-                          {chat.content.parts.map((part, idx) => {
-                            return (
-                              <ChatLoadingSection
-                                part={part}
-                                partIdx={idx}
-                                key={idx}
-                              />
-                            )
-                          })}
-                        </React.Fragment>
+                        <ChatLoadingSection
+                          part={part}
+                          partIdx={partIdx}
+                          key={partIdx}
+                        />
                       )
                     })}
                 </Box>

@@ -18,7 +18,7 @@ function ChatFunctionResponse({
   isThinkingSection,
 }: ChatFunctionResponseProps) {
   const [toggle, setToggle] = useState(false)
-  const result = part.functionResponse?.response?.result
+  const result = part.functionResponse?.response
   return (
     <ChatItemWrapper
       partIdx={`${partIdx}`}
@@ -34,10 +34,13 @@ function ChatFunctionResponse({
         }}
       >
         <CheckIcon />
-        <span data-testid="chat-function-response" className="truc-text">
+        <span data-testid="chat-function-response-name" className="truc-text">
           {part.functionResponse?.name}
         </span>
-        <IconButton onClick={() => setToggle(!toggle)}>
+        <IconButton
+          data-testid="chat-function-response-toggle"
+          onClick={() => setToggle(!toggle)}
+        >
           {toggle ? (
             <KeyboardArrowUpIcon fontSize="small" />
           ) : (
@@ -46,7 +49,7 @@ function ChatFunctionResponse({
         </IconButton>
       </Box>
       <Collapse in={toggle} timeout="auto" sx={{ marginLeft: '35px' }}>
-        <span className="truc-text">
+        <span data-testid="chat-function-response-result" className="truc-text">
           {part.functionResponse?.name + ' -> '}
           {result ? JSON.stringify(result, null, 2) : 'null'}
         </span>

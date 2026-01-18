@@ -179,32 +179,104 @@ test.describe('Greeting Agent Chat Page', () => {
 
     await expect(page.getByTestId('page-chat-section')).toBeVisible()
     await expect(page.getByTestId(`page-title`)).not.toBeVisible()
-    await expect(page.getByTestId('page-chat-0-part-loading')).toBeVisible()
-
     await expect(page.getByTestId('page-chat-0-part-0')).toBeVisible()
 
     await expect(
       page.getByTestId('page-chat-0-part-0').getByTestId('chat-text'),
     ).toHaveText(truncatedPrompt)
 
-    await expect(page.getByTestId('page-chat-1-part-0')).toBeVisible()
-    await expect(
-      page.getByTestId('page-chat-1-part-0').getByTestId('chat-function-call'),
-    ).toHaveText('say_hello')
-
-    await expect(page.getByTestId('page-chat-2-part-0')).toBeVisible()
+    await expect(page.getByTestId('page-chat-1-part-loading')).toBeVisible()
     await expect(
       page
-        .getByTestId('page-chat-2-part-0')
-        .getByTestId('chat-function-response'),
+        .getByTestId('page-chat-1-part-loading')
+        .getByTestId('loading-indicator'),
+    ).toBeVisible()
+
+    await expect(
+      page
+        .getByTestId('page-chat-1-part-loading')
+        .getByTestId('chat-loading-toggle'),
+    ).toBeVisible()
+    await page
+      .getByTestId('page-chat-1-part-loading')
+      .getByTestId('chat-loading-toggle')
+      .click()
+    await expect(
+      page
+        .getByTestId('page-chat-1-part-loading')
+        .getByTestId('page-chat-1-part-0'),
+    ).toBeVisible()
+
+    await expect(
+      page
+        .getByTestId('page-chat-1-part-loading')
+        .getByTestId('page-chat-1-part-0')
+        .getByTestId('chat-function-call-name'),
     ).toHaveText('say_hello')
 
-    await expect(page.getByTestId('page-chat-3-part-0')).toBeVisible({
+    await expect(
+      page
+        .getByTestId('page-chat-1-part-loading')
+        .getByTestId('page-chat-1-part-0')
+        .getByTestId('chat-function-call-toggle'),
+    ).toBeVisible()
+
+    await page
+      .getByTestId('page-chat-1-part-loading')
+      .getByTestId('page-chat-1-part-0')
+      .getByTestId('chat-function-call-toggle')
+      .click()
+
+    await expect(
+      page
+        .getByTestId('page-chat-1-part-loading')
+        .getByTestId('page-chat-1-part-0')
+        .getByTestId('chat-function-call-args'),
+    ).toHaveText('say_hello()')
+
+    await expect(
+      page
+        .getByTestId('page-chat-1-part-loading')
+        .getByTestId('page-chat-1-part-1'),
+    ).toBeVisible()
+
+    await expect(
+      page
+        .getByTestId('page-chat-1-part-loading')
+        .getByTestId('page-chat-1-part-1')
+        .getByTestId('chat-function-response-name'),
+    ).toHaveText('say_hello')
+
+    await expect(
+      page
+        .getByTestId('page-chat-1-part-loading')
+        .getByTestId('page-chat-1-part-1')
+        .getByTestId('chat-function-response-toggle'),
+    ).toBeVisible()
+
+    await page
+      .getByTestId('page-chat-1-part-loading')
+      .getByTestId('page-chat-1-part-1')
+      .getByTestId('chat-function-response-toggle')
+      .click()
+
+    await expect(
+      page
+        .getByTestId('page-chat-1-part-loading')
+        .getByTestId('page-chat-1-part-1')
+        .getByTestId('chat-function-response-result'),
+    ).toBeVisible()
+
+    await expect(page.getByTestId('page-chat-2-part-0')).toBeVisible({
       timeout: 10000,
     })
-    await expect(page.getByTestId('page-chat-0-part-loading')).not.toBeVisible()
     await expect(
-      page.getByTestId('page-chat-3-part-0').getByTestId('chat-text'),
+      page
+        .getByTestId('page-chat-1-part-loading')
+        .getByTestId('loading-indicator'),
+    ).not.toBeVisible()
+    await expect(
+      page.getByTestId('page-chat-2-part-0').getByTestId('chat-text'),
     ).toBeVisible()
 
     // Copy Prompt Test
@@ -244,11 +316,11 @@ test.describe('Greeting Agent Chat Page', () => {
 
     //Positive Feedback Test
     await expect(
-      page.getByTestId('page-chat-3-part-0').getByTestId('thumbs-up-button'),
+      page.getByTestId('page-chat-2-part-0').getByTestId('thumbs-up-button'),
     ).toBeVisible()
 
     await page
-      .getByTestId('page-chat-3-part-0')
+      .getByTestId('page-chat-2-part-0')
       .getByTestId('thumbs-up-button')
       .click()
 
@@ -258,7 +330,7 @@ test.describe('Greeting Agent Chat Page', () => {
 
     //Negative Feedback test
     await page
-      .getByTestId('page-chat-3-part-0')
+      .getByTestId('page-chat-2-part-0')
       .getByTestId('thumbs-down-button')
       .click()
 
@@ -280,11 +352,11 @@ test.describe('Greeting Agent Chat Page', () => {
 
     //Negative Feedback other test
     await page
-      .getByTestId('page-chat-3-part-0')
+      .getByTestId('page-chat-2-part-0')
       .getByTestId('thumbs-down-button')
       .click()
     await page
-      .getByTestId('page-chat-3-part-0')
+      .getByTestId('page-chat-2-part-0')
       .getByTestId('thumbs-down-button')
       .click()
     await expect(page.getByTestId(`feedback-category-other`)).toBeVisible()
@@ -300,7 +372,7 @@ test.describe('Greeting Agent Chat Page', () => {
 
     //Copy Response test
     await page
-      .getByTestId('page-chat-3-part-0')
+      .getByTestId('page-chat-2-part-0')
       .getByTestId('copy-button')
       .click()
     const handle2 = await page.evaluateHandle(() =>
@@ -308,18 +380,18 @@ test.describe('Greeting Agent Chat Page', () => {
     )
     const clipboardContent2 = await handle2.jsonValue()
     const responseContent = await page
-      .getByTestId('page-chat-3-part-0')
+      .getByTestId('page-chat-2-part-0')
       .getByTestId('chat-text')
       .innerText()
     expect(responseContent).toEqual(clipboardContent2?.trim())
 
     //Redo Button test
     await page
-      .getByTestId('page-chat-3-part-0')
+      .getByTestId('page-chat-2-part-0')
       .getByTestId('redo-button')
       .click()
     await expect(
-      page.getByTestId('page-chat-7-part-0').getByTestId('chat-text'),
+      page.getByTestId('page-chat-5-part-0').getByTestId('chat-text'),
     ).toBeVisible({ timeout: 10000 })
 
     // New Chat Button
@@ -340,8 +412,9 @@ test.describe('Greeting Agent Chat Page', () => {
     await submit.click()
     await expect(page.getByTestId('page-chat-section')).toBeVisible()
     await expect(page.getByTestId(`page-title`)).not.toBeVisible()
-    await expect(page.getByTestId('page-chat-0-part-loading')).toBeVisible()
-    await expect(page.getByTestId('page-chat-3-part-0')).toBeVisible()
+    await expect(page.getByTestId('page-chat-0-part-0')).toBeVisible()
+    await expect(page.getByTestId('page-chat-1-part-loading')).toBeVisible()
+    await expect(page.getByTestId('page-chat-2-part-0')).toBeVisible()
     await expect(submit).toBeVisible()
 
     //Session History Test
@@ -356,7 +429,7 @@ test.describe('Greeting Agent Chat Page', () => {
     await page.getByTestId(`session-history-1`).click()
 
     await expect(
-      page.getByTestId('page-chat-7-part-0').getByTestId('chat-text'),
+      page.getByTestId('page-chat-5-part-0').getByTestId('chat-text'),
     ).toBeVisible({ timeout: 10000 })
 
     //Delete Session History Test
@@ -419,8 +492,8 @@ test.describe('Greeting Agent Chat Page', () => {
     await submit.click()
     await expect(page.getByTestId('page-chat-section')).toBeVisible()
     await expect(page.getByTestId(`page-title`)).not.toBeVisible()
-    await expect(page.getByTestId('page-chat-0-part-loading')).toBeVisible()
-    await expect(page.getByTestId('page-chat-1-part-0')).toBeVisible()
+    await expect(page.getByTestId('page-chat-1-part-loading')).toBeVisible()
+    await expect(page.getByTestId('page-chat-2-part-0')).toBeVisible()
     await expect(submit).toBeVisible()
     await expect(page.getByTestId('chat-file-temp-test-file.txt')).toBeVisible()
     await expect(
@@ -441,7 +514,7 @@ test.describe('Greeting Agent Chat Page', () => {
     await submit.click()
     await expect(page.getByTestId('page-chat-section')).toBeVisible()
     await expect(page.getByTestId(`page-title`)).not.toBeVisible()
-    await expect(page.getByTestId('page-chat-0-part-loading')).toBeVisible()
+    await expect(page.getByTestId('page-chat-1-part-loading')).toBeVisible()
     await expect(page.getByTestId('page-chat-2-part-artifacts')).toBeVisible()
     await expect(page.getByTestId('page-chat-3-part-0')).toBeVisible()
     await expect(page.getByTestId('chat-file-my-csv.csv')).toBeVisible()
@@ -465,13 +538,13 @@ test.describe('Greeting Agent Chat Page', () => {
     await expect(page.getByTestId('page-chat-0-part-0')).toBeVisible({
       timeout: 30000,
     })
-    await expect(page.getByTestId('page-chat-0-part-loading')).toBeVisible()
+    await expect(page.getByTestId('page-chat-1-part-loading')).toBeVisible()
     await page.getByTestId('page-prompt-input-cancel').click()
-    await expect(page.getByTestId('page-chat-1-part-0')).toBeVisible({
+    await expect(page.getByTestId('page-chat-2-part-0')).toBeVisible({
       timeout: 10000,
     })
     await expect(
-      page.getByTestId('page-chat-1-part-0').getByTestId('chat-text'),
+      page.getByTestId('page-chat-2-part-0').getByTestId('chat-text'),
     ).toHaveText('You stopped this response')
 
     //Error Response Test
@@ -488,7 +561,7 @@ test.describe('Greeting Agent Chat Page', () => {
     await expect(page.getByTestId('page-chat-0-part-0')).toBeVisible({
       timeout: 10000,
     })
-    await expect(page.getByTestId('page-chat-0-part-loading')).toBeVisible()
+    await expect(page.getByTestId('page-chat-1-part-loading')).toBeVisible()
     await expect(page.getByTestId('page-chat-2-part-0')).toBeVisible({
       timeout: 30000,
     })

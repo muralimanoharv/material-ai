@@ -83,6 +83,16 @@ export class ChatService {
           parts: chatParts,
         },
         prompt,
+        id: `${new Date().getTime()}`,
+        loading_id: id,
+        chat_history: [],
+      })
+      this.historyService.add_history({
+        content: {
+          role: 'model',
+          parts: [],
+        },
+        prompt,
         id,
         loading: true,
         loading_message: '',
@@ -255,7 +265,10 @@ export class ChatService {
       if (!invokation_id_map.has(invocationId)) {
         invokation_id_map.set(invocationId, [])
       }
-      invokation_id_map.get(invocationId)?.push(event)
+      const role = does_chat_has_func(event) ? 'model' : event.content.role
+      invokation_id_map
+        .get(invocationId)
+        ?.push({ ...event, content: { ...event.content, role } })
     }
     this.historyService.clear_history()
     for (const id of invokation_id_map.keys()) {

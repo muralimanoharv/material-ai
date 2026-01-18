@@ -25,7 +25,6 @@ export default function ChatSection({
 }) {
   const context = useContext(AppContext) as AppContextType
   const history = useMemo(() => context.history, [context.history])
-
   return (
     <ChatSectionContext.Provider value={{ mfeMarkdownJsonRenderer }}>
       <Box
@@ -57,7 +56,7 @@ export default function ChatSection({
           }}
         >
           {history
-            .filter((chat) => !does_chat_has_func(chat))
+            .filter((chat) => !does_chat_has_func(chat, true))
             .map((chat, idx) => {
               return <ChatItemSection chat={chat} chatIdx={idx} key={chat.id} />
             })}
@@ -132,6 +131,8 @@ function ChatItemSection(props: ChatItemSectionProps) {
 
   return (
     <ChatItemContext.Provider value={chatContext} key={chat.id}>
+      <ChatLoading />
+      <ChatArtifactSection />
       <React.Fragment key={chat.id}>
         {parts.map((part, idx) => {
           return (
@@ -143,8 +144,6 @@ function ChatItemSection(props: ChatItemSectionProps) {
           )
         })}
       </React.Fragment>
-      <ChatArtifactSection />
-      <ChatLoading />
     </ChatItemContext.Provider>
   )
 }

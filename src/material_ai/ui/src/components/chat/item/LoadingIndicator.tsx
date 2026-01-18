@@ -19,7 +19,10 @@ function GradientSVG() {
 
 function LoadingIndicator(): React.JSX.Element {
   return (
-    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+    <Box
+      data-testid="loading-indicator"
+      sx={{ position: 'relative', display: 'inline-flex' }}
+    >
       <GradientSVG />
       <CircularProgress
         variant="indeterminate"
