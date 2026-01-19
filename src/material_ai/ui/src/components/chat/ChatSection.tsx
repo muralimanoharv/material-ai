@@ -166,7 +166,7 @@ function ChatItemSectionBody({ part, partIdx }: ChatItemSectionBodyProps) {
   // 4. Handle "Hidden" JSON Metadata (User Files)
   // We check if text exists and is valid JSON
   if (part.text && isValidJson(part.text) && JSON.parse(part.text)?.fileNames) {
-    return <ChatUserFiles partIdx={partIdx} part={part} />
+    return <ChatUserFiles part={part} />
   }
 
   // 5. Default: Render Text Message

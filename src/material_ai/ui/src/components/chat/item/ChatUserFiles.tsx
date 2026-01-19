@@ -6,7 +6,6 @@ import type { ChatPart, InlineData } from '../../../schema'
 
 interface ChatUserFilesProps {
   part: ChatPart
-  partIdx: number
 }
 
 export interface UploadedFile {
@@ -17,7 +16,7 @@ export interface UploadedFile {
 }
 
 // 2. Component
-function ChatUserFiles({ part, partIdx }: ChatUserFilesProps) {
+function ChatUserFiles({ part }: ChatUserFilesProps) {
   const { chat } = useContext(ChatItemContext) as unknown as ChatItemContextType
 
   // Memoize the heavy lifting: parsing JSON and mapping arrays
@@ -66,7 +65,7 @@ function ChatUserFiles({ part, partIdx }: ChatUserFilesProps) {
   if (!files) return null
 
   return (
-    <ChatItemWrapper partIdx={`${partIdx}`} alignment="flex-end">
+    <ChatItemWrapper partIdx="artifacts" alignment="flex-end">
       <FilesBox
         alignSelf={'flex-start'}
         justifyContent={'flex-start'}
