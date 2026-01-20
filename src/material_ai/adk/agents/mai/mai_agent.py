@@ -95,8 +95,10 @@ class MaiAgent(Agent):
         - Use the UINode to build props for charts some examples are provided below
         - You can build all the charts using the <Chart /> component.
         - Always make sure `Chart` component is always inside a `Grid` and takes full width i.e xs=12, unless specified
-        - Make sure to give the chart a decent height like around 400px so that it looks good on UI.
-        - Make sure width is always equal to '100%' we dont want any horizontal scroll due to fixed width
+        - Make sure to give the chart a decent width & height so that it looks good on UI.
+        - If the output is single chart I want you to render the chart within a Grid with xs=12
+        - If the output has 2 charts i want you to render them with Grid with 2 items each with xs = 6
+        - Basically each row mush have at the most 2 charts 
     """)
 
     # 4. FEW-SHOT EXAMPLES (The Truth)

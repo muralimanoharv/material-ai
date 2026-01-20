@@ -108,7 +108,7 @@ class Nl2SqlAgent(LlmAgent):
         - Formulate a plan for the SQL structure before moving to execution. 
         
         STEP 4: GENERATE & EXECUTE
-        - Write a valid SQLite query using the verified schema.
+        - Write a valid SQL query using the verified schema.
         - Call the `query` method to execute it and return the results.
 
         CRITICAL: Only respond after you got the resutls from `query` method, Do 

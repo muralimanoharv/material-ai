@@ -10,9 +10,10 @@ SQLITE_URL = "sqlite:///sports_analytics.db"
 data_retriever = Nl2SqlAgent(
     name="data_retriever",
     db_url=SQLITE_URL,
-    model="gemini-2.0-flash",
+    model="gemini-3-flash-preview",
     additional_instructions="""
         CRITICAL: Provide a high level overview of what sort of data you received.
+        Keep it simple and in paragraph style no need of any markdown text
     """,
     additional_column_instructions={
         "users": {"gender": "Only Values 'Male', 'Non-binary', 'Female'"}
