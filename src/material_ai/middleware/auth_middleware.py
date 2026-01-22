@@ -11,6 +11,10 @@ from material_ai.oauth import (
     oauth_user_details_context,
 )
 from material_ai.exec import UnauthorizedException
+from material_ai.middleware.app_header_middleware import (
+    EXCLUDED_PREFIXES,
+    EXCLUDED_UI_ASSETS,
+)
 from material_ai.auth import verify_user_details, _remove_cookies
 
 _logger = logging.getLogger(__name__)
@@ -25,18 +29,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request, call_next):
         route = request.url.path
-        EXCLUDED_PATHS = [
-            "/",
-            "/login",
-            "/health",
-            "/config",
-            "/auth",
-            "/icon.svg",
-            "/favicon.ico",
-            "/.well-known/appspecific/com.chrome.devtools.json",
-            "/gemini.svg",
-        ]
-        EXCLUDED_PREFIXES = ["/assets/"]
+        EXCLUDED_PATHS = ["/login", "/health", "/config", "/auth", *EXCLUDED_UI_ASSETS]
         is_excluded_path = route in EXCLUDED_PATHS or any(
             route.startswith(prefix) for prefix in EXCLUDED_PREFIXES
         )

@@ -5,7 +5,7 @@ from .app import get_endpoint_function, get_agent_loader
 from google.adk.cli.adk_web_server import Session
 from google.adk.agents import LlmAgent
 from datetime import datetime, timezone
-from fastapi import APIRouter, Response, Request, Cookie, status, Depends
+from fastapi import APIRouter, Response, Request, Cookie, status, Depends, Query
 from fastapi.responses import FileResponse, RedirectResponse
 from .exec import UnauthorizedException
 from .request import FeedbackRequest
@@ -104,7 +104,9 @@ async def logout(
     },
 )
 async def login(
-    request: Request, oauth_service: IOAuthService = Depends(get_oauth_service)
+    request: Request,
+    oauth_service: IOAuthService = Depends(get_oauth_service),
+    redirect: str | None = Query(default=None),
 ):
     """
     Redirects the user to OAuth 2.0 server for authentication.
@@ -112,8 +114,10 @@ async def login(
     # Generate a secure state token
     state, redirect_url = get_redirection_url(oauth_service)
     request.session["oauth_state"] = state
+    if redirect:
+        request.session["redirect"] = redirect
     _logger.debug(
-        f"DEBUG: Redirecting to OAuth provider with oauth_state token with value: {state}"
+        f"DEBUG: Redirecting to OAuth provider with oauth_state token with value: {state}, redirect: {redirect}"
     )
     return RedirectResponse(url=redirect_url)
 
@@ -149,6 +153,8 @@ async def user(
         return UserSuccessResponse(
             user_response=OAuthUserDetail(**json.loads(verified_user_details))
         )
+    if refresh_token is None:
+        raise UnauthorizedException()
 
     return await get_user_details(response, refresh_token, oauth_service)
 
@@ -177,12 +183,13 @@ async def callback(
     Handles the callback from OAuth2.0 after user authentication.
     """
     stored_state = request.session.get("oauth_state")
+    redirect = request.session.get("redirect")
     if not stored_state or stored_state != state:
         _logger.error(
             f"ERROR: Session missmatch stored state: {stored_state}, not same as state: {state}"
         )
         return Response(status_code=403)
-    return await on_callback(code, oauth_service)
+    return await on_callback(code, oauth_service, redirect)
 
 
 @router.get(

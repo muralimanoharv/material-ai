@@ -238,7 +238,7 @@ async def get_user_details(
 
 
 async def on_callback(
-    authorization_code: str, oauth_service: IOAuthService
+    authorization_code: str, oauth_service: IOAuthService, redirect: str | None
 ) -> Response:
     """Handles the OAuth 2.0 callback after a user authorizes the application.
 
@@ -269,7 +269,11 @@ async def on_callback(
     if isinstance(oauth_response, OAuthErrorResponse):
         raise HTTPException(status_code=500)
 
-    response = RedirectResponse(url="/", status_code=302)
+    url = "/"
+    if redirect:
+        url = f"/#{redirect}"
+
+    response = RedirectResponse(url, status_code=302)
 
     _set_oauth_token_cookies(response, oauth_response)
 

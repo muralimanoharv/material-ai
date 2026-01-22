@@ -99,6 +99,11 @@ class MaiAgent(Agent):
         - If the output is single chart I want you to render the chart within a Grid with xs=12
         - If the output has 2 charts i want you to render them with Grid with 2 items each with xs = 6
         - Basically each row mush have at the most 2 charts 
+                                          
+        **Headings**
+        - Make sure all headings like h1,h2,h3,h4,h5,h6 tags take complete row within a Grid ie xs=12
+        - For charts make sure we first give a heading in full width in one row and in next row we want the chart 
+                                          
     """)
 
     # 4. FEW-SHOT EXAMPLES (The Truth)
@@ -108,6 +113,7 @@ class MaiAgent(Agent):
           {
             "componentName": "Card",
             "variant": "outlined",
+            "data-testid": "user-profile-card"
             "style": {
               "marginBottom": "16px"
             },
@@ -152,6 +158,7 @@ class MaiAgent(Agent):
                         "componentName": "TextField",
                         "label": "Email Address",
                         "name": "email",
+                        "data-testid": "email-input"
                         "fullWidth": true
                       }
                     ]
@@ -165,6 +172,7 @@ class MaiAgent(Agent):
                         "componentName": "Button",
                         "type": "submit",
                         "children": "Login"
+                        "data-testid": "submit-button"
                       }
                     ]
                   }
@@ -189,6 +197,7 @@ class MaiAgent(Agent):
           ```json
           {
             "componentName": "Chart",
+            "data-testid": "bar-chart"
             "type": "bar",
             "options": {
               "responsive": true,
@@ -234,6 +243,9 @@ class MaiAgent(Agent):
             "```json\n"
             "JSON HERE\n"
             "ALSO ONCE THE JSON IS GENERATED, DO PROPERY VERFICATION IF THE GENERATED JSON IS VALID\n"
+            "WE ALSO WANT TO ADD 'data-testid' TO ALL COMPONENTS. \n"
+            "For Charts, we want the datatest-id to be the \n"
+            "name of the chart. For example if you render a bar chart makesure you add data-testid='bar-chart'\n"
             "```"
         )
 
