@@ -32,6 +32,7 @@ export default function UserAvatar() {
     <>
       <Tooltip title={user.given_name || 'User'}>
         <IconButton
+          data-testid="user-profile-button"
           id="user-profile-button"
           aria-controls={open ? 'user-profile-menu' : undefined}
           aria-haspopup="true"
@@ -61,6 +62,7 @@ export default function UserAvatar() {
         }}
       >
         <Box
+          data-testid="user-profile-menu"
           sx={{
             display: 'flex',
             flexDirection: 'column',
@@ -82,10 +84,13 @@ export default function UserAvatar() {
               flexGrow={1}
               fontWeight={700}
               variant="h5"
+              data-testid="user-email"
             >
               <b>{user.email}</b>
             </Typography>
             <IconButton
+              aria-label="close"
+              data-testid="user-profile-close"
               sx={{ position: 'absolute', right: 10 }}
               onClick={handleClose}
             >
@@ -106,7 +111,7 @@ export default function UserAvatar() {
               alt={user.given_name}
               src={user.picture}
             />
-            <Typography fontSize={'22px'} variant="h1">
+            <Typography fontSize={'22px'} variant="h1" data-testid="user-name">
               Hi, {user.given_name}!
             </Typography>
             <Box>

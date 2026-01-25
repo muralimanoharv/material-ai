@@ -24,6 +24,7 @@ export default function SignoutButton() {
 
   return (
     <Button
+      data-testid="signout-button"
       onClick={handleSignOut}
       color="inherit"
       variant="contained"

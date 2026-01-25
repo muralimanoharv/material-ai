@@ -171,9 +171,7 @@ async def remove_token(
         _remove_cookies(response)
         return
     auth = oauth_service
-    oauth_response = await auth.sso_revoke_refresh_token(refresh_token)
-    if isinstance(oauth_response, OAuthErrorResponse):
-        raise HTTPException(status_code=500)
+    await auth.sso_revoke_refresh_token(refresh_token)
     _remove_cookies(response)
     return response
 

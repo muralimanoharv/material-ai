@@ -1,5 +1,5 @@
 import { expect, type Page } from '@playwright/test'
-import { type Agent, type AppConfig } from '../src/schema'
+import { User, type Agent, type AppConfig, type Health } from '../src/schema'
 export class AutomationService {
   constructor(
     private page: Page,
@@ -79,13 +79,21 @@ export class AutomationService {
     await promptInput.fill('')
   }
 
-  async check_chat_item_box(chat: number, part: number, prompt?: string) {
+  async check_chat_item_box(
+    chat: number,
+    part: number,
+    options?: {
+      timeout?: number
+      prompt?: string
+    },
+  ) {
     const page = this.page
     const id = `page-chat-${chat}-part-${part}`
+    const prompt = options?.prompt || ''
     await expect(page.getByTestId('page-chat-section')).toBeVisible()
     await expect(page.getByTestId(`page-title`)).not.toBeVisible()
     await expect(page.getByTestId(id)).toBeVisible({
-      timeout: 30000,
+      timeout: options?.timeout || 30000,
     })
     expect(page.getByTestId(id).getByTestId('chat-text')).toBeVisible()
     if (!prompt) return
@@ -186,7 +194,7 @@ export class AutomationService {
     const id = `page-chat-${chat}-part-${part}`
     const truncatedPrompt =
       prompt.length >= 116 ? `${prompt.substring(0, 116)}...` : prompt
-    await this.check_chat_item_box(chat, part, truncatedPrompt)
+    await this.check_chat_item_box(chat, part, { prompt: truncatedPrompt })
     await page.getByTestId(id).getByTestId('user-text-toggle-button').click()
     await expect(page.getByTestId(id).getByTestId('chat-text')).toHaveText(
       prompt,
@@ -389,10 +397,11 @@ export class AutomationService {
       }
       part = part + 1
     }
+    await page.getByTestId(id).getByTestId('chat-loading-toggle').click()
   }
 }
 
-export async function check_config(page: Page) {
+export async function check_config(page: Page): Promise<AppConfig> {
   await page.goto('/')
   await expect(page.getByTestId('agents-page-header')).toBeVisible()
   const response = await page.context().request.get('/config')
@@ -402,7 +411,16 @@ export async function check_config(page: Page) {
   return config
 }
 
-export async function check_agents(page: Page) {
+export async function check_health(page: Page): Promise<Health> {
+  await page.goto('/')
+  const response = await page.context().request.get('/health')
+  expect(response.ok()).toBeTruthy()
+  expect(response.status()).toBe(200)
+  const health = await response.json()
+  return health
+}
+
+export async function check_agents(page: Page): Promise<Agent[]> {
   await page.goto('/')
   await expect(page.getByTestId('agents-page-header')).toBeVisible()
   const response = await page.context().request.get('/agents')
@@ -412,7 +430,7 @@ export async function check_agents(page: Page) {
   return agents
 }
 
-export async function check_user(page: Page) {
+export async function check_user(page: Page): Promise<User> {
   await page.goto('/')
   await expect(page.getByTestId('agents-page-header')).toBeVisible()
   const response = await page.context().request.get('/user')

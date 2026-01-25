@@ -16,6 +16,7 @@ export default function SigninButton({
 
   return (
     <Button
+      data-testid="signin-button"
       onClick={() => {
         window.location.href = `${HOST}/login?redirect=${location.pathname}`
       }}

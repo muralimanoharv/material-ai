@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { check_health } from './util'
 
 test('has title', async ({ page }) => {
   await page.goto('/')
@@ -76,4 +77,53 @@ test('should open the navigation drawer when the menu button is clicked', async 
 
   await expect(page.getByTestId('page-theme-dark-selected')).toBeVisible()
   await expect(targetElement).toHaveCSS('background-color', 'rgb(27, 28, 29)')
+})
+
+test('should check health dashboard', async ({ page }) => {
+  const health = await check_health(page)
+  const menuButton = page.getByTestId('page-menu-button').first()
+
+  await expect(menuButton).toBeVisible()
+
+  await menuButton.click()
+
+  await expect(page.getByTestId('drawer-signin-button')).toBeVisible()
+
+  const settingsButton = page.getByTestId('page-settings-button')
+  await expect(settingsButton).toBeVisible()
+
+  await settingsButton.click()
+
+  const healthButton = page.getByTestId('page-health-button')
+  await expect(healthButton).toBeVisible()
+
+  await healthButton.click()
+
+  const healthDashboard = page.getByTestId('health-dashboard')
+  const systemCard = healthDashboard.getByTestId('system-card')
+  const cpuCard = healthDashboard.getByTestId('cpu-card')
+  const memoryCard = healthDashboard.getByTestId('memory-card')
+  const storageCard = healthDashboard.getByTestId('storage-card')
+
+  await expect(healthDashboard).toBeVisible()
+  await expect(systemCard).toBeVisible()
+  await expect(memoryCard).toBeVisible()
+  await expect(cpuCard).toBeVisible()
+  await expect(storageCard).toBeVisible()
+
+  await expect(systemCard.getByTestId('app-name')).toBeVisible()
+  await expect(systemCard.getByTestId('app-name')).toHaveText(health.appName)
+  await expect(systemCard.getByTestId('app-version')).toBeVisible()
+  await expect(systemCard.getByTestId('app-version')).toHaveText(health.version)
+  await expect(systemCard.getByTestId('app-uptime')).toBeVisible()
+
+  await expect(cpuCard.getByTestId('cpu-usage')).toBeVisible()
+  await expect(cpuCard.getByTestId('cpu-chart')).toBeVisible()
+
+  await expect(memoryCard.getByTestId('memory-chart')).toBeVisible()
+  await expect(memoryCard.getByTestId('memory-percent')).toBeVisible()
+  await expect(memoryCard.getByTestId('memory-usage')).toBeVisible()
+
+  await expect(storageCard.getByTestId('storage-chart')).toBeVisible()
+  await expect(storageCard.getByTestId('storage-usage')).toBeVisible()
 })

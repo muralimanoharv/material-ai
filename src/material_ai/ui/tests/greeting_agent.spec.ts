@@ -120,7 +120,7 @@ test.describe('Greeting Agent Chat Page', () => {
     `
     await automationService.prompt(prompt)
 
-    await automationService.check_chat_item_box(0, 0, prompt)
+    await automationService.check_chat_item_box(0, 0, { prompt })
 
     await automationService.check_tool_call(1, [
       {
@@ -168,7 +168,7 @@ test.describe('Greeting Agent Chat Page', () => {
     const prompt_2 = `Hey what shall we do today`
     await automationService.prompt(prompt_2)
 
-    await automationService.check_chat_item_box(0, 0, prompt_2)
+    await automationService.check_chat_item_box(0, 0, { prompt: prompt_2 })
 
     await automationService.check_tool_call(1, [
       {
@@ -225,11 +225,9 @@ test.describe('Greeting Agent Chat Page', () => {
     await automationService.check_tool_call(1)
 
     await page.getByTestId('page-prompt-input-cancel').click()
-    await automationService.check_chat_item_box(
-      2,
-      0,
-      'You stopped this response',
-    )
+    await automationService.check_chat_item_box(2, 0, {
+      prompt: 'You stopped this response',
+    })
 
     //Error Response Test
     await automationService.new_chat()
@@ -238,10 +236,8 @@ test.describe('Greeting Agent Chat Page', () => {
     await automationService.prompt('error')
     await automationService.check_chat_item_box(0, 0)
     await automationService.check_tool_call(1)
-    await automationService.check_chat_item_box(
-      2,
-      0,
-      'Some error has occured, Please try again later',
-    )
+    await automationService.check_chat_item_box(2, 0, {
+      prompt: 'Some error has occured, Please try again later',
+    })
   })
 })

@@ -57,27 +57,26 @@ const HealthDashboard = ({ data }: { data: Health }) => {
     bgcolor: theme.palette.background.paper,
     borderRadius: 4,
     boxShadow: 'none',
-    overflow: 'hidden', // Prevents internal chart overflow
+    overflow: 'hidden',
     transition: 'background-color 0.2s ease-in-out',
     '&:hover': { bgcolor: theme.palette.background.cardHover },
   }
 
   return (
     <Box
+      data-testid="health-dashboard"
       sx={{
-        p: 0, // Removed initial box padding
+        p: 0,
         width: '100%',
-        overflowX: 'hidden', // Forces no horizontal scroll on the root
+        overflowX: 'hidden',
         bgcolor: theme.palette.background.default,
         minHeight: '100vh',
       }}
     >
-      {/* Container for content with responsive margins */}
       <Box sx={{ p: isMobile ? 2 : 4 }}>
         <Grid container spacing={isMobile ? 2 : 3} alignItems="stretch">
-          {/* Card 1: System Info */}
           <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-            <Card sx={cardStyle}>
+            <Card sx={cardStyle} data-testid="system-card">
               <CardContent>
                 <Stack
                   direction="row"
@@ -99,6 +98,7 @@ const HealthDashboard = ({ data }: { data: Health }) => {
                   </Typography>
                 </Stack>
                 <Typography
+                  data-testid="app-name"
                   variant={isMobile ? 'h6' : 'h5'}
                   sx={{ color: theme.palette.text.h5, fontWeight: 600, mb: 1 }}
                 >
@@ -117,6 +117,7 @@ const HealthDashboard = ({ data }: { data: Health }) => {
                     </Typography>
                     <Box sx={{ mt: 0.5 }}>
                       <Chip
+                        data-testid="app-version"
                         label={version}
                         size="small"
                         sx={{
@@ -136,6 +137,7 @@ const HealthDashboard = ({ data }: { data: Health }) => {
                     </Typography>
                     <Typography
                       variant="body2"
+                      data-testid="app-uptime"
                       sx={{
                         color: theme.palette.text.primary,
                         fontWeight: 500,
@@ -149,9 +151,8 @@ const HealthDashboard = ({ data }: { data: Health }) => {
             </Card>
           </Grid>
 
-          {/* Card 2: CPU Load */}
           <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-            <Card sx={cardStyle}>
+            <Card sx={cardStyle} data-testid="cpu-card">
               <CardContent>
                 <Typography
                   variant="overline"
@@ -163,6 +164,7 @@ const HealthDashboard = ({ data }: { data: Health }) => {
                   Compute Load
                 </Typography>
                 <Typography
+                  data-testid="cpu-usage"
                   variant={isMobile ? 'h4' : 'h3'}
                   sx={{
                     color: theme.palette.text.primary,
@@ -174,6 +176,7 @@ const HealthDashboard = ({ data }: { data: Health }) => {
                 </Typography>
                 <LinearProgress
                   variant="determinate"
+                  data-testid="cpu-chart"
                   value={system.cpu_percent_used}
                   sx={{
                     height: 10,
@@ -189,9 +192,8 @@ const HealthDashboard = ({ data }: { data: Health }) => {
             </Card>
           </Grid>
 
-          {/* Card 3: Memory Allocation */}
           <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-            <Card sx={cardStyle}>
+            <Card sx={cardStyle} data-testid="memory-card">
               <CardContent sx={{ textAlign: 'center' }}>
                 <Typography
                   variant="overline"
@@ -205,7 +207,6 @@ const HealthDashboard = ({ data }: { data: Health }) => {
                 >
                   Memory Allocation
                 </Typography>
-                {/* Fixed Height Wrapper to prevent ChartJS layout shifts */}
                 <Box
                   sx={{
                     height: 100,
@@ -216,6 +217,7 @@ const HealthDashboard = ({ data }: { data: Health }) => {
                 >
                   {memoryChartData && (
                     <Doughnut
+                      data-testid="memory-chart"
                       data={memoryChartData}
                       options={{
                         maintainAspectRatio: false,
@@ -233,6 +235,7 @@ const HealthDashboard = ({ data }: { data: Health }) => {
                     }}
                   >
                     <Typography
+                      data-testid="memory-percent"
                       variant="subtitle2"
                       sx={{
                         color: theme.palette.text.primary,
@@ -244,6 +247,7 @@ const HealthDashboard = ({ data }: { data: Health }) => {
                   </Box>
                 </Box>
                 <Typography
+                  data-testid="memory-usage"
                   variant="caption"
                   sx={{ color: theme.palette.text.tertiary }}
                 >
@@ -253,9 +257,8 @@ const HealthDashboard = ({ data }: { data: Health }) => {
             </Card>
           </Grid>
 
-          {/* Card 4: Storage */}
           <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-            <Card sx={cardStyle}>
+            <Card sx={cardStyle} data-testid="storage-card">
               <CardContent>
                 <Typography
                   variant="overline"
@@ -273,6 +276,7 @@ const HealthDashboard = ({ data }: { data: Health }) => {
                   sx={{ my: 1 }}
                 >
                   <Typography
+                    data-testid="storage-usage"
                     variant={isMobile ? 'h5' : 'h4'}
                     sx={{ color: theme.palette.text.primary, fontWeight: 500 }}
                   >
@@ -287,6 +291,7 @@ const HealthDashboard = ({ data }: { data: Health }) => {
                 </Stack>
                 <LinearProgress
                   variant="determinate"
+                  data-testid="storage-chart"
                   value={system.disk.percent_used}
                   sx={{
                     height: 10,
