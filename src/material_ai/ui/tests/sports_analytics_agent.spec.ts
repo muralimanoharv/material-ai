@@ -34,7 +34,7 @@ test('should query some charts to analyze sports data', async ({
   await automationService.check_subtitle(config.greeting)
 
   const prompts: string[] = [
-    // 'Give me a bar chart of what users gender vs their age',
+    'Give me a bar chart of what users gender vs their age',
     // 'Count of users grouped by fav_sport or gender as pie chart',
     // 'Give me count of user per city as bar chart',
     // 'Give me users per city  stacked by subscription_tier',
