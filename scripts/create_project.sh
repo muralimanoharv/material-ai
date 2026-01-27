@@ -674,6 +674,13 @@ def ${APP_FUNCTION}():
 
 ## 📦 Deployment
 
+This repository contains a production-ready Terraform configuration to deploy a containerized application to **Google Cloud Run**. The architecture is built on the **Principle of Least Privilege (PoLP)**, ensuring that no broad permissions are granted and no existing cloud infrastructure is modified.
+### Key Features
+
+* **Isolated Identity:** Creates a dedicated Service Account for the Cloud Run service with zero inherited permissions.
+* **Immutable & Idempotent:** Ensures that `terraform destroy` returns your GCP environment to its exact original state without leaving "orphan" permissions or modified shared resources.
+* **Zero Side-Effects:** Does not modify the default Compute Engine service account or existing IAM roles.
+
 This project uses a \`Makefile\` command to automate deployment.
 
 1.  **Permissions**: Make sure to run "chmod +x ./scripts/*.sh" and provide permissions to execute shell scripts
@@ -696,6 +703,10 @@ Next modify "scripts/deploy_crun.sh" to pass this env variable to terraform
 ./terraform apply \
   -var="custom_env_variable=hello world"
 
+
+5. Teardown the Application
+Once your ".env" file is configured, run the following command to teardown the application:
+make teardown
 -----
 
 ## 🤝 Contributing & Support

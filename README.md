@@ -398,6 +398,12 @@ For example, try a prompt like: *"Create a professional color palette for a web 
 ---
 
 ## Deployment 🚀
+This repository contains a production-ready Terraform configuration to deploy a containerized application to **Google Cloud Run**. The architecture is built on the **Principle of Least Privilege (PoLP)**, ensuring that no broad permissions are granted and no existing cloud infrastructure is modified.
+### Key Features
+
+* **Isolated Identity:** Creates a dedicated Service Account for the Cloud Run service with zero inherited permissions.
+* **Immutable & Idempotent:** Ensures that `terraform destroy` returns your GCP environment to its exact original state without leaving "orphan" permissions or modified shared resources.
+* **Zero Side-Effects:** Does not modify the default Compute Engine service account or existing IAM roles.
 
 This project is deployed using a `Makefile` command that automates the build and deployment process.
 
@@ -420,6 +426,8 @@ Once your `.env` file is configured, run the following command to teardown the a
 ```bash
 make teardown
 ```
+
+This will ensure your cloud environment is returned to its original state:
 
 ### 4\. Steps to add additional roles to cloud run service account
 In order to add additional permissions to cloud run service account you
