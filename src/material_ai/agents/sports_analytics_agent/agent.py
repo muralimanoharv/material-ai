@@ -15,7 +15,7 @@ data_retriever = Nl2SqlAgent(
         CRITICAL: Provide a high level overview of what sort of data you received.
         Keep it simple and in paragraph style no need of any markdown text
 
-        CRITICAL: DO NOT ADD SEMI COLON TO SQL QUERIES AND ALWAYS USE "COUNT" IN SQL QUERY TO BE UPPERCASE
+        CRITICAL: DO NOT ADD SEMI COLON TO SQL QUERIES AND ALWAYS USE "COUNT(*)" IN SQL QUERY TO BE UPPERCASE AND COUNT ROWS
     """,
     additional_column_instructions={
         "users": {"gender": "Only Values 'Male', 'Non-binary', 'Female'"}
