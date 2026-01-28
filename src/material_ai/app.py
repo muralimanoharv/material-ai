@@ -4,7 +4,7 @@ import os
 from typing import Optional, Mapping, Any
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.routing import APIRoute
-from google.adk.cli.fast_api import get_fast_api_app, AgentLoader
+from google.adk.cli.fast_api import AgentLoader
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -29,6 +29,30 @@ _logger = logging.getLogger(__name__)
 _app_instance: FastAPI | None = None
 _agent_loader: AgentLoader | None = None
 _lock = threading.Lock()
+# ####################### This is temp #######################
+from pydantic_core import core_schema
+from pydantic._internal._generate_schema import GenerateSchema
+
+
+def _patched_unknown_type_schema(self, obj):
+    return core_schema.any_schema()
+
+
+GenerateSchema._unknown_type_schema = _patched_unknown_type_schema
+from pydantic.json_schema import GenerateJsonSchema
+from pydantic.errors import PydanticInvalidForJsonSchema
+
+
+def patched_handle_invalid_for_json_schema(self, schema, error_info):
+    return {"type": "object", "title": f"Unknown Type: {error_info}"}
+
+
+GenerateJsonSchema.handle_invalid_for_json_schema = (
+    patched_handle_invalid_for_json_schema
+)
+
+# ####################### This is temp #######################
+from google.adk.cli.fast_api import get_fast_api_app
 
 STATIC_DIR = f"{os.path.dirname(os.path.abspath(__file__))}/ui/dist"
 UI_CONFIG_YAML = f"{os.path.dirname(os.path.abspath(__file__))}/ui/ui_config.yaml"

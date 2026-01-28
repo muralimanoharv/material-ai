@@ -7,12 +7,12 @@ license = { text = "MIT" }
 requires-python = ">=3.13"
 dependencies = [
     "deprecated==1.2.18",
-    "fastapi[all]>=0.116.1",
-    "google-adk==1.17.0",
+    "google-adk==1.23.0",
     "psutil>=7.1.0",
     "python-json-logger>=3.3.0",
     "pyyaml>=6.0.3",
     "sqlalchemy-bigquery>=1.16.0",
+    "starlette[full]>=0.50.0",
 ]
 
 [project.urls]

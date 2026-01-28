@@ -33,22 +33,135 @@ test('should query some charts to analyze sports data', async ({
   await automationService.check_title(`Hello, ${user.given_name}`)
   await automationService.check_subtitle(config.greeting)
 
-  const prompts: string[] = [
-    'Give me a bar chart of what users gender vs their age',
-    // 'Count of users grouped by fav_sport or gender as pie chart',
-    // 'Give me count of user per city as bar chart',
-    // 'Give me users per city  stacked by subscription_tier',
-    // 'Give me grouped bar chart of stamina_score vs strength_score per gender',
-    // 'Give me a line chart of steps_count over time',
-    // 'Give me a steps_count and calories_burned as multi axis line chart',
-    // "Give me a radar chart of one user's row from user_stats (Stamina, Strength, Speed, etc.).",
-    // 'Give me scatter chart of age vs stamina_score',
-    // 'Give me a bubble chart of age (X) vs active_minutes (Y) vs calories_burned (Size).',
-    // 'Give me polar chart of Distribution of fav_sport frequency.',
-    // 'Give me gradient chart of Use active_minutes over time with a color scale based on intensity.'
+  const SECHMA_RESULT = `get_schema -> {
+  "result": [
+    {
+      "table_name": "sports_analytics",
+      "columns": [
+        {
+          "name": "uid",
+          "type": "INTEGER",
+          "nullable": true
+        },
+        {
+          "name": "first_name",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "last_name",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "age",
+          "type": "INTEGER",
+          "nullable": true
+        },
+        {
+          "name": "gender",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "favourite_sport",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "country",
+          "type": "TEXT",
+          "nullable": true
+        }
+      ],
+      "join_hints": []
+    }
+  ]
+}`
+
+  const prompts = [
+    {
+      prompt:
+        'What is the total number of users ? can you make sure you call the column "total_players"',
+      query: {
+        args: 'query(sql_query=SELECT COUNT(*) AS total_players FROM sports_analytics LIMIT 1000)',
+        result: `query -> {
+          "result": [
+            {
+              "total_players": 100
+            }
+          ]
+        }`,
+      },
+    },
+    {
+      prompt: `How many people are below the age of 50, give me with column name "age_below_50"`,
+      query: {
+        args: 'query(sql_query=SELECT COUNT(*) AS age_below_50 FROM sports_analytics WHERE age < 50 LIMIT 1000)',
+        result: `query -> {
+          "result": [
+            {
+              "age_below_50": 71
+            }
+          ]
+        }`,
+      },
+    },
+    {
+      prompt: `How many people are above the age of 50, give me with column name "age_above_50"`,
+      query: {
+        args: 'query(sql_query=SELECT COUNT(*) AS age_above_50 FROM sports_analytics WHERE age > 50 LIMIT 1000)',
+        result: `query -> {
+          "result": [
+            {
+              "age_above_50": 28
+            }
+          ]
+        }`,
+      },
+    },
+    {
+      prompt: `How many people are with age equal to 50, give me with column name "age_equal_50"`,
+      query: {
+        args: 'query(sql_query=SELECT COUNT(*) AS age_equal_50 FROM sports_analytics WHERE age = 50 LIMIT 1000)',
+        result: `query -> {
+          "result": [
+            {
+              "age_equal_50": 1
+            }
+          ]
+        }`,
+      },
+    },
+    {
+      prompt: `How many people are with age equal to 50, give me with column name "age_equal_50"`,
+      query: {
+        args: 'query(sql_query=SELECT COUNT(*) AS age_equal_50 FROM sports_analytics WHERE age = 50 LIMIT 1000)',
+        result: `query -> {
+          "result": [
+            {
+              "age_equal_50": 1
+            }
+          ]
+        }`,
+      },
+    },
+    {
+      prompt: `Give me uid as "player_id" of user whose first name is "Yuki" and last name "Zhang"`,
+      query: {
+        args: `query(sql_query=SELECT uid AS player_id FROM sports_analytics WHERE first_name = 'Yuki' AND last_name = 'Zhang' LIMIT 1000)`,
+        result: `query -> {
+          "result": [
+            {
+              "player_id": 23
+            }
+          ]
+        }`,
+      },
+    },
   ]
 
-  for (const prompt of prompts) {
+  for (const { prompt, query } of prompts) {
     let cum_index = 0
     await automationService.new_chat()
     await automationService.prompt(prompt)
@@ -57,16 +170,28 @@ test('should query some charts to analyze sports data', async ({
       {
         name: 'transfer_to_agent',
         args: 'transfer_to_agent(agent_name=sports_analytics_pipeline)',
+        result: `transfer_to_agent -> {
+          "result": null
+        }`,
       },
       {
         name: 'get_tables',
         args: 'get_tables()',
+        result: `get_tables -> {
+          "result": [
+            "sports_analytics"
+          ]
+        }`,
       },
       {
         name: 'get_schema',
+        args: 'get_schema(tables=sports_analytics)',
+        result: SECHMA_RESULT,
       },
       {
         name: 'query',
+        args: query.args,
+        result: query.result,
       },
     ])
     await automationService.check_chat_item_box(cum_index++, 0)

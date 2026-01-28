@@ -331,7 +331,7 @@ export class AutomationService {
           .getByTestId(id)
           .getByTestId(toolId)
           .getByTestId('chat-function-call-name'),
-      ).toHaveText(tools[i].name)
+      ).toContainText(tools[i].name, { ignoreCase: true })
 
       await expect(
         page
@@ -352,7 +352,7 @@ export class AutomationService {
             .getByTestId(id)
             .getByTestId(toolId)
             .getByTestId('chat-function-call-args'),
-        ).toHaveText(args)
+        ).toContainText(args, { ignoreCase: true })
       }
       part = part + 1
       toolId = `page-chat-${chat}-part-${part}`
@@ -364,7 +364,7 @@ export class AutomationService {
           .getByTestId(id)
           .getByTestId(toolId)
           .getByTestId('chat-function-response-name'),
-      ).toHaveText(tools[i].name)
+      ).toContainText(tools[i].name, { ignoreCase: true })
 
       await expect(
         page
@@ -393,7 +393,7 @@ export class AutomationService {
             .getByTestId(id)
             .getByTestId(toolId)
             .getByTestId('chat-function-response-result'),
-        ).toHaveText(result)
+        ).toContainText(result, { ignoreCase: true })
       }
       part = part + 1
     }

@@ -29,7 +29,15 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request, call_next):
         route = request.url.path
-        EXCLUDED_PATHS = ["/login", "/health", "/config", "/auth", *EXCLUDED_UI_ASSETS]
+        EXCLUDED_PATHS = [
+            "/login",
+            "/health",
+            "/config",
+            "/auth",
+            "/docs",
+            "/openapi.json",
+            *EXCLUDED_UI_ASSETS,
+        ]
         is_excluded_path = route in EXCLUDED_PATHS or any(
             route.startswith(prefix) for prefix in EXCLUDED_PREFIXES
         )

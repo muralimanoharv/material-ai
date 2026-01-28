@@ -115,6 +115,7 @@ class Nl2SqlAgent(LlmAgent):
         not return any response in between, If you got any error you can go back to root agent and inform the same
 
         CRITICAL: Always Use this "{limit}" FOR any query, we never ever want to query more than this.
+        IMPORTANT: WE ALWAYS WANT TO ADD LIMIT CLAUSE TO QUERY AS MENTIONED ABOVE WHATSOEVER
         {additional_instructions}
         """
 
