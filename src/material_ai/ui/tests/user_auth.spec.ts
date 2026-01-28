@@ -4,10 +4,8 @@ import {
   check_agents,
   check_config,
   check_user,
+  REFRESH_TOKEN,
 } from './util'
-
-// @ts-expect-error this error is due to node type not avaiable in playwright
-const REFRESH_TOKEN = process.env.REFRESH_TOKEN || ''
 
 test.describe('User Authentication', () => {
   test('should display logged in user details', async ({ page, baseURL }) => {

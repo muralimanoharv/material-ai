@@ -1,5 +1,9 @@
 import { expect, type Page } from '@playwright/test'
 import { User, type Agent, type AppConfig, type Health } from '../src/schema'
+
+// @ts-expect-error this error is due to node type not avaiable in playwright
+export const REFRESH_TOKEN = process.env.REFRESH_TOKEN || ''
+
 export class AutomationService {
   constructor(
     private page: Page,

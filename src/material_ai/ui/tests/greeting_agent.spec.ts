@@ -4,10 +4,8 @@ import {
   check_agents,
   check_config,
   check_user,
+  REFRESH_TOKEN,
 } from './util'
-
-// @ts-expect-error this error is due to node type not avaiable in playwright
-const REFRESH_TOKEN = process.env.REFRESH_TOKEN || ''
 
 test.use({ permissions: ['clipboard-read', 'clipboard-write'] })
 
@@ -237,7 +235,7 @@ test.describe('Greeting Agent Chat Page', () => {
     await automationService.check_chat_item_box(0, 0)
     await automationService.check_tool_call(1)
     await automationService.check_chat_item_box(2, 0, {
-      prompt: 'Some error has occured, Please try again later',
+      prompt: 'Error: Error: Tool execution timed out or failed',
     })
   })
 })

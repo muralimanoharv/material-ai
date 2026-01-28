@@ -11,6 +11,7 @@ dist
 htmlcov
 build/
 **/*tfvars
+**/.adk
 **/*.tfstate
 **/*.tfstate.backup
 **/.terraform

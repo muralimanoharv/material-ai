@@ -1,8 +1,10 @@
 import { test, expect } from '@playwright/test'
-import { AutomationService, check_config, check_user } from './util'
-
-// @ts-expect-error this error is due to node type not avaiable in playwright
-const REFRESH_TOKEN = process.env.REFRESH_TOKEN || ''
+import {
+  AutomationService,
+  check_config,
+  check_user,
+  REFRESH_TOKEN,
+} from './util'
 
 test('should query some charts to analyze sports data', async ({
   page,
