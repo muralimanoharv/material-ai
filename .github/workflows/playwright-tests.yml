@@ -87,6 +87,7 @@ jobs:
         run: npx playwright test --project=chromium
         env:
           CI: true
+          SSO_ISSUER: ${{ secrets.SSO_ISSUER }}
           SSO_CLIENT_ID: ${{ secrets.SSO_CLIENT_ID }}
           SSO_CLIENT_SECRET: ${{ secrets.SSO_CLIENT_SECRET }}
           SSO_REDIRECT_URI: ${{ secrets.SSO_REDIRECT_URI }}
