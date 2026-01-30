@@ -32,6 +32,7 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
         """
         Set up a clean app, client, and mock StaticFiles for each test.
         """
+        os.environ["SSO_ISSUER"] = "google"
         app_module._app_instance = None
 
         self.config_patch = patch("material_ai.app.get_config")
