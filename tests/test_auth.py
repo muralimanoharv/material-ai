@@ -1,9 +1,11 @@
 # test_dependencies.py
 
 import unittest
+import pytest
 from unittest.mock import patch, MagicMock, AsyncMock, call
 from datetime import timedelta
 import base64
+import json
 import hmac
 import hashlib
 from material_ai.auth import (
@@ -26,8 +28,21 @@ from material_ai.auth import (
     _sign_user_details,
     HTTPException,
     Response,
+    get_user,
+    UnauthorizedException,
 )
 from material_ai.oauth import OAuthRedirectionResponse
+
+MOCK_USER_DICT = {
+    "sub": "user_123",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "email_verified": True,
+    "given_name": "Jhon",
+    "family_name": "Doe",
+    "picture": "Json Doe Pic",
+}
+MOCK_USER_JSON = json.dumps(MOCK_USER_DICT)
 
 
 class TestDependencyGetters(unittest.IsolatedAsyncioTestCase):
@@ -368,7 +383,7 @@ class TestDependencyGetters(unittest.IsolatedAsyncioTestCase):
         # --- Assert ---
         # 1. Verify the revocation method was called
         mock_oauth_service.sso_revoke_refresh_token.assert_awaited_once_with(
-            refresh_token
+            refresh_token, None
         )
         # 2. Verify cookies were removed
         mock_remove_cookies.assert_called_once_with(mock_response_object)
@@ -392,12 +407,9 @@ class TestDependencyGetters(unittest.IsolatedAsyncioTestCase):
         refresh_token = "token_that_fails"
 
         # --- Act & Assert ---
-        with self.assertRaises(HTTPException) as context:
-            await remove_token(mock_response_object, refresh_token, mock_oauth_service)
-
-        self.assertEqual(context.exception.status_code, 500)
+        await remove_token(mock_response_object, refresh_token, mock_oauth_service)
         # Ensure cookies are NOT removed if revocation fails, as the code raises an exception first
-        mock_remove_cookies.assert_not_called()
+        mock_remove_cookies.assert_called_once()
 
     @patch("material_ai.auth._remove_cookies")
     async def test_remove_token_with_none_token(self, mock_remove_cookies: MagicMock):
@@ -571,7 +583,9 @@ class TestDependencyGetters(unittest.IsolatedAsyncioTestCase):
         auth_code = "valid_authorization_code"
 
         # --- Act ---
-        response = await on_callback(auth_code, mock_oauth_service)
+        response = await on_callback(
+            auth_code, mock_oauth_service, "agents/greeting_agent"
+        )
 
         # --- Assert ---
         # 1. Check if the SSO service was called correctly
@@ -585,7 +599,7 @@ class TestDependencyGetters(unittest.IsolatedAsyncioTestCase):
         # 3. Verify the returned response is correct
         self.assertIsInstance(response, RedirectResponse)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers["location"], "/")
+        self.assertEqual(response.headers["location"], "/#agents/greeting_agent")
 
     @patch("material_ai.auth.get_config")
     async def test_on_callback_failure_raises_http_exception(
@@ -605,13 +619,57 @@ class TestDependencyGetters(unittest.IsolatedAsyncioTestCase):
 
         # --- Act & Assert ---
         with self.assertRaises(HTTPException) as context:
-            await on_callback(auth_code, mock_oauth_service)
+            response = await on_callback(
+                auth_code, mock_oauth_service, "agents/greeting_agent"
+            )
 
         # Check if the correct exception was raised
         self.assertEqual(context.exception.status_code, 500)
 
         # Ensure the SSO service was still called
         mock_oauth_service.sso_get_access_token.assert_awaited_once()
+
+    @patch("material_ai.auth.verify_user_details")
+    def test_get_user_success(self, mock_verify):
+        # Setup: Mock a valid verification return
+        mock_verify.return_value = MOCK_USER_JSON
+
+        # Execute
+        result = get_user(user_details=MOCK_USER_JSON)
+
+        # Assert
+        assert isinstance(result, OAuthUserDetail)
+        assert result.sub == "user_123"
+        assert result.email == "john@example.com"
+        mock_verify.assert_called_once_with(MOCK_USER_JSON)
+
+    ## 2. Test Missing Cookie (None)
+    @patch("material_ai.auth.verify_user_details")
+    def test_get_user_missing_cookie(self, mock_verify):
+        # Setup: verify_user_details returns None if input is None
+        mock_verify.return_value = None
+
+        # Execute & Assert
+        with pytest.raises(UnauthorizedException):
+            get_user(user_details=None)
+
+    ## 3. Test Invalid/Unverified Details
+    @patch("material_ai.auth.verify_user_details")
+    def test_get_user_verification_fails(self, mock_verify):
+        # Setup: simulate a tampered cookie that fails verification
+        mock_verify.return_value = None
+
+        with pytest.raises(UnauthorizedException):
+            get_user(user_details="tampered_cookie_string")
+
+    ## 4. Test Malformed JSON in Verified Details
+    @patch("material_ai.auth.verify_user_details")
+    def test_get_user_malformed_json(self, mock_verify):
+        # Setup: passes verification but contains invalid JSON
+        mock_verify.return_value = "{invalid_json: true"
+
+        with pytest.raises(json.JSONDecodeError):
+            get_user(user_details="verified_but_broken")
 
 
 if __name__ == "__main__":

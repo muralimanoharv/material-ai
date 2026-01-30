@@ -88,7 +88,7 @@ class IOAuthService(ABC):
 
     @abstractmethod
     async def sso_revoke_refresh_token(
-        self, refresh_token: str
+        self, refresh_token: str, access_token: str
     ) -> None | OAuthErrorResponse:
         """Revokes a refresh token, invalidating it.
 
@@ -97,6 +97,7 @@ class IOAuthService(ABC):
 
         Args:
             refresh_token: The refresh token to be revoked.
+            access_token: The access token to be revoked
 
         Returns:
             None on successful revocation, or an OAuthErrorResponse

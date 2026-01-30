@@ -10,6 +10,7 @@ import {
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import SignoutButton from '../SignoutButton'
+import { getInitials } from '../../utils'
 
 export default function UserAvatar() {
   const { user } = useContext(AppContext) as AppContextType
@@ -45,7 +46,9 @@ export default function UserAvatar() {
             }}
             alt={user.given_name}
             src={user.picture}
-          />
+          >
+            {!user.picture && getInitials(user.name)}
+          </Avatar>
         </IconButton>
       </Tooltip>
       <Menu
@@ -91,7 +94,7 @@ export default function UserAvatar() {
             <IconButton
               aria-label="close"
               data-testid="user-profile-close"
-              sx={{ position: 'absolute', right: 10 }}
+              sx={{ position: 'absolute', right: 10, top: 1 }}
               onClick={handleClose}
             >
               <CloseIcon />
@@ -110,7 +113,9 @@ export default function UserAvatar() {
               sx={{ width: 70, height: 70 }}
               alt={user.given_name}
               src={user.picture}
-            />
+            >
+              {!user.picture && getInitials(user.name)}
+            </Avatar>
             <Typography fontSize={'22px'} variant="h1" data-testid="user-name">
               Hi, {user.given_name}!
             </Typography>

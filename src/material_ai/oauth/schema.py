@@ -1,5 +1,11 @@
 import pydantic
-from typing import Any
+from enum import Enum
+from typing import Any, Optional
+
+
+class IssuerType(str, Enum):
+    GOOGLE = "google"
+    AZURE = "azure"
 
 
 class StatusCodeAndDetail(pydantic.BaseModel):
@@ -22,7 +28,9 @@ class StatusCodeAndDetail(pydantic.BaseModel):
 class SSOConfig(pydantic.BaseModel):
     """Captures all environment variables for sso."""
 
+    issuer: IssuerType
     client_id: str
+    tenant_id: Optional[str]
     client_secret: str
     redirect_uri: str
     session_secret_key: str
@@ -35,8 +43,8 @@ class OAuthUserDetail(pydantic.BaseModel):
     name: str
     given_name: str
     family_name: str
-    picture: str
-    email: str
+    picture: Optional[str]
+    email: Optional[str]
     email_verified: bool
 
 

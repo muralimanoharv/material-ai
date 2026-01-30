@@ -3,7 +3,7 @@
 import unittest
 import os
 import json
-from unittest.mock import patch, MagicMock, AsyncMock, ANY, PropertyMock
+from unittest.mock import patch, MagicMock, AsyncMock, ANY, PropertyMock, call
 from fastapi import status
 from material_ai import FeedbackRequest
 from fastapi.testclient import TestClient
@@ -13,8 +13,12 @@ from material_ai.api import (
     get_oauth_service,
     get_ui_configuration,
     get_feedback_handler,
+    get_user,
+    user,
     UserSuccessResponse,
     OAuthUserDetail,
+    LlmAgent,
+    UnauthorizedException,
 )
 from material_ai.ui_config import UIConfig
 from material_ai.config import Config, SSOConfig, ADKConfig, GeneralConfig, GoogleConfig
@@ -49,6 +53,9 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
 
         # 2. Set up the rest of the app and client
         app = get_app(oauth_service=self.mock_oauth_service)
+        self.app = app
+        self.mock_user = MagicMock()
+        self.mock_user.sub = "user_123"
 
         self.cookies = {
             "refresh_token": "test_refresh_token",
@@ -60,6 +67,7 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
         self.mock_feedback_handler = AsyncMock()
         app.dependency_overrides[get_oauth_service] = lambda: self.mock_oauth_service
         app.dependency_overrides[get_ui_configuration] = lambda: self.mock_ui_config
+        app.dependency_overrides[get_user] = lambda: self.mock_user
         app.dependency_overrides[get_feedback_handler] = (
             lambda: self.mock_feedback_handler
         )
@@ -153,18 +161,43 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
         # --- Assert ---
         # Now the comparison 'stored_state != state' will work correctly
         # because stored_state will be "secret-csrf-token-123"
-        mock_session_object.get.assert_called_once_with("oauth_state")
-        mock_on_callback.assert_awaited_once_with(auth_code, self.mock_oauth_service)
+        expected_calls = [call("oauth_state"), call("redirect")]
+        mock_session_object.get.assert_has_calls(expected_calls, any_order=False)
+        mock_on_callback.assert_awaited_once_with(
+            auth_code, self.mock_oauth_service, test_state
+        )
 
-    def test_user_unauthorized_when_no_refresh_token(self, mock_get_config):
+    async def test_user_unauthorized_missing_refresh_token(self, mock_get_config):
         """
-        Tests that /user returns 401 Unauthorized if the refresh_token cookie is missing.
+        Directly tests the 'if refresh_token is None' branch
+        without using the FastAPI TestClient.
         """
+        # --- Arrange ---
+        # Mock the required parameters for the 'user' function
+        mock_response = MagicMock()  # For 'response: Response'
+        mock_oauth_service = MagicMock()  # For 'oauth_service: IOAuthService'
 
-        self.client.cookies = {"refresh_token": None}
+        # Scenario: user_details is None and refresh_token is None
+        user_details = None
+        refresh_token = None
+
+        # --- Act & Assert ---
+        # We expect the UnauthorizedException to be raised immediately
+        with self.assertRaises(UnauthorizedException):
+            await user(
+                response=mock_response,
+                user_details=user_details,
+                refresh_token=refresh_token,
+                oauth_service=mock_oauth_service,
+            )
+
+    def test_get_user_unauthorized_no_refresh_token(self, mock_get_config):
+        """Tests 401 when no user_details and no refresh_token are present."""
+        # No cookies provided
         response = self.client.get("/user")
 
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        # Should raise UnauthorizedException as seen in your code (line 58)
+        self.assertEqual(response.status_code, 401)
 
     @patch("material_ai.api.verify_user_details")
     def test_user_returns_details_from_cache_cookie(
@@ -256,6 +289,31 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(response.headers["location"], dummy_redirect_url)
 
+    @patch("material_ai.api.get_redirection_url")
+    def test_login_redirects_and_sets_state_with_ui_redirect(
+        self, mock_get_redirection_url, mock_get_config
+    ):
+        """
+        Tests that the /login endpoint correctly sets the session state
+        and returns a redirect response to the URL provided by its helper.
+        """
+
+        dummy_state = "test-csrf-state-token-123"
+        dummy_redirect = "/apps/greeting_agent"
+        dummy_redirect_url = "https://oauth.provider.com/auth?state=...&client_id=..."
+
+        mock_get_redirection_url.return_value = (dummy_state, dummy_redirect_url)
+
+        response = self.client.get(
+            f"/login?redirect={dummy_redirect}", follow_redirects=False
+        )
+
+        mock_get_redirection_url.assert_called_once_with(self.mock_oauth_service)
+
+        self.assertEqual(response.status_code, status.HTTP_307_TEMPORARY_REDIRECT)
+
+        self.assertEqual(response.headers["location"], dummy_redirect_url)
+
     @patch("material_ai.api.remove_token", new_callable=AsyncMock)
     async def test_logout_with_refresh_token(self, mock_remove_token, mock_get_config):
         """
@@ -276,7 +334,10 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
         # 5. Check that remove_token was called with the correct arguments.
         # We use ANY for the response object because it's created inside the endpoint.
         mock_remove_token.assert_awaited_once_with(
-            ANY, self.cookies["refresh_token"], self.mock_oauth_service
+            ANY,
+            self.cookies["refresh_token"],
+            self.mock_oauth_service,
+            self.cookies["access_token"],
         )
 
     @patch("material_ai.api.remove_token", new_callable=AsyncMock)
@@ -546,6 +607,219 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    @patch("material_ai.api.get_agent_loader")
+    def test_get_agent_ui_loader_not_found(self, mock_loader, mock_get_config):
+        """Takes self + 1 argument for 1 patch."""
+        mock_loader.return_value = None
+
+        response = self.client.get("/apps/my-app/ui")
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.text, "Agent directory not found")
+
+    @patch("material_ai.api.os.path.exists")
+    @patch("material_ai.api.get_agent_loader")
+    def test_get_agent_ui_file_not_found(
+        self, mock_loader, mock_exists, mock_get_config
+    ):
+        """Takes self + 2 arguments for 2 patches."""
+        mock_loader_instance = MagicMock()
+        mock_loader_instance.agents_dir = "/fake/dir"
+        mock_loader.return_value = mock_loader_instance
+        mock_exists.return_value = False
+
+        response = self.client.get("/apps/my-app/ui")
+
+        self.assertEqual(response.status_code, 404)
+        mock_exists.assert_called_once()
+
+    @patch("material_ai.api.FileResponse")
+    @patch("material_ai.api.os.path.exists")
+    @patch("material_ai.api.get_agent_loader")
+    def test_get_agent_ui_success(
+        self, mock_loader, mock_exists, mock_file_response, mock_get_config
+    ):
+        """Takes self + 3 arguments for 3 patches."""
+        mock_loader_instance = MagicMock()
+        mock_loader_instance.agents_dir = "/fake/dir"
+        mock_loader.return_value = mock_loader_instance
+        mock_exists.return_value = True
+
+        # We mock FileResponse so it doesn't try to open a real file
+        mock_file_response.return_value = MagicMock(status_code=200)
+
+        response = self.client.get("/apps/my-app/ui")
+
+        self.assertEqual(response.status_code, 200)
+        mock_file_response.assert_called_once()
+
+    @patch("material_ai.api.get_agent_loader")
+    def test_get_agents_loader_not_found(self, mock_loader, mock_get_config):
+        """Returns an empty list if agent_loader is None."""
+        mock_loader.return_value = None
+
+        response = self.client.get("/agents")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), [])
+
+    @patch("material_ai.api.get_agent_loader")
+    def test_get_agents_success(self, mock_loader, mock_get_config):
+        """Tests successful retrieval and formatting of agents."""
+        # 1. Setup Mock Loader
+        mock_loader_instance = MagicMock()
+        mock_loader.return_value = mock_loader_instance
+
+        # 2. Setup Mock Agents in the loader
+        mock_loader_instance.list_agents.return_value = ["greeting_agent", "data_agent"]
+
+        # 3. Create mock agent objects with required attributes
+        # First agent is an LlmAgent (with a model)
+        mock_llm_agent = MagicMock(spec=LlmAgent)
+        mock_llm_agent.description = "Says hello"
+        mock_llm_agent.model = "gpt-4"
+
+        # Second agent is a generic agent (no model)
+        mock_generic_agent = MagicMock()
+        mock_generic_agent.description = "Processes data"
+        # Ensure it's not seen as an LlmAgent
+
+        # Configure load_agent to return different mocks based on input
+        mock_loader_instance.load_agent.side_effect = [
+            mock_llm_agent,
+            mock_generic_agent,
+        ]
+
+        # --- Act ---
+        response = self.client.get("/agents")
+
+        # --- Assert ---
+        self.assertEqual(response.status_code, 200)
+        data = response.json()["agents"]
+
+        self.assertEqual(len(data), 2)
+
+        # Verify first agent (Formatted name and model)
+        self.assertEqual(data[0]["id"], "greeting_agent")
+        self.assertEqual(data[0]["name"], "Greeting Agent")
+        self.assertEqual(data[0]["model"], "gpt-4")
+
+        # Verify second agent (Formatted name and empty model)
+        self.assertEqual(data[1]["id"], "data_agent")
+        self.assertEqual(data[1]["name"], "Data Agent")
+        self.assertEqual(data[1]["model"], "")
+
+    @patch("material_ai.api.get_agent_loader")
+    def test_get_agents_with_empty_name_coverage(self, mock_loader, mock_get_config):
+        """
+        Specifically tests the highlighted line:
+        if not name: return ""
+        """
+        # Arrange
+        mock_loader_instance = MagicMock()
+        mock_loader.return_value = mock_loader_instance
+
+        # We include an empty string to trigger the 'if not name' branch
+        mock_loader_instance.list_agents.return_value = [""]
+
+        mock_agent = MagicMock()
+        mock_agent.description = "Test Description"
+        mock_loader_instance.load_agent.return_value = mock_agent
+
+        # Act
+        response = self.client.get("/agents")
+
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        agents = response.json()["agents"]
+
+        # Verify that the empty name returned an empty string as per your code
+        self.assertEqual(agents[0]["name"], "")
+        self.assertEqual(agents[0]["id"], "")
+
+    @patch("material_ai.api.get_agent_loader")
+    def test_get_agents_formatting_logic(self, mock_loader, mock_get_config):
+        """Tests the snake_case to Title Case conversion."""
+        mock_loader_instance = MagicMock()
+        mock_loader.return_value = mock_loader_instance
+        mock_loader_instance.list_agents.return_value = ["chat_helper_agent"]
+
+        mock_agent = MagicMock()
+        mock_agent.description = "Helpful agent"
+        mock_loader_instance.load_agent.return_value = mock_agent
+
+        response = self.client.get("/agents")
+
+        # Verify 'chat_helper_agent' becomes 'Chat Helper Agent'
+        self.assertEqual(response.json()["agents"][0]["name"], "Chat Helper Agent")
+
+    @patch("material_ai.api.get_endpoint_function")
+    @patch("material_ai.api.get_user")
+    def test_history_success(self, mock_get_user, mock_get_endpoint, mock_get_config):
+        """Tests successful history retrieval with content title."""
+        # 1. Arrange
+        mock_get_user.return_value = self.mock_user
+
+        # Mock the list_sessions and get_session functions
+        mock_list = AsyncMock()
+        mock_get = AsyncMock()
+
+        # Side effect to return the correct function based on the string name
+        mock_get_endpoint.side_effect = lambda name: (
+            mock_list if name == "list_sessions" else mock_get
+        )
+
+        # Mock session list
+        session_1 = MagicMock(id="s1", last_update_time=100, app_name="test_app")
+        mock_list.return_value = [session_1]
+
+        # Mock session details with content to trigger get_title success
+        session_instance = MagicMock()
+        session_instance.events = [
+            MagicMock(content=MagicMock(parts=[MagicMock(text="Hello World")]))
+        ]
+        mock_get.return_value = session_instance
+
+        # 2. Act
+        response = self.client.get("/apps/test_app/history")
+
+        # 3. Assert
+        self.assertEqual(response.status_code, 200)
+        data = response.json()["history"]
+        self.assertEqual(data[0]["title"], "Hello World")
+        self.assertEqual(data[0]["last_update_time"], 100 * 1000)
+
+    @patch("material_ai.api.get_endpoint_function")
+    @patch("material_ai.api.get_user")
+    def test_history_title_fallback_coverage(
+        self, mock_get_user, mock_get_endpoint, mock_get_config
+    ):
+        """Covers the 'except (IndexError, AttributeError)' branch in get_title."""
+        # 1. Arrange
+
+        mock_get_user.return_value = self.mock_user
+
+        mock_list = AsyncMock()
+        mock_get = AsyncMock()
+        mock_get_endpoint.side_effect = lambda name: (
+            mock_list if name == "list_sessions" else mock_get
+        )
+
+        session_1 = MagicMock(id="s1", last_update_time=100, app_name="test_app")
+        mock_list.return_value = [session_1]
+
+        # Mock an empty session to trigger IndexError in get_title
+        session_instance = MagicMock()
+        session_instance.events = []  # This will cause IndexError at events[0]
+        mock_get.return_value = session_instance
+
+        # 2. Act
+        response = self.client.get("/apps/test_app/history")
+
+        # 3. Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["history"][0]["title"], "...")
+
 
 def create_dummy_ui_config() -> UIConfig:
     return UIConfig(
@@ -608,10 +882,12 @@ def create_dummy_ui_config() -> UIConfig:
 def create_dummy_config(debug_mode: bool = True) -> Config:
     return Config(
         sso=SSOConfig(
+            issuer="google",
             session_secret_key="a-fake-but-valid-secret-key-for-testing",
             client_id="test_client_id",
             client_secret="test_client_secret",
             redirect_uri="test_redirect_uri",
+            tenant_id="",
         ),
         general=GeneralConfig(debug=debug_mode),
         adk=ADKConfig(

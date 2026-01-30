@@ -81,6 +81,7 @@ async def feedback(
 )
 async def logout(
     refresh_token: str | None = Cookie(None),
+    access_token: str | None = Cookie(None),
     oauth_service: IOAuthService = Depends(get_oauth_service),
 ):
     """
@@ -88,7 +89,7 @@ async def logout(
     """
     # Here we logout the user and remove cookies
     response = Response(status_code=200)
-    await remove_token(response, refresh_token, oauth_service)
+    await remove_token(response, refresh_token, oauth_service, access_token)
     return response
 
 
@@ -145,6 +146,8 @@ async def user(
     """
     Handles user detail retrieval based on session cookies.
     """
+    if not refresh_token:
+        raise UnauthorizedException()
 
     if user_details is not None:
         verified_user_details = verify_user_details(user_details)
@@ -153,8 +156,6 @@ async def user(
         return UserSuccessResponse(
             user_response=OAuthUserDetail(**json.loads(verified_user_details))
         )
-    if refresh_token is None:
-        raise UnauthorizedException()
 
     return await get_user_details(response, refresh_token, oauth_service)
 

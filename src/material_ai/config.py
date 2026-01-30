@@ -91,8 +91,11 @@ def _configure(path: pathlib.Path) -> Config:
             f"config file {path} is not a valid file or does not exist."
         )
     config_parser.read(path)
+
     sso = SSOConfig(
+        issuer=get_config_value(config_parser, "SSO", "issuer"),
         client_id=get_config_value(config_parser, "SSO", "client_id"),
+        tenant_id=get_config_value(config_parser, "SSO", "tenant_id", ""),
         client_secret=get_config_value(config_parser, "SSO", "client_secret"),
         redirect_uri=get_config_value(config_parser, "SSO", "redirect_uri"),
         session_secret_key=get_config_value(config_parser, "SSO", "session_secret_key"),

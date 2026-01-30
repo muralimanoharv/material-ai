@@ -144,7 +144,10 @@ def _remove_cookies(response: Response):
 
 
 async def remove_token(
-    response: Response, refresh_token: str, oauth_service: IOAuthService
+    response: Response,
+    refresh_token: str,
+    oauth_service: IOAuthService,
+    access_token: str = None,
 ) -> Response:
     """Revokes a refresh token and clears authentication cookies.
 
@@ -159,6 +162,8 @@ async def remove_token(
         response: The FastAPI Response object, which will be modified to
                   remove the cookies.
         refresh_token: The refresh token to be revoked. Can be None.
+        oauth_service: the oauth_service instance.
+        access_token: access token
 
     Returns:
         The modified Response object with authentication cookies cleared.
@@ -171,7 +176,7 @@ async def remove_token(
         _remove_cookies(response)
         return
     auth = oauth_service
-    await auth.sso_revoke_refresh_token(refresh_token)
+    await auth.sso_revoke_refresh_token(refresh_token, access_token)
     _remove_cookies(response)
     return response
 

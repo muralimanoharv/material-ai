@@ -208,7 +208,7 @@ def _setup_app(
     _setup_logging(config)
 
     if oauth_service == None:
-        oauth_service = get_oauth()
+        oauth_service = get_oauth(config.sso)
 
     _setup_overrides(app, oauth_service, ui_config_yaml, feedback_handler)
 

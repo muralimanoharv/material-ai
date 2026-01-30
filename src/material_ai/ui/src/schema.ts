@@ -106,6 +106,7 @@ export interface User {
   given_name: string
   picture: string
   email: string
+  name: string
 }
 
 export interface UserResponse {
