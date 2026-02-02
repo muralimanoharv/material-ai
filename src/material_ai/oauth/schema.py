@@ -41,7 +41,7 @@ class OAuthUserDetail(pydantic.BaseModel):
     """A typical user properties obtained from sso"""
 
     sub: str
-    name: str
+    name: Optional[str]
     given_name: Optional[str]
     family_name: Optional[str]
     picture: Optional[str]

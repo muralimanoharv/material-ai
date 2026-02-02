@@ -80,7 +80,9 @@ class AzureOAuthService(IOAuthService):
             id_token=id_token,
         )
 
-    @handle_httpx_errors(url="https://oauth2.googleapis.com/token")
+    @handle_httpx_errors(
+        url="https://login.microsoftonline.com/tenant/oauth2/v2.0/token"
+    )
     async def sso_get_new_access_token(
         self, sso: SSOConfig, refresh_token: str
     ) -> OAuthSuccessResponse | OAuthErrorResponse:
@@ -90,7 +92,7 @@ class AzureOAuthService(IOAuthService):
         token_payload = {
             "refresh_token": refresh_token,
             "client_id": sso.client_id,
-            "scope": f"api://{sso.client_id}/access_as_user",
+            "scope": sso.scope,
             "client_secret": sso.client_secret,
             "redirect_uri": sso.redirect_uri,
             "grant_type": "refresh_token",
@@ -122,7 +124,12 @@ class AzureOAuthService(IOAuthService):
             id_token=id_token,
         )
 
-    @handle_httpx_errors(url="https://oauth2.googleapis.com/revoke")
+    async def sso_get_user_details(
+        self, access_token: str
+    ) -> OAuthUserDetail | OAuthErrorResponse:
+        pass
+
+    @handle_httpx_errors(url="https://graph.microsoft.com/v1.0/me/revokeSignInSessions")
     async def sso_revoke_refresh_token(
         self, refresh_token: str, access_token: str
     ) -> None | OAuthErrorResponse:

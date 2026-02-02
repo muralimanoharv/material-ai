@@ -71,6 +71,22 @@ class IOAuthService(ABC):
         pass
 
     @abstractmethod
+    async def sso_get_user_details(
+        self, sso: SSOConfig, access_token: str
+    ) -> OAuthUserDetail | OAuthErrorResponse:
+        """Fetches user profile information from the OAuth provider.
+
+        Args:
+            sso: The SSOConfig object with provider details.
+            access_token: A valid access token for the user.
+
+        Returns:
+            An OAuthUserDetail object with the user's information on success,
+            or an OAuthErrorResponse on failure.
+        """
+        pass
+
+    @abstractmethod
     async def sso_revoke_refresh_token(
         self, refresh_token: str, access_token: str
     ) -> None | OAuthErrorResponse:

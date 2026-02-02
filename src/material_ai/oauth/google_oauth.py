@@ -24,7 +24,7 @@ class GoogleOAuthService(IOAuthService):
             "response_type": "code",
             "client_id": sso.client_id,
             "redirect_uri": sso.redirect_uri,
-            "scope": "openid email profile",
+            "scope": sso.scope,
             "state": state,
             "access_type": "offline",
             "prompt": "consent",
@@ -46,6 +46,7 @@ class GoogleOAuthService(IOAuthService):
         token_payload = {
             "code": authorization_code,
             "client_id": sso.client_id,
+            "scope": sso.scope,
             "client_secret": sso.client_secret,
             "redirect_uri": sso.redirect_uri,
             "grant_type": "authorization_code",
@@ -86,6 +87,7 @@ class GoogleOAuthService(IOAuthService):
         token_payload = {
             "client_id": sso.client_id,
             "client_secret": sso.client_secret,
+            "scope": sso.scope,
             "refresh_token": refresh_token,
             "grant_type": "refresh_token",
         }
@@ -102,7 +104,7 @@ class GoogleOAuthService(IOAuthService):
         access_token = token_data.get("access_token")
         expires_in = token_data.get("expires_in")
         id_token = token_data.get("id_token")
-        user_detail = await self.sso_verify_id_token(sso, id_token)
+        user_detail = await self.sso_get_user_details(access_token)
 
         if isinstance(user_detail, OAuthErrorResponse):
             return user_detail
@@ -114,6 +116,23 @@ class GoogleOAuthService(IOAuthService):
             expires_in=expires_in,
             id_token=id_token,
         )
+
+    @handle_httpx_errors(url="https://www.googleapis.com/oauth2/v3/userinfo")
+    async def sso_get_user_details(
+        self, access_token: str
+    ) -> OAuthUserDetail | OAuthErrorResponse:
+        url = "https://www.googleapis.com/oauth2/v3/userinfo"
+
+        headers = {"Authorization": f"Bearer {access_token}"}
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, headers=headers)
+            response.raise_for_status()
+
+        user_details = response.json()
+        user_detail = OAuthUserDetail(**user_details)
+
+        return user_detail
 
     @handle_httpx_errors(url="https://oauth2.googleapis.com/revoke")
     async def sso_revoke_refresh_token(

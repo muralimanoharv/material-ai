@@ -199,7 +199,7 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
             picture="Test pitcure",
         )
         with patch.object(
-            self.service, "sso_verify_id_token", new_callable=AsyncMock
+            self.service, "sso_get_user_details", new_callable=AsyncMock
         ) as mock_get_details:
             mock_get_details.return_value = mock_user_detail
 
@@ -209,9 +209,7 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
             )
 
             # Assert
-            mock_get_details.assert_awaited_once_with(
-                self.sso_config, "brand_new_id_token"
-            )
+            mock_get_details.assert_awaited_once_with("brand_new_access_token")
             self.assertIsInstance(response, OAuthSuccessResponse)
             self.assertEqual(response.access_token, "brand_new_access_token")
             self.assertEqual(
@@ -264,7 +262,7 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
             status_code=401, detail="Invalid credentials"
         )
         with patch.object(
-            self.service, "sso_verify_id_token", return_value=error_response
+            self.service, "sso_get_user_details", return_value=error_response
         ):
             # Act
             response = await self.service.sso_get_new_access_token(
@@ -273,6 +271,30 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
 
             # Assert: The final response should be the error from the failed downstream call
             self.assertIs(response, error_response)
+
+    @respx.mock
+    async def test_sso_get_user_details_success(self):
+        """
+        Should successfully fetch user details with a valid access token.
+        """
+        user_info_payload = {
+            "sub": "12345",
+            "email": "test@gmail.com",
+            "name": "Test User",
+            "given_name": "Test User",
+            "family_name": "Test User",
+            "picture": "Test Pitcure",
+            "email_verified": True,
+        }
+        respx.get("https://www.googleapis.com/oauth2/v3/userinfo").mock(
+            return_value=httpx.Response(200, json=user_info_payload)
+        )
+
+        response = await self.service.sso_get_user_details("valid_access_token")
+
+        self.assertIsInstance(response, OAuthUserDetail)
+        self.assertEqual(response.email, "test@gmail.com")
+        self.assertEqual(response.sub, "12345")
 
     @respx.mock
     async def test_sso_get_new_access_token_http_error(self):
