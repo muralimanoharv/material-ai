@@ -50,7 +50,9 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
         self.maxDiff = None
         self.mock_oauth_service = AsyncMock()
 
-        self.mock_oauth_service.sso_verify_access_token.return_value = "test_user_123"
+        user_response = MagicMock()
+        user_response.sub = "test_user_123"
+        self.mock_oauth_service.sso_verify_id_token.return_value = user_response
 
         # 2. Set up the rest of the app and client
         app = get_app(oauth_service=self.mock_oauth_service)
@@ -62,6 +64,7 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
             "refresh_token": "test_refresh_token",
             "access_token": "test_access_token",
             "user_details": "test_user_details",
+            "id_token": "test_id_token",
         }
 
         self.mock_ui_config = create_dummy_ui_config()
@@ -530,6 +533,7 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
         self.client.cookies = {
             "refresh_token": "test_refresh_token",
             "access_token": "test_user_details",
+            "id_token": "test_user_details",
         }
 
         response = self.client.post("/feedback", json=invalid_payload)
@@ -540,7 +544,7 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
 
     def test_api_with_invaid_oauth_service(self, mock_get_config):
 
-        self.mock_oauth_service.sso_verify_access_token.return_value = None
+        self.mock_oauth_service.sso_verify_id_token.return_value = None
 
         response = self.client.get("/logout")
 
@@ -548,8 +552,8 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
 
     def test_api_with_error_oauth_service(self, mock_get_config):
 
-        self.mock_oauth_service.sso_verify_access_token.return_value = (
-            OAuthErrorResponse(status_code=401, detail="SomeErrorHasOccured")
+        self.mock_oauth_service.sso_verify_id_token.return_value = OAuthErrorResponse(
+            status_code=401, detail="SomeErrorHasOccured"
         )
 
         response = self.client.get("/logout")
@@ -889,6 +893,7 @@ def create_dummy_config(debug_mode: bool = True) -> Config:
             client_secret="test_client_secret",
             redirect_uri="test_redirect_uri",
             tenant_id="",
+            scope="openid profile email",
         ),
         general=GeneralConfig(debug=debug_mode),
         adk=ADKConfig(

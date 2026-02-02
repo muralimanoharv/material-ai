@@ -15,6 +15,9 @@ client_id = sso_client_id_from_file
 client_secret = sso_client_secret_from_file
 redirect_uri = http://localhost/redirect
 session_secret_key = file_secret_key
+scope=openid email profile
+issuer=google
+
 
 [GENERAL]
 debug = True

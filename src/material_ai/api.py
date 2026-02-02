@@ -176,13 +176,20 @@ async def user(
 )
 async def callback(
     request: Request,
-    code: str,
-    state: str,
+    code: str = Query(default=None),
+    state: str = Query(default=None),
+    error: str = Query(default=None),
+    error_description: str = Query(default=None),
     oauth_service: IOAuthService = Depends(get_oauth_service),
 ):
     """
     Handles the callback from OAuth2.0 after user authentication.
     """
+    if error:
+        return {
+            "error": error,
+            "error_description": error_description,
+        }
     stored_state = request.session.get("oauth_state")
     redirect = request.session.get("redirect")
     if not stored_state or stored_state != state:

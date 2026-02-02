@@ -1,7 +1,8 @@
 import unittest
 import respx
 import httpx
-from unittest.mock import patch, Mock, AsyncMock
+import jwt
+from unittest.mock import patch, Mock, AsyncMock, MagicMock
 
 # --- Assumed Schema Mocks ---
 # In a real project, you would import these from your schema file.
@@ -30,6 +31,7 @@ class TestAzureOAuthService(unittest.IsolatedAsyncioTestCase):
             redirect_uri="http://localhost/callback",
             session_secret_key="test_secret_key",
             tenant_id="test_tenant",
+            scope="openid email profile",
         )
 
     def test_sso_get_redirection_url(self):
@@ -67,6 +69,7 @@ class TestAzureOAuthService(unittest.IsolatedAsyncioTestCase):
                 json={
                     "access_token": "new_access_token",
                     "refresh_token": "new_refresh_token",
+                    "id_token": "new_id_token",
                     "expires_in": 3600,
                 },
             )
@@ -83,7 +86,7 @@ class TestAzureOAuthService(unittest.IsolatedAsyncioTestCase):
             picture="Test pitcure",
         )
         with patch.object(
-            self.service, "sso_get_user_details", new_callable=AsyncMock
+            self.service, "sso_verify_id_token", new_callable=AsyncMock
         ) as mock_get_details:
             mock_get_details.return_value = mock_user_detail
 
@@ -92,7 +95,7 @@ class TestAzureOAuthService(unittest.IsolatedAsyncioTestCase):
             )
 
             # Assertions
-            mock_get_details.assert_awaited_once_with("new_access_token")
+            mock_get_details.assert_awaited_once_with(self.sso_config, "new_id_token")
             self.assertIsInstance(response, OAuthSuccessResponse)
             self.assertEqual(response.access_token, "new_access_token")
             self.assertEqual(response.user_detail.email, "test@example.com")
@@ -135,34 +138,12 @@ class TestAzureOAuthService(unittest.IsolatedAsyncioTestCase):
             )
 
             with patch.object(
-                self.service, "sso_get_user_details", return_value=error_response
+                self.service, "sso_verify_id_token", return_value=error_response
             ) as mock_get_details:
                 response = await self.service.sso_get_access_token(
                     self.sso_config, "auth_code"
                 )
                 self.assertIs(response, error_response)
-
-    @respx.mock
-    async def test_sso_get_user_details_success(self):
-        """
-        Should successfully fetch user details with a valid access token.
-        """
-        user_info_payload = {
-            "id": "12345",
-            "mail": "test@gmail.com",
-            "displayName": "Test User",
-            "givenName": "Test User",
-            "surname": "Test User",
-        }
-        respx.get(
-            "https://graph.microsoft.com/v1.0/me?$select=id,displayName,givenName,surname,mail,userPrincipalName"
-        ).mock(return_value=httpx.Response(200, json=user_info_payload))
-
-        response = await self.service.sso_get_user_details("valid_access_token")
-
-        self.assertIsInstance(response, OAuthUserDetail)
-        self.assertEqual(response.email, "test@gmail.com")
-        self.assertEqual(response.sub, "12345")
 
     @respx.mock
     async def test_sso_revoke_refresh_token_success(self):
@@ -196,19 +177,6 @@ class TestAzureOAuthService(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.detail, "invalid_token")
 
     @respx.mock
-    async def test_sso_verify_access_token_success(self):
-        """
-        Should return the user's subject (sub) ID if the token is valid.
-        """
-        respx.get(
-            "https://graph.microsoft.com/v1.0/me?$select=id,displayName,givenName,surname,mail,userPrincipalName"
-        ).mock(return_value=httpx.Response(200, json={"sub": "user_subject_id_123"}))
-
-        is_valid = await self.service.sso_verify_access_token("valid_token")
-
-        self.assertEqual(is_valid, True)
-
-    @respx.mock
     async def test_sso_get_new_access_token_success(self):
         """
         Should successfully use a refresh token to get a new access token and user details.
@@ -222,6 +190,7 @@ class TestAzureOAuthService(unittest.IsolatedAsyncioTestCase):
                 json={
                     "access_token": "brand_new_access_token",
                     "refresh_token": "existing_refresh_token",
+                    "id_token": "brand_new_id_token",
                     "expires_in": 3599,
                 },
             )
@@ -238,7 +207,7 @@ class TestAzureOAuthService(unittest.IsolatedAsyncioTestCase):
             picture="Test pitcure",
         )
         with patch.object(
-            self.service, "sso_get_user_details", new_callable=AsyncMock
+            self.service, "sso_verify_id_token", new_callable=AsyncMock
         ) as mock_get_details:
             mock_get_details.return_value = mock_user_detail
 
@@ -248,7 +217,9 @@ class TestAzureOAuthService(unittest.IsolatedAsyncioTestCase):
             )
 
             # Assert
-            mock_get_details.assert_awaited_once_with("brand_new_access_token")
+            mock_get_details.assert_awaited_once_with(
+                self.sso_config, "brand_new_id_token"
+            )
             self.assertIsInstance(response, OAuthSuccessResponse)
             self.assertEqual(response.access_token, "brand_new_access_token")
             self.assertEqual(
@@ -275,7 +246,7 @@ class TestAzureOAuthService(unittest.IsolatedAsyncioTestCase):
         )
 
         with patch.object(
-            self.service, "sso_get_user_details", new_callable=AsyncMock
+            self.service, "sso_verify_id_token", new_callable=AsyncMock
         ) as mock_get_details:
             # Act
             response = await self.service.sso_get_new_access_token(
@@ -302,6 +273,7 @@ class TestAzureOAuthService(unittest.IsolatedAsyncioTestCase):
                 json={
                     "access_token": "new_token",
                     "refresh_token": "existing_refresh_token",
+                    "id_token": "new_id_token",
                 },
             )
         )
@@ -311,7 +283,7 @@ class TestAzureOAuthService(unittest.IsolatedAsyncioTestCase):
             status_code=401, detail="Invalid credentials"
         )
         with patch.object(
-            self.service, "sso_get_user_details", return_value=error_response
+            self.service, "sso_verify_id_token", return_value=error_response
         ):
             # Act
             response = await self.service.sso_get_new_access_token(
@@ -342,6 +314,71 @@ class TestAzureOAuthService(unittest.IsolatedAsyncioTestCase):
         self.assertIsInstance(response, OAuthErrorResponse)
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.detail, {"error": "unauthorized_client"})
+
+    @respx.mock
+    async def test_sso_verify_id_token_microsoft_success(self):
+        # 1. Mock the JWK Client and Signing Key
+        mock_jwks_client = MagicMock()
+        mock_signing_key = MagicMock()
+        mock_signing_key.key = "azure-public-key"
+        mock_jwks_client.get_signing_key_from_jwt.return_value = mock_signing_key
+
+        # 2. Mock jwt.decode to return Microsoft-specific payload
+        # Note the use of 'oid' and 'preferred_username' as per your code
+        fake_payload = {
+            "oid": "ms-user-999",
+            "name": "Murali Manohar Veeravalli",
+            "preferred_username": "murali@outlook.com",
+            "picture": "http://cdn.microsoft.com/photo.jpg",
+            "tid": self.sso_config.tenant_id,
+        }
+
+        # Use patch.object for your internal 'get_client' helper
+        with patch.object(self.service, "get_client", return_value=mock_jwks_client):
+            with patch("jwt.decode", return_value=fake_payload) as mock_decode:
+
+                # 3. Execute
+                result = await self.service.sso_verify_id_token(
+                    self.sso_config, "ms-token-123"
+                )
+
+                # 4. Assertions
+                assert isinstance(result, OAuthUserDetail)
+                assert result.sub == "ms-user-999"  # Maps from 'oid'
+                assert (
+                    result.email == "murali@outlook.com"
+                )  # Maps from 'preferred_username'
+
+                # Verify your "A B C" split logic
+                # "Murali Manohar Veeravalli" -> Given: Murali, Family: Veeravalli
+                assert result.given_name == "Murali"
+                assert result.family_name == "Veeravalli"
+
+                mock_decode.assert_called_once_with(
+                    "ms-token-123",
+                    "azure-public-key",
+                    algorithms=["RS256"],
+                    audience=[self.sso_config.client_id],
+                    issuer=f"https://login.microsoftonline.com/{self.sso_config.tenant_id}/v2.0",
+                )
+
+    @respx.mock
+    async def test_sso_verify_id_token_microsoft_invalid(self):
+        # Mock the helper to return a client but make decode fail
+        mock_jwks_client = MagicMock()
+
+        with patch.object(self.service, "get_client", return_value=mock_jwks_client):
+            with patch(
+                "jwt.decode", side_effect=jwt.ExpiredSignatureError("Token expired")
+            ):
+
+                result = await self.service.sso_verify_id_token(
+                    self.sso_config, "expired-ms-token"
+                )
+
+                assert isinstance(result, OAuthErrorResponse)
+                assert result.status_code == 401
+                assert result.detail == "Invalid token"
 
 
 if __name__ == "__main__":

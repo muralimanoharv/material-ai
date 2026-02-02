@@ -71,22 +71,6 @@ class IOAuthService(ABC):
         pass
 
     @abstractmethod
-    async def sso_get_user_details(
-        self, sso: SSOConfig, access_token: str
-    ) -> OAuthUserDetail | OAuthErrorResponse:
-        """Fetches user profile information from the OAuth provider.
-
-        Args:
-            sso: The SSOConfig object with provider details.
-            access_token: A valid access token for the user.
-
-        Returns:
-            An OAuthUserDetail object with the user's information on success,
-            or an OAuthErrorResponse on failure.
-        """
-        pass
-
-    @abstractmethod
     async def sso_revoke_refresh_token(
         self, refresh_token: str, access_token: str
     ) -> None | OAuthErrorResponse:
@@ -106,19 +90,20 @@ class IOAuthService(ABC):
         pass
 
     @abstractmethod
-    async def sso_verify_access_token(
-        self, access_token: str
-    ) -> str | OAuthErrorResponse:
+    async def sso_verify_id_token(
+        self, sso: SSOConfig, id_token: str
+    ) -> OAuthUserDetail | OAuthErrorResponse:
         """Verifies the validity of an access token.
 
         Checks with the OAuth provider to confirm if the token is active
         and not expired or revoked.
 
         Args:
-            access_token: The access token to verify.
+            sso: The SSOConfig object with provider details.
+            id_token: The access token to verify.
 
         Returns:
-            String uid if the token is valid, None if it's invalid, or an
-            OAuthErrorResponse if an error occurs during verification.
+            An OAuthUserDetail object with the user's information on success,
+            or an OAuthErrorResponse on failure.
         """
         pass

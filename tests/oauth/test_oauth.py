@@ -13,6 +13,7 @@ sso_config = SSOConfig(
     redirect_uri="http://localhost/callback",
     session_secret_key="test_secret_key",
     tenant_id="",
+    scope="openid email profile",
 )
 
 
@@ -51,6 +52,7 @@ class TestGetOauth(unittest.TestCase):
             redirect_uri="http://localhost/callback",
             session_secret_key="test_secret_key",
             tenant_id="test_tenant",
+            scope="openid email profile",
         )
         instance = oauth_factory.get_oauth(azure_config)
 

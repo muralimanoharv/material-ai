@@ -228,6 +228,7 @@ class TestDependencyGetters(unittest.IsolatedAsyncioTestCase):
             access_token="test_access_token",
             expires_in=3066,
             refresh_token="test_refresh_token",
+            id_token="test_id_token",
             user_detail=OAuthUserDetail(
                 email="test@test.com",
                 email_verified=True,
@@ -293,6 +294,7 @@ class TestDependencyGetters(unittest.IsolatedAsyncioTestCase):
         # 2. Create mock data objects
         mock_oauth_data = OAuthSuccessResponse(
             access_token="test_access_token",
+            id_token="test_id_token",
             expires_in=3066,
             refresh_token="test_refresh_token",
             user_detail=OAuthUserDetail(
@@ -310,7 +312,7 @@ class TestDependencyGetters(unittest.IsolatedAsyncioTestCase):
         # --- Act ---
         _set_oauth_token_cookies(mock_response, mock_oauth_data)
 
-        self.assertEqual(mock_response.set_cookie.call_count, 3)
+        self.assertEqual(mock_response.set_cookie.call_count, 4)
 
     def test_remove_cookies_deletes_all_auth_cookies(self):
         """
@@ -332,7 +334,7 @@ class TestDependencyGetters(unittest.IsolatedAsyncioTestCase):
         # 1. Verify that the delete_cookie method was called 3 times.
         self.assertEqual(
             mock_response.delete_cookie.call_count,
-            3,
+            4,
             "delete_cookie should be called exactly 3 times.",
         )
 
@@ -343,6 +345,7 @@ class TestDependencyGetters(unittest.IsolatedAsyncioTestCase):
             call("access_token"),
             call("refresh_token"),
             call("user_details"),
+            call("id_token"),
         ]
 
         # 3. Assert that the method was called with all the expected arguments.
@@ -361,6 +364,7 @@ class TestDependencyGetters(unittest.IsolatedAsyncioTestCase):
         mock_oauth_service.sso_revoke_refresh_token.return_value = OAuthSuccessResponse(
             access_token="test_access_token",
             expires_in=3066,
+            id_token="test_id_token",
             refresh_token="test_refresh_token",
             user_detail=OAuthUserDetail(
                 email="test@test.com",
@@ -496,6 +500,7 @@ class TestDependencyGetters(unittest.IsolatedAsyncioTestCase):
             access_token="test_access_token",
             expires_in=3066,
             refresh_token="test_refresh_token",
+            id_token="test_id_token",
             user_detail=mock_user_data,
         )
 
@@ -567,6 +572,7 @@ class TestDependencyGetters(unittest.IsolatedAsyncioTestCase):
             access_token="test_access_token",
             expires_in=3066,
             refresh_token="test_refresh_token",
+            id_token="test_id_token",
             user_detail=OAuthUserDetail(
                 email="test@test.com",
                 email_verified=True,

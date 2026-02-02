@@ -105,6 +105,15 @@ def _set_oauth_token_cookies(response: Response, oauth_response: OAuthSuccessRes
         samesite="lax",
     )
 
+    response.set_cookie(
+        key="id_token",
+        value=oauth_response.id_token,
+        httponly=True,
+        secure=False if config.general.debug else True,
+        max_age=oauth_response.expires_in,
+        samesite="lax",
+    )
+
     refresh_token_expiration = (
         oauth_response.expires_in + timedelta(days=2).total_seconds()
     )
@@ -141,6 +150,7 @@ def _remove_cookies(response: Response):
     response.delete_cookie("access_token")
     response.delete_cookie("refresh_token")
     response.delete_cookie("user_details")
+    response.delete_cookie("id_token")
 
 
 async def remove_token(

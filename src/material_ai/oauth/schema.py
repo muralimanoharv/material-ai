@@ -34,6 +34,7 @@ class SSOConfig(pydantic.BaseModel):
     client_secret: str
     redirect_uri: str
     session_secret_key: str
+    scope: str
 
 
 class OAuthUserDetail(pydantic.BaseModel):
@@ -41,11 +42,11 @@ class OAuthUserDetail(pydantic.BaseModel):
 
     sub: str
     name: str
-    given_name: str
-    family_name: str
+    given_name: Optional[str]
+    family_name: Optional[str]
     picture: Optional[str]
     email: Optional[str]
-    email_verified: bool
+    email_verified: Optional[bool]
 
 
 class OAuthSuccessResponse(pydantic.BaseModel):
@@ -53,6 +54,7 @@ class OAuthSuccessResponse(pydantic.BaseModel):
 
     access_token: str
     refresh_token: str
+    id_token: str
     user_detail: OAuthUserDetail
     expires_in: int
 

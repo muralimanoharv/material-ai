@@ -99,6 +99,7 @@ def _configure(path: pathlib.Path) -> Config:
         client_secret=get_config_value(config_parser, "SSO", "client_secret"),
         redirect_uri=get_config_value(config_parser, "SSO", "redirect_uri"),
         session_secret_key=get_config_value(config_parser, "SSO", "session_secret_key"),
+        scope=get_config_value(config_parser, "SSO", "scope"),
     )
     general = GeneralConfig(
         debug=get_config_value(config_parser, "GENERAL", "debug"),

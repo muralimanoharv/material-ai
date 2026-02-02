@@ -1,6 +1,8 @@
 import secrets
 import httpx
 import logging
+import jwt
+from jwt import PyJWKClient
 import urllib.parse
 from .interface import IOAuthService
 from .schema import OAuthRedirectionResponse, OAuthUserDetail, OAuthSuccessResponse
@@ -9,10 +11,11 @@ from .util import handle_httpx_errors
 
 _logger = logging.getLogger(__name__)
 
-SCOPE = "openid profile email User.Read offline_access"
-
 
 class AzureOAuthService(IOAuthService):
+
+    def __init__(self):
+        self.client = None
 
     def sso_get_redirection_url(self, sso: SSOConfig) -> OAuthRedirectionResponse:
         state = secrets.token_urlsafe(16)
@@ -22,7 +25,7 @@ class AzureOAuthService(IOAuthService):
             "response_type": "code",
             "redirect_uri": sso.redirect_uri,
             "response_mode": "query",
-            "scope": SCOPE,
+            "scope": sso.scope,
             "state": state,
         }
 
@@ -45,7 +48,7 @@ class AzureOAuthService(IOAuthService):
         token_payload = {
             "code": authorization_code,
             "client_id": sso.client_id,
-            "scope": SCOPE,
+            "scope": sso.scope,
             "client_secret": sso.client_secret,
             "redirect_uri": sso.redirect_uri,
             "grant_type": "authorization_code",
@@ -64,7 +67,8 @@ class AzureOAuthService(IOAuthService):
         access_token = token_data.get("access_token")
         expires_in = token_data.get("expires_in")
         refresh_token = token_data.get("refresh_token")
-        user_detail = await self.sso_get_user_details(access_token)
+        id_token = token_data.get("id_token")
+        user_detail = await self.sso_verify_id_token(sso, id_token)
         if isinstance(user_detail, OAuthErrorResponse):
             return user_detail
 
@@ -73,6 +77,7 @@ class AzureOAuthService(IOAuthService):
             refresh_token=refresh_token,
             user_detail=user_detail,
             expires_in=expires_in,
+            id_token=id_token,
         )
 
     @handle_httpx_errors(url="https://oauth2.googleapis.com/token")
@@ -85,7 +90,7 @@ class AzureOAuthService(IOAuthService):
         token_payload = {
             "refresh_token": refresh_token,
             "client_id": sso.client_id,
-            "scope": SCOPE,
+            "scope": f"api://{sso.client_id}/access_as_user",
             "client_secret": sso.client_secret,
             "redirect_uri": sso.redirect_uri,
             "grant_type": "refresh_token",
@@ -104,7 +109,8 @@ class AzureOAuthService(IOAuthService):
         access_token = token_data.get("access_token")
         expires_in = token_data.get("expires_in")
         refresh_token = token_data.get("refresh_token")
-        user_detail = await self.sso_get_user_details(access_token)
+        id_token = token_data.get("id_token")
+        user_detail = await self.sso_verify_id_token(sso, id_token)
         if isinstance(user_detail, OAuthErrorResponse):
             return user_detail
 
@@ -113,35 +119,8 @@ class AzureOAuthService(IOAuthService):
             refresh_token=refresh_token,
             user_detail=user_detail,
             expires_in=expires_in,
+            id_token=id_token,
         )
-
-    @handle_httpx_errors(url="https://graph.microsoft.com/v1.0/me")
-    async def sso_get_user_details(
-        self, access_token: str
-    ) -> OAuthUserDetail | OAuthErrorResponse:
-        url = "https://graph.microsoft.com/v1.0/me?$select=id,displayName,givenName,surname,mail,userPrincipalName"
-
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "Accept": "application/json",
-        }
-
-        async with httpx.AsyncClient() as client:
-            response = await client.get(url, headers=headers)
-            response.raise_for_status()
-
-        user_details = response.json()
-        user_detail = OAuthUserDetail(
-            sub=user_details.get("id"),
-            name=user_details.get("displayName"),
-            given_name=user_details.get("givenName"),
-            family_name=user_details.get("surname"),
-            picture="",
-            email=user_details.get("mail"),
-            email_verified=True,
-        )
-
-        return user_detail
 
     @handle_httpx_errors(url="https://oauth2.googleapis.com/revoke")
     async def sso_revoke_refresh_token(
@@ -156,18 +135,47 @@ class AzureOAuthService(IOAuthService):
 
         _logger.info("INFO: Token successfully revoked.")
 
-    @handle_httpx_errors(url="https://graph.microsoft.com/v1.0/me?")
-    async def sso_verify_access_token(
-        self, access_token: str
-    ) -> bool | OAuthErrorResponse:
-        url = "https://graph.microsoft.com/v1.0/me?$select=id,displayName,givenName,surname,mail,userPrincipalName"
+    async def sso_verify_id_token(
+        self, sso: SSOConfig, id_token: str
+    ) -> OAuthUserDetail | OAuthErrorResponse:
+        jwks_url = (
+            f"https://login.microsoftonline.com/{sso.tenant_id}/discovery/v2.0/keys"
+        )
+        issuer = f"https://login.microsoftonline.com/{sso.tenant_id}/v2.0"
+        jwks_client = self.get_client(jwks_url)
+        EXPECTED_AUDIENCE = [sso.client_id]
+        try:
+            signing_key = jwks_client.get_signing_key_from_jwt(id_token)
 
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "Accept": "application/json",
-        }
+            data: dict[str, str] = jwt.decode(
+                id_token,
+                signing_key.key,
+                algorithms=["RS256"],
+                audience=EXPECTED_AUDIENCE,
+                issuer=issuer,
+            )
+            email = (
+                data.get("email")
+                or data.get("preferred_username")
+                or data.get("upn")
+                or ""
+            )
 
-        async with httpx.AsyncClient() as client:
-            response = await client.get(url, headers=headers)
-            response.raise_for_status()
-            return response.status_code == 200
+            return OAuthUserDetail(
+                sub=data.get("oid"),
+                name=data.get("name"),
+                email=email,
+                email_verified=True,
+                picture=data.get("picture", ""),
+                given_name=data.get("name").split(" ")[0],
+                family_name=data.get("name").split(" ")[-1],
+            )
+
+        except jwt.PyJWTError as e:
+            _logger.error(f"ERROR: Token validation failed:{e}", exc_info=e)
+            return OAuthErrorResponse(status_code=401, detail="Invalid token")
+
+    def get_client(self, jwks_url: str) -> PyJWKClient:
+        if self.client == None:
+            self.client = PyJWKClient(jwks_url)
+        return self.client
