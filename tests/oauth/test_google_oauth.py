@@ -152,7 +152,7 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
         )
 
         response = await self.service.sso_revoke_refresh_token(
-            refresh_token="valid_refresh_token",
+            refresh_token="valid_refresh_token", access_token=""
         )
         self.assertIsNone(response)
 
@@ -165,7 +165,9 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
             return_value=httpx.Response(400, text="invalid_token")
         )
 
-        response = await self.service.sso_revoke_refresh_token("invalid_refresh_token")
+        response = await self.service.sso_revoke_refresh_token(
+            "invalid_refresh_token", ""
+        )
 
         self.assertIsInstance(response, OAuthErrorResponse)
         self.assertEqual(response.status_code, 400)
