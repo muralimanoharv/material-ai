@@ -136,7 +136,7 @@ class GoogleOAuthService(IOAuthService):
 
     @handle_httpx_errors(url="https://oauth2.googleapis.com/revoke")
     async def sso_revoke_refresh_token(
-        self, refresh_token: str
+        self, refresh_token: str, access_token: str
     ) -> None | OAuthErrorResponse:
         url = "https://oauth2.googleapis.com/revoke"
 
