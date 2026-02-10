@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router'
 import { AutoAwesome } from '@mui/icons-material'
-import DrawerButton from '../../material/DrawerButton'
+import DrawerButton from '../other/DrawerButton'
 import { useTheme } from '@mui/material'
 import { useContext } from 'react'
 import {

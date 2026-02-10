@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { withLayout } from '../../hooks'
 import { AppContext, type AppContextType } from '../../context'
-import HealthDashboard from '../HealthDashboard'
+import HealthDashboard from '../health/HealthDashboard'
 
 function HealthPage() {
   const context = useContext(AppContext) as AppContextType

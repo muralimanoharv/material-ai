@@ -15,7 +15,7 @@ import {
 import { InfoOutlined as InfoIcon } from '@mui/icons-material'
 import { Doughnut } from 'react-chartjs-2'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
-import type { Health } from '../schema'
+import type { Health } from '../../schema'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 

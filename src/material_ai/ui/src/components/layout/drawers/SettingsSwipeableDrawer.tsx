@@ -11,7 +11,7 @@ import PaletteIcon from '@mui/icons-material/Palette'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
 import ThemeSwipeableDrawer from './ThemeSwipeableDrawer'
 import { LayoutContext } from '../../../context'
-import MaterialList from '../../material/MaterialList'
+import MaterialList from '../other/MaterialList'
 import { useNavigate } from 'react-router'
 
 // Define the Context shape

@@ -15,8 +15,8 @@ import {
   Circle as StatusIcon,
   AutoAwesome as SparkleIcon,
 } from '@mui/icons-material'
-import type { Agent } from '../schema'
-import { formatModelName } from '../utils'
+import type { Agent } from '../../schema'
+import { formatModelName } from '../../utils'
 import { useNavigate } from 'react-router'
 
 const AgentList = ({ agents }: { agents: Agent[] }) => {

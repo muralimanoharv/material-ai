@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import DrawerButton from '../../material/DrawerButton'
+import DrawerButton from '../other/DrawerButton'
 import AddCommentOutlinedIcon from '@mui/icons-material/AddCommentOutlined'
 import {
   AppContext,

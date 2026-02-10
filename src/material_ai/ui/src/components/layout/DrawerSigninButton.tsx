@@ -1,7 +1,7 @@
 import { useContext } from 'react'
-import { LayoutContext, type LayoutContextType } from '../context'
+import { LayoutContext, type LayoutContextType } from '../../context'
 import { Box, Typography, useTheme } from '@mui/material'
-import SigninButton from './SigninButton'
+import SigninButton from '../SigninButton'
 
 function DrawerSigninButton() {
   const { isDrawerOpen } = useContext(LayoutContext) as LayoutContextType
@@ -17,7 +17,6 @@ function DrawerSigninButton() {
         justifyContent: 'space-between',
         alignItems: 'flex-start',
         gap: '25px',
-        // Cast to 'any' if 'cardHover' is not in your theme.d.ts
         background:
           theme.palette.background.cardHover || theme.palette.grey[100],
         borderTopLeftRadius: '24px',

@@ -29,6 +29,8 @@ _logger = logging.getLogger(__name__)
 _app_instance: FastAPI | None = None
 _agent_loader: AgentLoader | None = None
 _lock = threading.Lock()
+logging.getLogger("aiosqlite").setLevel(logging.WARNING)
+logging.getLogger("google_adk").setLevel(logging.WARNING)
 # ####################### This is temp #######################
 from pydantic_core import core_schema
 from pydantic._internal._generate_schema import GenerateSchema

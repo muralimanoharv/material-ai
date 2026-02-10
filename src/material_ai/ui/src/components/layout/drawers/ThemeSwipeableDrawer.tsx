@@ -8,7 +8,7 @@ import ListItemText from '@mui/material/ListItemText'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import { Typography } from '@mui/material'
 import { LayoutContext, type LayoutContextType } from '../../../context'
-import MaterialList from '../../material/MaterialList'
+import MaterialList from '../other/MaterialList'
 import type { ThemeMode } from '../../../schema'
 
 export default function ThemeSwipeableDrawer() {

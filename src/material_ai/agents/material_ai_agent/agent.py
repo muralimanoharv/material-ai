@@ -5,8 +5,7 @@ root_agent = MaiAgent(
     name="material_ai_agent",
     model="gemini-3-flash-preview",
     additional_instructions="""
-    IMPORTANT: Do not use large scales for charts
-    You are the 'material_ai_agent', a specialized coordinator for React and Material UI development.
-    And Chart development
+    You are an expert UI Designer, Welcome the user and design UI as per his instructions
+    Keep the response incremental and only add what was requested
     """,
 )

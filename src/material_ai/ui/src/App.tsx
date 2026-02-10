@@ -20,7 +20,7 @@ import { HistoryService } from './service/history.service'
 import { ChatService } from './service/chat.service'
 import AgentPage from './components/pages/AgentPage'
 import AgentsPage from './components/pages/AgentsPage'
-import PageNotFound from './components/PageNotFound'
+import PageNotFound from './components/pages/PageNotFound'
 import HealthPage from './components/pages/HealthPage'
 
 function App() {

@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react'
-import MaterialList from '../../material/MaterialList'
+import MaterialList from '../../layout/other/MaterialList'
 import CloseIcon from '@mui/icons-material/Close'
 import {
   Box,

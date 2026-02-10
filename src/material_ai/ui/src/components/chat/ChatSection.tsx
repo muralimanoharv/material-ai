@@ -5,8 +5,6 @@ import {
   AppContext,
   type AppContextType,
   type ChatItemContextType,
-  ChatSectionContext,
-  type MfeMarkdownJsonRendererFn,
 } from '../../context'
 import { CHAT_SECTION_WIDTH } from '../../assets/themes'
 import { does_chat_has_func, isValidJson } from '../../utils'
@@ -18,51 +16,47 @@ import ChatText from './item/ChatText'
 
 export default function ChatSection({
   maxWidth = CHAT_SECTION_WIDTH,
-  mfeMarkdownJsonRenderer,
 }: {
   maxWidth?: string
-  mfeMarkdownJsonRenderer?: MfeMarkdownJsonRendererFn
 }) {
   const context = useContext(AppContext) as AppContextType
   const history = useMemo(() => context.history, [context.history])
   return (
-    <ChatSectionContext.Provider value={{ mfeMarkdownJsonRenderer }}>
+    <Box
+      data-testid="page-chat-section"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        alignItems: 'center',
+        position: 'relative',
+      }}
+    >
       <Box
-        data-testid="page-chat-section"
+        className="chat-items"
         sx={{
           display: 'flex',
+          gap: '4px',
           flexDirection: 'column',
           width: '100%',
-          alignItems: 'center',
-          position: 'relative',
+          maxWidth,
+          // CSS trick to show actions only on the very last message
+          '& .chat-item-box:last-of-type .actions-child-model': {
+            opacity: '1',
+          },
+          // Add spacing at bottom for the fixed footer input
+          '& .chat-item-box:last-of-type': {
+            marginBottom: '500px',
+          },
         }}
       >
-        <Box
-          className="chat-items"
-          sx={{
-            display: 'flex',
-            gap: '4px',
-            flexDirection: 'column',
-            width: '100%',
-            maxWidth,
-            // CSS trick to show actions only on the very last message
-            '& .chat-item-box:last-of-type .actions-child-model': {
-              opacity: '1',
-            },
-            // Add spacing at bottom for the fixed footer input
-            '& .chat-item-box:last-of-type': {
-              marginBottom: '500px',
-            },
-          }}
-        >
-          {history
-            .filter((chat) => !does_chat_has_func(chat, true))
-            .map((chat, idx) => {
-              return <ChatItemSection chat={chat} chatIdx={idx} key={chat.id} />
-            })}
-        </Box>
+        {history
+          .filter((chat) => !does_chat_has_func(chat, true))
+          .map((chat, idx) => {
+            return <ChatItemSection chat={chat} chatIdx={idx} key={chat.id} />
+          })}
       </Box>
-    </ChatSectionContext.Provider>
+    </Box>
   )
 }
 
@@ -154,21 +148,15 @@ interface ChatItemSectionBodyProps {
 }
 
 function ChatItemSectionBody({ part, partIdx }: ChatItemSectionBodyProps) {
-  // 1. Skip inline data (images/files are usually handled inside other wrappers or skipped here)
   if (part.inlineData) return null
 
-  // 2. Handle Function Calls
-  if (part.functionCall) return null // Cast if ChatFunctionCall expects specific shape
+  if (part.functionCall) return null
 
-  // 3. Handle Function Responses
   if (part.functionResponse) return null
 
-  // 4. Handle "Hidden" JSON Metadata (User Files)
-  // We check if text exists and is valid JSON
   if (part.text && isValidJson(part.text) && JSON.parse(part.text)?.fileNames) {
     return <ChatUserFiles part={part} />
   }
 
-  // 5. Default: Render Text Message
   return <ChatText partIdx={partIdx} part={part} />
 }

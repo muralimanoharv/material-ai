@@ -1,8 +1,8 @@
 import { useContext, useEffect } from 'react'
 import { useSearchParams } from 'react-router'
-import { AppContext, type AppContextType } from '../context'
-import { useSessionId } from '../hooks'
-import ChatPage from './pages/ChatPage'
+import { AppContext, type AppContextType } from '../../context'
+import { useSessionId } from '../../hooks'
+import ChatPage from '../pages/ChatPage'
 
 function AgentPageSection({ agent }: { agent: string }) {
   const { apiService, setSessions, fetchSession, historyService } = useContext(

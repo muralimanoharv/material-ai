@@ -1,4 +1,4 @@
-import React, { createContext, type ReactNode } from 'react'
+import React, { createContext } from 'react'
 import { type Theme } from '@mui/material/styles'
 import type {
   Agent,
@@ -103,11 +103,3 @@ export const ThemeContext = createContext<ThemeContextType | null>(null)
 export const LayoutContext = createContext<LayoutContextType | null>(null)
 
 export const ChatItemContext = createContext<ChatItemContextType | null>(null)
-
-export type MfeMarkdownJsonRendererFn = (
-  json: Record<string, string> | null,
-) => ReactNode | null
-
-export const ChatSectionContext = createContext<{
-  mfeMarkdownJsonRenderer?: MfeMarkdownJsonRendererFn
-}>({})

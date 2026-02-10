@@ -12,7 +12,7 @@ import {
   type AppContextType,
 } from '../../context'
 import SettingsSwipeableDrawer from './drawers/SettingsSwipeableDrawer'
-import MaterialDrawer, { drawerWidth } from '../material/MaterialDrawer'
+import MaterialDrawer, { drawerWidth } from './other/MaterialDrawer'
 import Header from './Header'
 import Footer from './Footer'
 import SessionHistorySection from './SessionHistorySection'
@@ -21,7 +21,7 @@ import MenuButton from './buttons/MenuButton'
 import SettingsButton from './buttons/SettingsButton'
 import { useAgentId, useMobileHook } from '../../hooks'
 import AgentsButton from './buttons/AgentsButton'
-import DrawerSigninButton from '../DrawerSigninButton'
+import DrawerSigninButton from './DrawerSigninButton'
 
 interface LayoutProps {
   children: React.ReactNode

@@ -2,15 +2,11 @@ import { Typography, type TypographyProps } from '@mui/material'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { useContext, type ReactNode } from 'react'
-import { renderDynamicUI, type UINode } from '../DynamicMuiLoader'
-import {
-  AppContext,
-  ChatSectionContext,
-  type AppContextType,
-} from '../../context'
+import { AppContext, type AppContextType } from '../../context'
 import CustomCode from './CustomCode'
+import BabelReactRenderer from '../BabelReactRenderer'
+import { isValidJson } from '../../utils'
 
-// 1. Define Props Interface
 interface MarkdownProps {
   children: string | null | undefined
 }
@@ -46,59 +42,36 @@ function TypographyParser(variant: TypographyProps['variant']) {
 }
 
 const CustomCodeRenderer = ({
-  className,
   children,
 }: React.HTMLAttributes<HTMLElement>) => {
-  const { mfeMarkdownJsonRenderer } = useContext(ChatSectionContext)
-  const match = /language-(\w+)/.exec(className || '')
-  const isJson = match && match[1] === 'json'
   const { setSnack } = useContext(AppContext) as AppContextType
 
-  if (!isJson) return <code>{children}</code>
+  const rawString = String(children).replace(/\n$/, '')
 
-  let parsedData: Record<string, string> | null = null
-  let isParsedSuccessfully = false
-  const jsonString = String(children).replace(/\n$/, '')
-  try {
-    parsedData = JSON.parse(jsonString)
-    isParsedSuccessfully = true
-  } catch (error) {
-    console.warn('Failed to parse JSON for UI:', error)
+  if (rawString.includes('export default') || rawString.includes('React')) {
+    return <BabelReactRenderer code={rawString} />
   }
 
-  if (!isParsedSuccessfully) {
+  if (isValidJson(rawString)) {
+    const content = JSON.stringify(JSON.parse(rawString), null, 2)
     return (
       <CustomCode
-        content={jsonString}
-        title="TEXT"
-        onCopy={async () => {
-          await navigator.clipboard.writeText(
-            JSON.stringify(parsedData, null, 2),
-          )
-          setSnack('Copied to clipboard')
-        }}
-      />
-    )
-  }
-  if (mfeMarkdownJsonRenderer) {
-    const node = mfeMarkdownJsonRenderer(parsedData)
-    if (node) return node
-  }
-
-  if (!parsedData?.componentName) {
-    return (
-      <CustomCode
-        content={JSON.stringify(parsedData, null, 2)}
+        content={content}
         title="JSON"
         onCopy={async () => {
-          await navigator.clipboard.writeText(
-            JSON.stringify(parsedData, null, 2),
-          )
+          await navigator.clipboard.writeText(content)
           setSnack('Copied to clipboard')
         }}
       />
     )
   }
 
-  return <>{renderDynamicUI(parsedData as UINode)}</>
+  ;<CustomCode
+    content={rawString}
+    title="TEXT"
+    onCopy={async () => {
+      await navigator.clipboard.writeText(rawString)
+      setSnack('Copied to clipboard')
+    }}
+  />
 }

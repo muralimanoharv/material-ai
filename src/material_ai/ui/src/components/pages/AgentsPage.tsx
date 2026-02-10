@@ -3,7 +3,7 @@ import { Box } from '@mui/material'
 import { withLayout } from '../../hooks'
 import { AppContext, type AppContextType } from '../../context'
 import Greeting from '../Greeting'
-import AgentList from '../AgentList'
+import AgentList from '../agents/AgentList'
 
 function AgentsPage() {
   const { agents, user, setSessions } = useContext(AppContext) as AppContextType
