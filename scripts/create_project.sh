@@ -97,19 +97,19 @@ download_terraform() {
 
 download_template_files() {
     # URLs for the root directory
-    wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/config.ini
-    wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/src/material_ai/ui/ui_config.yaml
-    wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.dockerignore
-    wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.gitignore
-    wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/cloudbuild.yaml
-    wget -q https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.env.example
+    curl -O https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/config.ini
+    curl -O https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/src/material_ai/ui/ui_config.yaml
+    curl -O https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.dockerignore
+    curl -O https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.gitignore
+    curl -O https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/cloudbuild.yaml
+    curl -O https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.env.example
     # URLs for the scripts directory
     mkdir -p scripts
-    wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/setup.sh
-    wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/auth.sh
-    wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/deploy_crun.sh
-    wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/teardown.sh
-    wget -q -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/main.tf
+    curl -O -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/setup.sh
+    curl -O -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/auth.sh
+    curl -O -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/deploy_crun.sh
+    curl -O -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/teardown.sh
+    curl -O -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/main.tf
 }
 
 
