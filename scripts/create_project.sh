@@ -135,7 +135,9 @@ PROJECT_NAME_LOWERCASE=$(echo "$PROJECT_NAME_SANITIZED" | tr '[:upper:]' '[:lowe
 PROJECT_PASCAL_CASE=""
 IFS='_' read -ra words <<< "$PROJECT_NAME_LOWERCASE"
 for word in "${words[@]}"; do
-  PROJECT_PASCAL_CASE+="${word^}"
+  first_char=$(printf "%.1s" "$word" | tr '[:upper:]' '[:lower:]' | tr '[:lower:]' '[:upper:]')
+  rest_of_word=$(printf "%.s" "$word"; echo "${word:1}")
+  PROJECT_PASCAL_CASE+="${first_char}${rest_of_word}"
 done
 unset IFS
 
