@@ -831,13 +831,17 @@ def create_dummy_ui_config() -> UIConfig:
         title="Test",
         greeting="Test greeting",
         errorMessage="Test error message",
-        models=[
-            {"model": "Test Model 1", "tagline": "Test tagline 1"},
-            {"model": "Test Model 2", "tagline": "Test tagline 2"},
-        ],
-        feedback={
-            "positive": {"value": "GOOD", "categories": []},
-            "negative": {"value": "BAD", "categories": []},
+        agents={
+            "greeting_agent": {
+                "title": "Greeting Agent",
+                "greeting": "What a great day to chat with you!",
+                "show_footer": "true",
+                "chat_section_width": "760px",
+                "feedback": {
+                    "positive": {"value": "GOOD", "categories": []},
+                    "negative": {"value": "BAD", "categories": []},
+                },
+            }
         },
         theme={
             "lightPalette": {
