@@ -1,7 +1,6 @@
 export const HOST = import.meta.env.VITE_API_BASE_URL
 import {
   type Session,
-  type AppConfig,
   type FeedbackDto,
   type UserResponse,
   type RequestPart,
@@ -12,19 +11,43 @@ import {
   type Agent,
   type AgentResponse,
   type Health,
+  AppConfigImpl,
 } from '../schema'
 
 interface ApiServiceContext {
   getUser: () => User | undefined
   on401: () => void
   on404: () => void
-  getConfig: () => AppConfig
+  getConfig: () => AppConfigImpl
 }
 
 export class ApiService {
   private context: ApiServiceContext
   constructor(context: ApiServiceContext) {
     this.context = context
+  }
+
+  async send_message_api(message: SendMessageApiArgs) {
+    const response = await fetch(`${HOST}/run`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        app_name: message.app_name,
+        user_id: message.sub,
+        session_id: message.session_id,
+        new_message: {
+          role: 'user',
+          parts: message.parts,
+        },
+        streaming: false,
+      }),
+    })
+    this.handle_response(response)
+
+    return response.json()
   }
 
   async send_message(
@@ -313,6 +336,14 @@ export class NotFound extends Error {
     }
   }
 }
+
+interface SendMessageApiArgs {
+  parts: RequestPart[]
+  sub: string
+  session_id: string
+  app_name: string
+}
+
 interface SendMessageArgs {
   parts: RequestPart[]
   session_id: string

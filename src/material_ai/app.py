@@ -123,7 +123,7 @@ def _setup_overrides(
             feedback. If set to None, a default no-op handler that returns a
             200 status code is used instead.
     """
-    ui_config = get_ui_config(ui_config_yaml)
+    ui_config = get_ui_config(ui_config_yaml, agents=get_agent_loader().list_agents())
 
     def override_get_oauth_service() -> IOAuthService:
         return oauth_service
@@ -261,9 +261,9 @@ def get_app(
                 session_service_uri=config.adk.session_db_url,
                 **adk_kwargs,
             )
+            _agent_loader = AgentLoader(agent_dir)
             _setup_app(app, oauth_service, ui_config_yaml, feedback_handler)
             _app_instance = app
-            _agent_loader = AgentLoader(agent_dir)
 
         return _app_instance
 

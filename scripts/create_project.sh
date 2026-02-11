@@ -98,7 +98,7 @@ download_terraform() {
 download_template_files() {
     # URLs for the root directory
     curl -O https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/config.ini
-    curl -O https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/src/material_ai/ui/ui_config.yaml
+    # curl -O https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/src/material_ai/ui/ui_config.yaml
     curl -O https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.dockerignore
     curl -O https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.gitignore
     curl -O https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/cloudbuild.yaml
@@ -295,6 +295,103 @@ exclude = '''
 name = "pypi"
 url = "https://pypi.org/simple"
 default = true
+EOF
+
+cat > ui_config.yaml << EOF
+# --- UI Configuration ---
+# This file configures the basic UI elements, models, feedback system, and theme of the application.
+
+# -- General Settings --
+# title: The main title of the application, displayed in the browser tab.
+title: Gemini
+# greeting: The welcome message or initial prompt shown to the user.
+greeting: What should we do today?
+# errorMessage: A generic error message for unexpected issues.
+errorMessage: Some error has occured, Please try again later
+
+agents:
+  ${PROJECT_NAME_LOWERCASE}:
+    # Agent Specific title
+    title: Greeting Agent
+    # Agent Specific greeting
+    greeting: What a great day to chat with you!
+    # If you would like to show footer
+    show_footer: true
+    # Ideal chat section width
+    chat_section_width: 760px
+    # Configuration related to agent feedback
+    feedback:
+      # Settings for a positive user response.
+      positive:
+        # value: The internal identifier sent for positive feedback.
+        value: GOOD
+        # categories: Sub-categories for feedback (empty for positive).
+        categories: []
+      # Settings for a negative user response.
+      negative:
+        # value: The internal identifier sent for negative feedback.
+        value: BAD
+        # categories: A list of predefined reasons for negative feedback.
+        categories:
+          - Not / poorly personalized
+          - Problem with saving information
+          - Not factually correct
+          - Didn't follow instructions
+          - Offensive / Unsafe
+          - Wrong language
+# -- Theme Configuration --
+# Defines the visual appearance (colors) for light and dark modes.
+theme:
+  # lightPalette: Color scheme for the light mode UI.
+  lightPalette:
+    mode: light
+    # primary: Main accent color for buttons, links, etc.
+    primary:
+      main: '#1a73e8'
+    # background: Colors for various background surfaces.
+    background:
+      default: '#ffffff'     # Main app background
+      paper: '#f0f4f9'       # Side panels, containers
+      card: '#f0f4f9'         # Card components
+      cardHover: '#dde3ea'    # Card on mouse hover
+      history: '#d3e3fd'      # History items
+    # text: Colors for different types of text.
+    text:
+      primary: '#07080aff'    # Main text
+      secondary: '#1b1c1d'    # Less important text
+      tertiary: '#575b5f'     # Hints, disabled text
+      h5: '#1f1f1f'          # H5 headings
+      selected: '#0842a0'     # Selected text/items
+      tagline: '#9a9b9c'      # Model taglines
+    # tooltip: Colors for tooltips.
+    tooltip:
+      background: '#1b1c1d'
+      text: '#e8eaed'
+  # darkPalette: Color scheme for the dark mode UI.
+  darkPalette:
+    mode: dark
+    # primary: Main accent color for dark mode.
+    primary:
+      main: '#8ab4f8'
+    # background: Colors for various background surfaces in dark mode.
+    background:
+      default: '#1b1c1d'     # Main app background
+      paper: '#333537'       # Side panels, containers
+      card: '#282a2c'         # Card components
+      cardHover: '#3d3f42'    # Card on mouse hover
+      history: '#1f3760'      # History items
+    # text: Colors for different types of text in dark mode.
+    text:
+      primary: '#fff'          # Main text
+      secondary: '#9aa0a6'    # Less important text
+      tertiary: '#a2a9b0'     # Hints, disabled text
+      h5: '#e3e3e3'          # H5 headings
+      selected: '#d3e3fd'     # Selected text/items
+      tagline: '#747775'      # Model taglines
+    # tooltip: Colors for tooltips in dark mode.
+    tooltip:
+      background: '#fff'
+      text: '#1b1c1d'
 EOF
 
 echo "✅ Config files created."

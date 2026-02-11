@@ -61,6 +61,13 @@ export default function Layout({ children, showFooter = true }: LayoutProps) {
     return open || hoverOpen
   }
 
+  const shouldShowFooter = () => {
+    if (!context.user) return true
+    if (!agentId) return true
+    if (showFooter) return context.config.getAgent(agentId)?.show_footer
+    return false
+  }
+
   return (
     <LayoutContext.Provider
       value={{
@@ -121,7 +128,7 @@ export default function Layout({ children, showFooter = true }: LayoutProps) {
             >
               {children}
             </Box>
-            {showFooter && <Footer />}
+            {shouldShowFooter() && <Footer />}
           </Box>
         </Box>
       </Box>

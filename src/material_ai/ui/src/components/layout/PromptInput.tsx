@@ -159,10 +159,12 @@ export default function PromptInput() {
               },
             }}
             placeholder={
-              user ? `Ask ${config.title}` : `Sign in to ask ${config.title}`
+              user
+                ? `Ask ${config.getTitle(agent)}`
+                : `Sign in to ask ${config.getTitle(agent)}`
             }
             inputProps={{
-              'aria-label': `Ask ${config.title}`,
+              'aria-label': `Ask ${config.getTitle(agent)}`,
               'data-testid': 'page-prompt-input',
               style: {
                 height: fullScreen ? '500px' : undefined,
@@ -244,7 +246,7 @@ export default function PromptInput() {
         sx={{ textAlign: 'center', marginTop: '16px', marginBottom: '16px' }}
       >
         <Typography variant="h6">
-          {config.title} can make mistakes, so double-check it
+          {config.getTitle(agent)} can make mistakes, so double-check it
         </Typography>
       </Box>
     </Box>

@@ -76,7 +76,7 @@ function SessionItem({ session, sessionIdx }: SessionItemProps) {
       if (isSelected) context.on_new_chat(agent)
     } catch (e: unknown) {
       console.error(e)
-      context.setSnack(config?.errorMessage || 'Error deleting session')
+      context.setSnack(config.getErrorMessage())
     }
   }
 

@@ -1,17 +1,41 @@
 from __future__ import annotations
 from google.adk.agents import Agent
+from pydantic import BaseModel, Field
+from typing import List
+
+
+class Coordinate(BaseModel):
+    x: float
+    y: float
+
+
+class Node(Coordinate):
+    label: str
+
+
+class Connection(BaseModel):
+    from_node: Coordinate = Field(alias="from")
+    to_node: Coordinate = Field(alias="to")
+
+    class Config:
+        populate_by_name = True
+
+
+class VectorGraph(BaseModel):
+    nodes: List[Node]
+    connections: List[Connection]
+
 
 root_agent = Agent(
     name="vector_agent",
     model="gemini-2.0-flash",
     output_key="json",  # This ensures the internal reasoning stays structured
     tools=[],
-    description="A semantic analysis agent that provides Markdown explanations containing JSON data.",
+    output_schema=VectorGraph,
+    description="Generates a graph with structured output in JSON",
     instruction="""
-    You are a Vector Space Specialist. You communicate using Markdown. 
-    Every single response MUST contain a triple-backtick JSON block: ```json ... ```
+    You are a Vector Space Specialist. 
 
-    ### The JSON Structure inside Markdown:
     The JSON block must always include:
     1. "nodes": A full list of objects { "x": float, "y": float, "label": string } for ALL words in the session.
     2. "connections": A list of objects { "from": { "x": float, "y": float }, "to": { "x": float, "y": float } }.
@@ -25,8 +49,19 @@ root_agent = Agent(
        - If the user asks for the distance, similarity, or relationship between words, you MUST populate the "connections" array with links between those specific nodes.
        - If the user asks for "top N related words," draw connections from the target word to its N closest neighbors.
 
-    3. **Markdown Content**:
-       - Before or after the JSON block, explain the 'why' behind the placement.
-       - Discuss how high-dimensional nuances (like 1536D) are projected into this 2D view to show categories like 'fruit' or 'tech'.
+    3. Sample Output:
+      {
+         "nodes": [
+            {"x": 10.5, "y": 20.0, "label": "Start"},
+            {"x": 50.0, "y": 100.2, "label": "End"}
+         ],
+         "connections": [
+            {
+                  "from": {"x": 10.5, "y": 20.0},
+                  "to": {"x": 50.0, "y": 100.2}
+            }
+         ]
+      }
+
     """,
 )

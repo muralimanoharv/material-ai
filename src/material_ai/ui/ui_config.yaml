@@ -9,40 +9,42 @@ greeting: What should we do today?
 # errorMessage: A generic error message for unexpected issues.
 errorMessage: Some error has occured, Please try again later
 
-# -- Models Configuration --
-# A list of selectable models available in the application.
-models:
-  - # model: The display name of the model.
-    model: 2.5 Flash
-    # tagline: A short description of the model's primary use case.
-    tagline: Fast all-round help
-  - # model: The display name of the model.
-    model: 2.5 Pro
-    # tagline: A short description of the model's primary use case.
-    tagline: Reasoning, math & code
+agents:
+  material_ai_agent:
+    # width of chat section
+    chat_section_width: 100%
+  greeting_agent:
+    # Agent Specific title
+    title: Greeting Agent
+    # Agent Specific greeting
+    greeting: What a great day to chat with you!
+    # If you would like to show footer
+    show_footer: true
+    # Ideal chat section width
+    chat_section_width: 760px
+    # Configuration related to agent feedback
+    feedback:
+      # Settings for a positive user response.
+      positive:
+        # value: The internal identifier sent for positive feedback.
+        value: GOOD
+        # categories: Sub-categories for feedback (empty for positive).
+        categories: []
+      # Settings for a negative user response.
+      negative:
+        # value: The internal identifier sent for negative feedback.
+        value: BAD
+        # categories: A list of predefined reasons for negative feedback.
+        categories:
+          - Not / poorly personalized
+          - Problem with saving information
+          - Not factually correct
+          - Didn't follow instructions
+          - Offensive / Unsafe
+          - Wrong language
 
-# -- Feedback System --
-# Configures the user feedback options.
-feedback:
-  # Settings for a positive user response.
-  positive:
-    # value: The internal identifier sent for positive feedback.
-    value: GOOD
-    # categories: Sub-categories for feedback (empty for positive).
-    categories: []
-  # Settings for a negative user response.
-  negative:
-    # value: The internal identifier sent for negative feedback.
-    value: BAD
-    # categories: A list of predefined reasons for negative feedback.
-    categories:
-      - Not / poorly personalized
-      - Problem with saving information
-      - Not factually correct
-      - Didn't follow instructions
-      - Offensive / Unsafe
-      - Wrong language
-
+  vector_agent:
+    show_footer: false
 # -- Theme Configuration --
 # Defines the visual appearance (colors) for light and dark modes.
 theme:

@@ -7,6 +7,12 @@ import CustomCode from './CustomCode'
 import BabelReactRenderer from '../BabelReactRenderer'
 import { isValidJson } from '../../utils'
 
+export function TypographyParser(variant: TypographyProps['variant']) {
+  return ({ children }: { children?: ReactNode }) => (
+    <Typography variant={variant}>{children}</Typography>
+  )
+}
+
 interface MarkdownProps {
   children: string | null | undefined
 }
@@ -19,25 +25,12 @@ export default function Markdown(props: MarkdownProps) {
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          p: TypographyParser('p'),
-          h1: TypographyParser('h1'),
-          h2: TypographyParser('h2'),
-          h3: TypographyParser('h3'),
-          h4: TypographyParser('h4'),
-          h5: TypographyParser('h5'),
-          h6: TypographyParser('h6'),
           code: CustomCodeRenderer,
         }}
       >
         {content}
       </ReactMarkdown>
     </div>
-  )
-}
-
-function TypographyParser(variant: TypographyProps['variant']) {
-  return ({ children }: { children?: ReactNode }) => (
-    <Typography variant={variant}>{children}</Typography>
   )
 }
 
@@ -66,12 +59,5 @@ const CustomCodeRenderer = ({
     )
   }
 
-  ;<CustomCode
-    content={rawString}
-    title="TEXT"
-    onCopy={async () => {
-      await navigator.clipboard.writeText(rawString)
-      setSnack('Copied to clipboard')
-    }}
-  />
+  return children
 }

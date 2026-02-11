@@ -1,6 +1,6 @@
 import React from 'react'
 import type {
-  AppConfig,
+  AppConfigImpl,
   ChatItem,
   FileAttachment,
   Session,
@@ -13,7 +13,7 @@ import type { NavigateFunction } from 'react-router'
 
 interface ChatServiceContext {
   getUser: () => User | undefined
-  getConfig: () => AppConfig
+  getConfig: () => AppConfigImpl
   setPromptLoading: React.Dispatch<React.SetStateAction<boolean>>
   setFiles: React.Dispatch<React.SetStateAction<FileAttachment[]>>
   setSessions: React.Dispatch<React.SetStateAction<Session[]>>
@@ -197,14 +197,14 @@ export class ChatService {
     this.historyService.add_history({
       content: {
         role: 'model',
-        parts: [{ text: this.context.getConfig().errorMessage }],
+        parts: [{ text: this.context.getConfig().getErrorMessage() }],
       },
       id,
       loading_id: id,
       chat_history: [],
       cancelled: true,
     })
-    this.context.setSnack(this.context.getConfig().errorMessage)
+    this.context.setSnack(this.context.getConfig().getErrorMessage())
   }
 
   async cancel_api(): Promise<void> {

@@ -1,5 +1,5 @@
 import { useState, useEffect, type ReactNode } from 'react'
-import { type AppConfig } from '../schema'
+import { type AppConfig, AppConfigImpl } from '../schema'
 import { AppThemeProvider } from './AppThemeProvider'
 import { HOST } from '../service/api.service'
 
@@ -8,10 +8,12 @@ interface AppConfigProviderProps {
 }
 
 export function AppConfigProvider({ children }: AppConfigProviderProps) {
-  const [config, setConfig] = useState<AppConfig | undefined>(() => {
+  const [config, setConfig] = useState<AppConfigImpl | undefined>(() => {
     try {
       const storedConfig = sessionStorage.getItem('config')
-      return storedConfig ? JSON.parse(storedConfig) : undefined
+      return storedConfig
+        ? new AppConfigImpl(JSON.parse(storedConfig))
+        : undefined
     } catch {
       return undefined
     }
@@ -36,7 +38,7 @@ export function AppConfigProvider({ children }: AppConfigProviderProps) {
         const data = (await response.json()) as AppConfig
 
         sessionStorage.setItem('config', JSON.stringify(data))
-        setConfig(data)
+        setConfig(new AppConfigImpl(data))
       } catch (err) {
         if (err instanceof Error) {
           setError(err.message)

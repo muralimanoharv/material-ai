@@ -108,7 +108,9 @@ test.describe('Greeting Agent Chat Page', () => {
     await automationService.goto_agent('greeting_agent')
 
     await automationService.check_title(`Hello, ${user.given_name}`)
-    await automationService.check_subtitle(config.greeting)
+    await automationService.check_subtitle(
+      config.agents['greeting_agent'].greeting,
+    )
 
     const prompt = `
         Hello, What can you do today, Are you a bot or a robot, what is you 
@@ -146,10 +148,18 @@ test.describe('Greeting Agent Chat Page', () => {
     await automationService.check_chat_item_prompt_toggle(0, 0, prompt)
 
     //Positive Feedback Test
-    await automationService.check_chat_item_positive_feedback(2, 0)
+    await automationService.check_chat_item_positive_feedback(
+      2,
+      0,
+      'greeting_agent',
+    )
 
     //Negative Feedback test
-    await automationService.check_chat_item_negative_feedback(2, 0)
+    await automationService.check_chat_item_negative_feedback(
+      2,
+      0,
+      'greeting_agent',
+    )
 
     //Copy Response test
     await automationService.check_chat_item_copy_response(2, 0)
@@ -161,7 +171,9 @@ test.describe('Greeting Agent Chat Page', () => {
     // New Chat Button
     await automationService.new_chat()
     await automationService.check_title(`Hello, ${user.given_name}`)
-    await automationService.check_subtitle(config.greeting)
+    await automationService.check_subtitle(
+      config.agents['greeting_agent'].greeting,
+    )
 
     const prompt_2 = `Hey what shall we do today`
     await automationService.prompt(prompt_2)
@@ -185,10 +197,14 @@ test.describe('Greeting Agent Chat Page', () => {
     //Delete Session History Test
     await automationService.delete_session_history(0)
     await automationService.check_title(`Hello, ${user.given_name}`)
-    await automationService.check_subtitle(config.greeting)
+    await automationService.check_subtitle(
+      config.agents['greeting_agent'].greeting,
+    )
 
     //Prompt input Agent selection test
     await automationService.check_prompt_input_agent_menu(agents)
+    await page.goto('/')
+    await automationService.goto_agent('greeting_agent')
 
     //Prompt input upload files test
     await automationService.select_prompt_input_agent_menu('greeting_agent')

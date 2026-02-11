@@ -3,13 +3,8 @@ import threading
 import logging
 import pathlib
 import yaml
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from .theme import ThemeConfig
-
-
-class ModelInfo(pydantic.BaseModel):
-    model: str
-    tagline: str
 
 
 class Feedback(pydantic.BaseModel):
@@ -22,39 +17,45 @@ class FeedbackInfo(pydantic.BaseModel):
     negative: Feedback
 
 
+class AgentInfo(pydantic.BaseModel):
+    title: str
+    greeting: str
+    show_footer: bool
+    chat_section_width: str
+    feedback: FeedbackInfo
+
+
 class UIConfig(pydantic.BaseModel):
     """Defines the structured response for the config endpoint."""
 
     title: str
     greeting: str
     errorMessage: str
-    models: List[ModelInfo]
-    feedback: FeedbackInfo
+    agents: Dict[str, AgentInfo]
     theme: ThemeConfig
+
+
+DEFAULT_FEEDBACK = FeedbackInfo(
+    positive={"value": "GOOD", "categories": []},
+    negative={
+        "value": "BAD",
+        "categories": [
+            "Not / poorly personalized",
+            "Problem with saving information",
+            "Not factually correct",
+            "Didn't follow instructions",
+            "Offensive / Unsafe",
+            "Wrong language",
+        ],
+    },
+)
 
 
 DEFAULT_CONFIG = UIConfig(
     title="Gemini",
     greeting="What should we do today?",
     errorMessage="Some error has occured, Please try again later",
-    models=[
-        {"model": "2.5 Flash", "tagline": "Fast all-round help"},
-        {"model": "2.5 Pro", "tagline": "Reasoning, math & code"},
-    ],
-    feedback={
-        "positive": {"value": "GOOD", "categories": []},
-        "negative": {
-            "value": "BAD",
-            "categories": [
-                "Not / poorly personalized",
-                "Problem with saving information",
-                "Not factually correct",
-                "Didn't follow instructions",
-                "Offensive / Unsafe",
-                "Wrong language",
-            ],
-        },
-    },
+    agents={},
     theme={
         "lightPalette": {
             "mode": "light",
@@ -113,7 +114,7 @@ _lock = threading.Lock()
 _logger = logging.getLogger(__name__)
 
 
-def get_ui_config(ui_config_yaml) -> UIConfig:
+def get_ui_config(ui_config_yaml, agents: list[str]) -> UIConfig:
     global _config_instance
     with _lock:
         if _config_instance is None:
@@ -128,7 +129,33 @@ def get_ui_config(ui_config_yaml) -> UIConfig:
                 return _config_instance
             try:
                 with open(config_path, "r") as file:
-                    _config_instance = UIConfig(**yaml.safe_load(file))
+
+                    loaded_config: Dict[str, Any] = yaml.safe_load(file)
+                    agents_map: Dict[str, AgentInfo] = {}
+
+                    for agent in agents:
+                        agent_config = loaded_config.get("agents", {}).get(agent, {})
+                        agents_map[agent] = AgentInfo(
+                            title=agent_config.get("title", DEFAULT_CONFIG.title),
+                            greeting=agent_config.get(
+                                "greeting", DEFAULT_CONFIG.greeting
+                            ),
+                            show_footer=agent_config.get("show_footer", True),
+                            chat_section_width=agent_config.get(
+                                "chat_section_width", "760px"
+                            ),
+                            feedback=agent_config.get("feedback", DEFAULT_FEEDBACK),
+                        )
+
+                    _config_instance = UIConfig(
+                        title=loaded_config.get("title", DEFAULT_CONFIG.title),
+                        greeting=loaded_config.get("greeting", DEFAULT_CONFIG.greeting),
+                        errorMessage=loaded_config.get(
+                            "errorMessage", DEFAULT_CONFIG.errorMessage
+                        ),
+                        theme=loaded_config.get("theme", DEFAULT_CONFIG.theme),
+                        agents=agents_map,
+                    )
             except Exception as e:
                 msg = f"WARNING: Error loading ui configuration: {e}"
                 _logger.warning(msg, exc_info=e)

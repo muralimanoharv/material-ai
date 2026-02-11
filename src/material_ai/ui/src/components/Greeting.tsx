@@ -1,12 +1,22 @@
 import { Box, Typography, useTheme } from '@mui/material'
 import { useContext } from 'react'
 import { AppContext, type AppContextType } from '../context'
+import { useAgentId } from '../hooks'
 
 function Greeting({ greeting }: { greeting?: string }) {
   const { user, config, loading, history } = useContext(
     AppContext,
   ) as AppContextType
   const theme = useTheme()
+  const agentId = useAgentId()
+
+  const getTitle = () => {
+    return config.getTitle(agentId)
+  }
+
+  const getGreeting = () => {
+    return config.getGreeting(agentId)
+  }
 
   let showHeading = false
 
@@ -50,7 +60,7 @@ function Greeting({ greeting }: { greeting?: string }) {
             sx={{ userSelect: 'none' }}
             data-testid="page-subtitle"
           >
-            {greeting ? greeting : config.greeting}
+            {greeting ? greeting : getGreeting()}
           </Typography>
         </>
       ) : (
@@ -66,7 +76,7 @@ function Greeting({ greeting }: { greeting?: string }) {
               userSelect: 'none',
             }}
           >
-            Meet {config.title},
+            Meet {getTitle()},
           </Typography>
           <Typography
             sx={{ userSelect: 'none' }}

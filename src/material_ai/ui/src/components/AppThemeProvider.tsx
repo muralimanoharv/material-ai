@@ -4,12 +4,12 @@ import {
   createTheme,
   type Theme,
 } from '@mui/material/styles'
-import { lightTheme, darkTheme } from '../assets/themes'
-import { type AppConfig, type ThemeMode } from '../schema'
+import { getDarkTheme, getLightTheme } from '../assets/themes'
+import { type ThemeMode, type AppConfigImpl } from '../schema'
 import { ThemeContext } from '../context'
 
 interface AppThemeProviderProps {
-  config: AppConfig
+  config: AppConfigImpl
   children: ReactNode
 }
 
@@ -25,11 +25,14 @@ export function AppThemeProvider({ config, children }: AppThemeProviderProps) {
       return createTheme()
     }
 
-    if (mode === 'light') return lightTheme(config)
-    if (mode === 'dark') return darkTheme(config)
+    const darkTheme = getDarkTheme(config.getTheme())
+    const lightTheme = getLightTheme(config.getTheme())
+
+    if (mode === 'light') return lightTheme
+    if (mode === 'dark') return darkTheme
 
     const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    return darkModeMediaQuery.matches ? darkTheme(config) : lightTheme(config)
+    return darkModeMediaQuery.matches ? darkTheme : lightTheme
   }, [mode, config])
 
   return (

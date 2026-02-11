@@ -13,6 +13,7 @@ import UserTextToggleButton from './UserTextToggleButton'
 import UserButtons from './UserButtons'
 import ChatNegativeFeebackSelection from './ChatNegativeFeebackSelection'
 import type { ChatPart } from '../../../schema'
+import { useAgentId } from '../../../hooks'
 
 const MAX_COLLAPSED_LENGTH = 116
 
@@ -27,6 +28,7 @@ export default function ChatText({ part, partIdx }: ChatItemProps) {
   const { feedback, negativeFeedbackToggle, chat, chatIdx } = useContext(
     ChatItemContext,
   ) as ChatItemContextType
+  const agentId = useAgentId()
 
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -50,7 +52,8 @@ export default function ChatText({ part, partIdx }: ChatItemProps) {
   const showToggleBtn = isUserMessage && isLargeText
 
   const showNegativeFeedback =
-    feedback?.feedback_category === config.feedback.negative.value &&
+    feedback?.feedback_category ===
+      config.getAgent(agentId)?.feedback.negative.value &&
     negativeFeedbackToggle
 
   // Define styles with SxProps for type safety on CSS properties

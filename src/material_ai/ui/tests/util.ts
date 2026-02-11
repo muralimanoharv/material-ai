@@ -99,7 +99,9 @@ export class AutomationService {
     await expect(page.getByTestId(id)).toBeVisible({
       timeout: options?.timeout || 30000,
     })
-    expect(page.getByTestId(id).getByTestId('chat-text')).toBeVisible()
+    expect(page.getByTestId(id).getByTestId('chat-text')).toBeVisible({
+      timeout: options?.timeout || 30000,
+    })
     if (!prompt) return
     const truncatedPrompt =
       prompt.length >= 116 ? `${prompt.substring(0, 116)}...` : prompt
@@ -136,7 +138,10 @@ export class AutomationService {
 
   async select_prompt_input_agent_menu(agent: string) {
     const page = this.page
-    await page.getByTestId('prompt-input-agent-menu').click()
+    await expect(page.getByTestId('prompt-input-agent-menu')).toBeVisible({
+      timeout: 30000,
+    })
+    await page.getByTestId('prompt-input-agent-menu').click({ timeout: 10000 })
     await page.getByTestId(`prompt-input-agent-${agent}`).click()
   }
 
@@ -209,7 +214,11 @@ export class AutomationService {
     )
   }
 
-  async check_chat_item_positive_feedback(chat: number, part: number) {
+  async check_chat_item_positive_feedback(
+    chat: number,
+    part: number,
+    agent: string,
+  ) {
     const page = this.page
     const id = `page-chat-${chat}-part-${part}`
     await expect(
@@ -219,17 +228,21 @@ export class AutomationService {
     await page.getByTestId(id).getByTestId('thumbs-up-button').click()
 
     await expect(page.getByTestId('snack-bar-message')).toHaveText(
-      `Thank you! Your feedback helps make ${this.config.title} better for everyone`,
+      `Thank you! Your feedback helps make ${this.config.agents[agent].title} better for everyone`,
     )
   }
 
-  async check_chat_item_negative_feedback(chat: number, part: number) {
+  async check_chat_item_negative_feedback(
+    chat: number,
+    part: number,
+    agent: string,
+  ) {
     const page = this.page
     const config = this.config
     const id = `page-chat-${chat}-part-${part}`
     await page.getByTestId(id).getByTestId('thumbs-down-button').click()
 
-    for (const category of config.feedback.negative.categories) {
+    for (const category of config.agents[agent].feedback.negative.categories) {
       await expect(
         page.getByTestId(id).getByTestId(`feedback-category-${category}`),
       ).toBeVisible()
@@ -238,12 +251,12 @@ export class AutomationService {
     await page
       .getByTestId(id)
       .getByTestId(
-        `feedback-category-${config.feedback.negative.categories[0]}`,
+        `feedback-category-${config.agents[agent].feedback.negative.categories[0]}`,
       )
       .click()
 
     await expect(page.getByTestId('snack-bar-message')).toHaveText(
-      `Thank you for helping improve ${config.title}`,
+      `Thank you for helping improve ${config.agents[agent].title}`,
     )
     await page.getByTestId(id).getByTestId('thumbs-down-button').click()
     await page.getByTestId(id).getByTestId('thumbs-down-button').click()
@@ -261,7 +274,7 @@ export class AutomationService {
       .click()
 
     await expect(page.getByTestId('snack-bar-message')).toHaveText(
-      `Thank you for helping improve ${config.title}`,
+      `Thank you for helping improve ${config.agents[agent].title}`,
     )
   }
 

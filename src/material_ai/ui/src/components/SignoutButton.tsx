@@ -18,7 +18,7 @@ export default function SignoutButton() {
         return
       }
       console.error(e)
-      setSnack(config.errorMessage)
+      setSnack(config.getErrorMessage())
     }
   }
 

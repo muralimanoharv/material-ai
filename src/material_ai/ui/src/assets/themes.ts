@@ -193,16 +193,16 @@ const getComponentOverrides = (palette: Palette): ThemeOptions => ({
   },
 })
 
-export const lightTheme = (config: ThemeConfig) =>
+export const getLightTheme = (theme: ThemeConfig) =>
   createTheme({
     ...baseThemeOptions,
-    palette: config.theme.lightPalette,
-    ...getComponentOverrides(config.theme.lightPalette),
+    palette: theme.lightPalette,
+    ...getComponentOverrides(theme.lightPalette),
   })
 
-export const darkTheme = (config: ThemeConfig) =>
+export const getDarkTheme = (theme: ThemeConfig) =>
   createTheme({
     ...baseThemeOptions,
-    palette: config.theme.darkPalette,
-    ...getComponentOverrides(config.theme.darkPalette),
+    palette: theme.darkPalette,
+    ...getComponentOverrides(theme.darkPalette),
   })
