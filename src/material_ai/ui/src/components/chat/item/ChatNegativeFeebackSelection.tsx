@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react'
-import MaterialList from '../../material/MaterialList'
+import MaterialList from '../../layout/other/MaterialList'
 import CloseIcon from '@mui/icons-material/Close'
 import {
   Box,
@@ -18,6 +18,7 @@ import {
   type ChatItemContextType,
 } from '../../../context'
 import CheckIcon from '@mui/icons-material/Check'
+import { useAgentId } from '../../../hooks'
 
 export default function ChatNegativeFeebackSelection() {
   const { config } = useContext(AppContext) as AppContextType
@@ -27,6 +28,7 @@ export default function ChatNegativeFeebackSelection() {
 
   const [otherBox, setOtherBox] = useState(false)
   const [feedbackText, setFeedbackText] = useState('')
+  const agentId = useAgentId()
 
   const theme = useTheme()
 
@@ -66,31 +68,33 @@ export default function ChatNegativeFeebackSelection() {
         </IconButton>
       </Box>
       <Typography variant="h4">
-        Your feedback helps make {config.title} better for everyone.
+        Your feedback helps make {config.getTitle(agentId)} better for everyone.
       </Typography>
       <Box>
         <MaterialList>
-          {config.feedback.negative.categories.map((category) => {
-            return (
-              <ListItem disablePadding key={category}>
-                <ListItemButton
-                  data-testid={`feedback-category-${category}`}
-                  onClick={() => {
-                    postNegativeFeedback({
-                      ...feedback,
-                      feedback_text: category,
-                    })
-                  }}
-                  sx={{
-                    backgroundColor: theme.palette.background.paper,
-                    padding: '12px 16px',
-                  }}
-                >
-                  {category}
-                </ListItemButton>
-              </ListItem>
-            )
-          })}
+          {config
+            .getAgent(agentId)
+            ?.feedback.negative.categories.map((category) => {
+              return (
+                <ListItem disablePadding key={category}>
+                  <ListItemButton
+                    data-testid={`feedback-category-${category}`}
+                    onClick={() => {
+                      postNegativeFeedback({
+                        ...feedback,
+                        feedback_text: category,
+                      })
+                    }}
+                    sx={{
+                      backgroundColor: theme.palette.background.paper,
+                      padding: '12px 16px',
+                    }}
+                  >
+                    {category}
+                  </ListItemButton>
+                </ListItem>
+              )
+            })}
           <ListItem disablePadding key={'Other'}>
             <ListItemButton
               disableRipple

@@ -15,6 +15,9 @@ client_id = sso_client_id_from_file
 client_secret = sso_client_secret_from_file
 redirect_uri = http://localhost/redirect
 session_secret_key = file_secret_key
+scope=openid email profile
+issuer=google
+
 
 [GENERAL]
 debug = True
@@ -106,6 +109,7 @@ class TestConfigLoader(unittest.TestCase):
             tmp_path = tmp.name
 
         os.environ["CONFIG_PATH"] = tmp_path
+        os.environ["SSO_ISSUER"] = "google"
 
         # FIX: Ensure the environment variable is not set for this specific test
         # This isolates the test to only check file-loading logic.
@@ -131,6 +135,7 @@ class TestConfigLoader(unittest.TestCase):
             tmp_path = tmp.name
 
         os.environ["CONFIG_PATH"] = tmp_path
+        os.environ["SSO_ISSUER"] = "google"
 
         try:
             # First call should load the config
@@ -152,6 +157,7 @@ class TestConfigLoader(unittest.TestCase):
 
         os.environ["CONFIG_PATH"] = tmp_path
         os.environ["SSO_CLIENT_ID"] = "sso_client_id_from_env"
+        os.environ["SSO_ISSUER"] = "google"
         os.environ["GOOGLE_API_KEY"] = "google_api_key_from_env"
 
         try:
@@ -168,6 +174,7 @@ class TestConfigLoader(unittest.TestCase):
             tmp_path = tmp.name
 
         os.environ["CONFIG_PATH"] = tmp_path
+        os.environ["SSO_ISSUER"] = "google"
 
         try:
             with patch.object(

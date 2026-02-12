@@ -7,19 +7,21 @@ import {
   type ChatItemContextType,
 } from '../../context'
 import { CHAT_SECTION_WIDTH } from '../../assets/themes'
-import { isValidJson } from '../../utils'
+import { does_chat_has_func, isValidJson } from '../../utils'
 import ChatArtifactSection from './item/ChatArtifactSection'
 import ChatLoading from './item/ChatLoading'
-import ChatFunctionCall from './item/ChatFunctionCall'
-import ChatFunctionResponse from './item/ChatFunctionResponse'
 import ChatUserFiles from './item/ChatUserFiles'
 import type { ChatItem, ChatPart, FeedbackDto } from '../../schema'
 import ChatText from './item/ChatText'
+import { useAgentId } from '../../hooks'
 
-export default function ChatSection() {
+export default function ChatSection({
+  maxWidth = CHAT_SECTION_WIDTH,
+}: {
+  maxWidth?: string
+}) {
   const context = useContext(AppContext) as AppContextType
   const history = useMemo(() => context.history, [context.history])
-
   return (
     <Box
       data-testid="page-chat-section"
@@ -35,10 +37,10 @@ export default function ChatSection() {
         className="chat-items"
         sx={{
           display: 'flex',
-          gap: '10px',
+          gap: '4px',
           flexDirection: 'column',
           width: '100%',
-          maxWidth: CHAT_SECTION_WIDTH,
+          maxWidth,
           // CSS trick to show actions only on the very last message
           '& .chat-item-box:last-of-type .actions-child-model': {
             opacity: '1',
@@ -49,9 +51,11 @@ export default function ChatSection() {
           },
         }}
       >
-        {history.map((chat, idx) => {
-          return <ChatItemSection chat={chat} chatIdx={idx} key={chat.id} />
-        })}
+        {history
+          .filter((chat) => !does_chat_has_func(chat, true))
+          .map((chat, idx) => {
+            return <ChatItemSection chat={chat} chatIdx={idx} key={chat.id} />
+          })}
       </Box>
     </Box>
   )
@@ -71,6 +75,8 @@ function ChatItemSection(props: ChatItemSectionProps) {
 
   const { chat, chatIdx } = props
 
+  const agentId = useAgentId()
+
   const postPostiveFeedback = async ({
     feedback_category,
     feedback_text,
@@ -82,11 +88,11 @@ function ChatItemSection(props: ChatItemSectionProps) {
 
       setFeedback(dto)
       context.setSnack(
-        `Thank you! Your feedback helps make ${config.title} better for everyone`,
+        `Thank you! Your feedback helps make ${config.getTitle(agentId)} better for everyone`,
       )
     } catch (e: unknown) {
       console.error(e)
-      context.setSnack(config.errorMessage)
+      context.setSnack(config.getErrorMessage())
     }
   }
 
@@ -100,10 +106,12 @@ function ChatItemSection(props: ChatItemSectionProps) {
 
       setFeedback(dto)
       setNegativeFeedbackToggle(false)
-      context.setSnack(`Thank you for helping improve ${config.title}`)
+      context.setSnack(
+        `Thank you for helping improve ${config.getTitle(agentId)}`,
+      )
     } catch (e: unknown) {
       console.error(e)
-      context.setSnack(config.errorMessage)
+      context.setSnack(config.getErrorMessage())
     }
   }
 
@@ -122,6 +130,8 @@ function ChatItemSection(props: ChatItemSectionProps) {
 
   return (
     <ChatItemContext.Provider value={chatContext} key={chat.id}>
+      <ChatLoading />
+      <ChatArtifactSection />
       <React.Fragment key={chat.id}>
         {parts.map((part, idx) => {
           return (
@@ -133,8 +143,6 @@ function ChatItemSection(props: ChatItemSectionProps) {
           )
         })}
       </React.Fragment>
-      <ChatArtifactSection />
-      <ChatLoading />
     </ChatItemContext.Provider>
   )
 }
@@ -145,23 +153,15 @@ interface ChatItemSectionBodyProps {
 }
 
 function ChatItemSectionBody({ part, partIdx }: ChatItemSectionBodyProps) {
-  // 1. Skip inline data (images/files are usually handled inside other wrappers or skipped here)
   if (part.inlineData) return null
 
-  // 2. Handle Function Calls
-  if (part.functionCall)
-    return <ChatFunctionCall partIdx={partIdx} part={part} /> // Cast if ChatFunctionCall expects specific shape
+  if (part.functionCall) return null
 
-  // 3. Handle Function Responses
-  if (part.functionResponse)
-    return <ChatFunctionResponse partIdx={partIdx} part={part} />
+  if (part.functionResponse) return null
 
-  // 4. Handle "Hidden" JSON Metadata (User Files)
-  // We check if text exists and is valid JSON
   if (part.text && isValidJson(part.text) && JSON.parse(part.text)?.fileNames) {
-    return <ChatUserFiles partIdx={partIdx} part={part} />
+    return <ChatUserFiles part={part} />
   }
 
-  // 5. Default: Render Text Message
   return <ChatText partIdx={partIdx} part={part} />
 }

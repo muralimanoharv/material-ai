@@ -256,7 +256,15 @@ class TestGetAppFactory(unittest.TestCase):
 
         # Assert
         # Check that the config was fetched
-        mock_get_ui_config.assert_called_once_with(mock_ui_config_yaml)
+        mock_get_ui_config.assert_called_once_with(
+            mock_ui_config_yaml,
+            agents=[
+                "greeting_agent",
+                "material_ai_agent",
+                "sports_analytics_agent",
+                "vector_agent",
+            ],
+        )
 
         # Check that the overrides dictionary was populated correctly
         self.assertIn(mock_get_oauth, mock_app.dependency_overrides)

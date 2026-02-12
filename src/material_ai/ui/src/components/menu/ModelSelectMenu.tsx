@@ -12,6 +12,11 @@ interface ModelItemProps {
   tagline: string
 }
 
+const MODELS = [
+  { model: '2.5 Flash', tagline: 'Fast all round help' },
+  { model: '2.5 Pro', tagline: 'For complex scenarios' },
+]
+
 export default function ModelSelectMenu() {
   const { user, config, agents } = React.useContext(
     AppContext,
@@ -32,10 +37,10 @@ export default function ModelSelectMenu() {
   }
 
   // Safety check: if config isn't loaded yet, return null
-  if (!user || !config || !config.models) return null
+  if (!user || !config || !MODELS) return null
 
   // Calculate vertical offset
-  const verticalOffset = -100 - (config.models.length - 1) * 50
+  const verticalOffset = -100 - (MODELS.length - 1) * 50
 
   return (
     <React.Fragment>
@@ -82,7 +87,7 @@ export default function ModelSelectMenu() {
           >
             Choose your model
           </Typography>
-          {config.models.map(({ model, tagline }) => (
+          {MODELS.map(({ model, tagline }) => (
             <ModelItem model={model} tagline={tagline} key={model} />
           ))}
         </Box>

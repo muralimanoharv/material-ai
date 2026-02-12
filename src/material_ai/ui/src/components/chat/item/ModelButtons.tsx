@@ -49,16 +49,19 @@ export default function ModelButtons(props: ModelButtonsProps) {
     {
       icon: <ThumbUpOffAltIcon fontSize="small" />,
       filledIcon: <ThumbUpIcon fontSize="small" />,
-      value: config.feedback.positive.value,
+      value: config.getAgent(agent)?.feedback.positive.value,
       dataTestId: 'thumbs-up-button',
       tooltip: 'Good response',
       onClick: async () => {
-        if (feedback?.feedback_category === config.feedback.positive.value) {
+        if (
+          feedback?.feedback_category ===
+          config.getAgent(agent)?.feedback.positive.value
+        ) {
           setFeedback(undefined) // Use undefined to clear
           return
         }
         const dto: FeedbackDto = {
-          feedback_category: config.feedback.positive.value,
+          feedback_category: config.getAgent(agent)?.feedback.positive.value,
           feedback_text: '',
         }
         await postPostiveFeedback(dto)
@@ -67,16 +70,19 @@ export default function ModelButtons(props: ModelButtonsProps) {
     {
       icon: <ThumbDownOffAltIcon fontSize="small" />,
       filledIcon: <ThumbDownIcon fontSize="small" />,
-      value: config.feedback.negative.value,
+      value: config.getAgent(agent)?.feedback.negative.value,
       dataTestId: 'thumbs-down-button',
       tooltip: 'Bad response',
       onClick: async () => {
-        if (feedback?.feedback_category === config.feedback.negative.value) {
+        if (
+          feedback?.feedback_category ===
+          config.getAgent(agent)?.feedback.negative.value
+        ) {
           setFeedback(undefined)
           return
         }
         const dto: FeedbackDto = {
-          feedback_category: config.feedback.negative.value,
+          feedback_category: config.getAgent(agent)?.feedback.negative.value,
           feedback_text: '',
           id: chat.id,
         }
@@ -123,9 +129,10 @@ export default function ModelButtons(props: ModelButtonsProps) {
     // Only apply color logic if the action has a 'value' (Thumb Up/Down)
     if (
       action.value &&
-      [config.feedback.negative.value, config.feedback.positive.value].includes(
-        action.value,
-      )
+      [
+        config.getAgent(agent)?.feedback.negative.value,
+        config.getAgent(agent)?.feedback.positive.value,
+      ].includes(action.value)
     ) {
       if (feedback?.feedback_category === action.value) return 'primary'
     }
@@ -136,9 +143,10 @@ export default function ModelButtons(props: ModelButtonsProps) {
   const getIcon = (action: ActionItem): ReactNode => {
     if (
       action.value &&
-      [config.feedback.negative.value, config.feedback.positive.value].includes(
-        action.value,
-      )
+      [
+        config.getAgent(agent)?.feedback.negative.value,
+        config.getAgent(agent)?.feedback.positive.value,
+      ].includes(action.value)
     ) {
       if (feedback?.feedback_category === action.value) return action.filledIcon
     }
@@ -149,7 +157,6 @@ export default function ModelButtons(props: ModelButtonsProps) {
     <Box
       className="actions-child actions-child-model"
       sx={{
-        marginLeft: '60px',
         // Check if feedback exists to determine opacity
         opacity: feedback ? '1' : '0',
         transition: 'opacity 0.5s ease',

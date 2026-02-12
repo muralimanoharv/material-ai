@@ -35,6 +35,10 @@ export class HistoryService {
     })
   }
 
+  get_by_id(id: string): ChatItem | undefined {
+    return this.getHistory().find((hist) => hist.id === id)
+  }
+
   get(idx: number): ChatItem | undefined {
     const history = this.getHistory()
     return history[idx]

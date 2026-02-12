@@ -13,6 +13,7 @@ import UserTextToggleButton from './UserTextToggleButton'
 import UserButtons from './UserButtons'
 import ChatNegativeFeebackSelection from './ChatNegativeFeebackSelection'
 import type { ChatPart } from '../../../schema'
+import { useAgentId } from '../../../hooks'
 
 const MAX_COLLAPSED_LENGTH = 116
 
@@ -27,6 +28,7 @@ export default function ChatText({ part, partIdx }: ChatItemProps) {
   const { feedback, negativeFeedbackToggle, chat, chatIdx } = useContext(
     ChatItemContext,
   ) as ChatItemContextType
+  const agentId = useAgentId()
 
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -34,6 +36,7 @@ export default function ChatText({ part, partIdx }: ChatItemProps) {
   const role = chat.content.role
   const isUserMessage = role === 'user'
   const isModelMessage = role === 'model'
+  const isCancelled = !!chat.cancelled
 
   const isLargeText = text.length > MAX_COLLAPSED_LENGTH
 
@@ -45,11 +48,12 @@ export default function ChatText({ part, partIdx }: ChatItemProps) {
 
   const showUserActions = isUserMessage
   const showModelActions = isModelMessage
-  const showGeminiIcon = isModelMessage
+  const showGeminiIcon = false
   const showToggleBtn = isUserMessage && isLargeText
 
   const showNegativeFeedback =
-    feedback?.feedback_category === config.feedback.negative.value &&
+    feedback?.feedback_category ===
+      config.getAgent(agentId)?.feedback.negative.value &&
     negativeFeedbackToggle
 
   // Define styles with SxProps for type safety on CSS properties
@@ -59,7 +63,7 @@ export default function ChatText({ part, partIdx }: ChatItemProps) {
     borderTopRightRadius: isUserMessage ? '0px' : undefined,
     borderTopLeftRadius: !isUserMessage ? '0px' : undefined,
     maxWidth: isUserMessage ? '452px' : undefined,
-    padding: isUserMessage ? '12px 16px' : '2px 16px',
+    padding: isUserMessage ? '12px 16px' : undefined,
     display: 'flex',
     alignItems: 'flex-start',
     gap: '20px',
@@ -71,10 +75,11 @@ export default function ChatText({ part, partIdx }: ChatItemProps) {
         textExpand={isExpanded}
         isUser={isUserMessage}
         isLargeText={() => isLargeText}
+        isCancelled={isCancelled}
         part={part}
       />
     )
-  }, [part, isExpanded, isUserMessage, isLargeText])
+  }, [part, isExpanded, isUserMessage, isLargeText, isCancelled])
 
   return (
     <Box

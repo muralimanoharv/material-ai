@@ -70,12 +70,12 @@ export default function Header() {
             variant="h4"
             data-testid="page-header"
           >
-            {config.title}
+            {config.getTitle(agentId)}
           </Typography>
         </Box>
       </Box>
 
-      {agentId && (
+      {!isMobile && agentId && (
         <Box>
           <Typography
             data-testid="page-agent-name"

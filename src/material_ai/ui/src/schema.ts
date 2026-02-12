@@ -10,29 +10,74 @@ export interface Session {
 }
 
 export interface ThemeConfig {
-  theme: {
-    lightPalette: Palette
-    darkPalette: Palette
-  }
+  lightPalette: Palette
+  darkPalette: Palette
 }
 
 export interface FeedbackConfig {
-  feedback: {
-    negative: {
-      value: string
-      categories: string[]
-    }
-    positive: {
-      value: string
-    }
+  negative: {
+    value: string
+    categories: string[]
+  }
+  positive: {
+    value: string
   }
 }
 
-export interface AppConfig extends ThemeConfig, FeedbackConfig {
+export interface AgentConfig {
   greeting: string
   title: string
-  models: { model: string; tagline: string }[]
+  show_footer: boolean
+  chat_section_width: string
+  feedback: FeedbackConfig
+}
+
+export interface AppConfig {
+  greeting: string
+  title: string
   errorMessage: string
+  theme: ThemeConfig
+  agents: Record<string, AgentConfig>
+}
+
+export class AppConfigImpl {
+  private config: AppConfig
+
+  constructor(config: AppConfig) {
+    this.config = config
+  }
+
+  getTitle(agentId: string | undefined) {
+    if (!agentId) return this.config.title
+    const agentConfig = this.config.agents[agentId]
+    if (!agentConfig) return this.config.title
+    return agentConfig.title
+  }
+
+  getGreeting(agentId: string | undefined) {
+    if (!agentId) return this.config.greeting
+    const agentConfig = this.config.agents[agentId]
+    if (!agentConfig) return this.config.greeting
+    return agentConfig.greeting
+  }
+
+  getAgent(agentId: string | undefined): AgentConfig | undefined {
+    if (!agentId) {
+      return undefined
+    }
+    if (!this.config.agents[agentId]) {
+      throw new Error(`Agent with id ${agentId} not found`)
+    }
+    return this.config.agents[agentId]
+  }
+
+  getTheme() {
+    return this.config.theme
+  }
+
+  getErrorMessage() {
+    return this.config.errorMessage
+  }
 }
 
 export interface FileAttachment {
@@ -48,10 +93,14 @@ export interface ArtifactDelta {
 
 export interface FunctionCallPart {
   name: string
+  args: Record<string, unknown>
 }
 
 export interface FunctionResponsePart {
   name: string
+  response: {
+    result: unknown
+  }
 }
 export interface InlineData {
   mimeType: string
@@ -74,10 +123,15 @@ export interface ChatItem {
     parts: ChatPart[]
   }
   loading?: boolean
+  loading_message?: string | null
+  loading_finished?: boolean
+  loading_id?: string
+  chat_history?: ChatItem[]
   cancelled?: boolean
   prompt?: string
   id: string
   error?: string
+  invocationId?: string
 }
 
 export interface ArtifactFile {
@@ -97,6 +151,7 @@ export interface User {
   given_name: string
   picture: string
   email: string
+  name: string
 }
 
 export interface UserResponse {

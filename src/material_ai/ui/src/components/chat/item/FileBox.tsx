@@ -68,7 +68,7 @@ export default function FileBox(props: FileBoxProps) {
       window.open(blobUrl, '_blank')
     } catch (e: unknown) {
       console.error(e)
-      context.setSnack(config?.errorMessage || 'Error opening file')
+      context.setSnack(config.getErrorMessage())
     }
   }
 

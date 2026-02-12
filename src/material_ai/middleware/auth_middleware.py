@@ -4,6 +4,7 @@ import http.cookies
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from material_ai.exec import UnauthorizedException
+from material_ai.config import get_config
 from material_ai.oauth import (
     OAuthUserDetail,
     IOAuthService,
@@ -11,8 +12,11 @@ from material_ai.oauth import (
     oauth_user_details_context,
 )
 from material_ai.exec import UnauthorizedException
+from material_ai.middleware.app_header_middleware import (
+    EXCLUDED_PREFIXES,
+    EXCLUDED_UI_ASSETS,
+)
 from material_ai.auth import verify_user_details, _remove_cookies
-
 
 _logger = logging.getLogger(__name__)
 
@@ -27,17 +31,14 @@ class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         route = request.url.path
         EXCLUDED_PATHS = [
-            "/",
             "/login",
             "/health",
             "/config",
             "/auth",
-            "/icon.svg",
-            "/favicon.ico",
-            "/.well-known/appspecific/com.chrome.devtools.json",
-            "/gemini.svg",
+            "/docs",
+            "/openapi.json",
+            *EXCLUDED_UI_ASSETS,
         ]
-        EXCLUDED_PREFIXES = ["/assets/"]
         is_excluded_path = route in EXCLUDED_PATHS or any(
             route.startswith(prefix) for prefix in EXCLUDED_PREFIXES
         )
@@ -67,10 +68,10 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
             auth = self.oauth_service
 
-            access_token_cookie = cookies.get("access_token")
+            id_token_cookie = cookies.get("id_token")
 
-            oauth_response = await auth.sso_verify_access_token(
-                access_token_cookie.value
+            oauth_response = await auth.sso_verify_id_token(
+                sso=get_config().sso, id_token=id_token_cookie.value
             )
 
             if not oauth_response:
@@ -79,7 +80,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
             if isinstance(oauth_response, OAuthErrorResponse):
                 raise UnauthorizedException()
 
-            uid = str(oauth_response)
+            uid = str(oauth_response.sub)
 
             # If we want to cross check if given user can call this API
             # We dont want other actors to modify user session

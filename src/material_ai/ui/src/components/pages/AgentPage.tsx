@@ -1,8 +1,8 @@
 import { useContext } from 'react'
 import { AppContext, type AppContextType } from '../../context'
 import { useAgentId, withLayout } from '../../hooks'
-import PageNotFound from '../PageNotFound'
-import AgentPageSection from '../AgentPageSection'
+import PageNotFound from './PageNotFound'
+import AgentPageSection from '../agents/AgentPageSection'
 import Greeting from '../Greeting'
 
 function AgentPage() {

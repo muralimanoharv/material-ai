@@ -1,10 +1,18 @@
 import { Typography, type TypographyProps } from '@mui/material'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { type ReactNode } from 'react'
-import { renderDynamicUI, type UINode } from '../DynamicMuiLoader'
+import { useContext, type ReactNode } from 'react'
+import { AppContext, type AppContextType } from '../../context'
+import CustomCode from './CustomCode'
+import BabelReactRenderer from '../BabelReactRenderer'
+import { isValidJson } from '../../utils'
 
-// 1. Define Props Interface
+export function TypographyParser(variant: TypographyProps['variant']) {
+  return ({ children }: { children?: ReactNode }) => (
+    <Typography variant={variant}>{children}</Typography>
+  )
+}
+
 interface MarkdownProps {
   children: string | null | undefined
 }
@@ -17,26 +25,7 @@ export default function Markdown(props: MarkdownProps) {
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          p: TypographyParser('p'),
-          h1: TypographyParser('h1'),
-          h2: TypographyParser('h2'),
-          h3: TypographyParser('h3'),
-          h4: TypographyParser('h4'),
-          h5: TypographyParser('h5'),
-          h6: TypographyParser('h6'),
           code: CustomCodeRenderer,
-          // pre: (preProps) => (
-          //   <pre
-          //     style={{
-          //       backgroundColor: theme.palette.background.paper,
-          //       padding: '10px',
-          //       borderRadius: '4px',
-          //       overflowX: 'auto',
-          //     }}
-          //   >
-          //     {preProps.children}
-          //   </pre>
-          // ),
         }}
       >
         {content}
@@ -45,40 +34,30 @@ export default function Markdown(props: MarkdownProps) {
   )
 }
 
-function TypographyParser(variant: TypographyProps['variant']) {
-  return ({ children }: { children?: ReactNode }) => (
-    <Typography variant={variant}>{children}</Typography>
-  )
-}
-
 const CustomCodeRenderer = ({
-  className,
   children,
 }: React.HTMLAttributes<HTMLElement>) => {
-  const match = /language-(\w+)/.exec(className || '')
-  const isJson = match && match[1] === 'json'
+  const { setSnack } = useContext(AppContext) as AppContextType
 
-  if (!isJson) return <>Invalid Response</>
+  const rawString = String(children).replace(/\n$/, '')
 
-  let parsedData: UINode | null = null
-  let isParsedSuccessfully = false
-
-  try {
-    const jsonString = String(children).replace(/\n$/, '')
-    parsedData = JSON.parse(jsonString)
-    isParsedSuccessfully = true
-  } catch (error) {
-    console.warn('Failed to parse JSON for UI:', error)
+  if (rawString.includes('export default') || rawString.includes('React')) {
+    return <BabelReactRenderer code={rawString} />
   }
 
-  if (!isParsedSuccessfully) {
-    return <>{children}</>
+  if (isValidJson(rawString)) {
+    const content = JSON.stringify(JSON.parse(rawString), null, 2)
+    return (
+      <CustomCode
+        content={content}
+        title="JSON"
+        onCopy={async () => {
+          await navigator.clipboard.writeText(content)
+          setSnack('Copied to clipboard')
+        }}
+      />
+    )
   }
 
-  if (!parsedData?.componentName) {
-    return <>Error: Component Name not found</>
-  }
-
-  // Success
-  return <>{renderDynamicUI(parsedData)}</>
+  return children
 }

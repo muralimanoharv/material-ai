@@ -1,5 +1,6 @@
 import { useTheme, Button } from '@mui/material'
 import { HOST } from '../service/api.service'
+import { useLocation } from 'react-router'
 
 interface SigninButtonProps {
   varient?: 'contained' | 'text' | 'outlined'
@@ -11,11 +12,13 @@ export default function SigninButton({
   borderRadius = '100px',
 }: SigninButtonProps) {
   const theme = useTheme()
+  const location = useLocation()
 
   return (
     <Button
+      data-testid="signin-button"
       onClick={() => {
-        window.location.href = `${HOST}/login`
+        window.location.href = `${HOST}/login?redirect=${location.pathname}`
       }}
       sx={
         varient === 'contained'

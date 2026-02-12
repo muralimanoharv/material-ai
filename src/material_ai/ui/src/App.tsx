@@ -20,7 +20,8 @@ import { HistoryService } from './service/history.service'
 import { ChatService } from './service/chat.service'
 import AgentPage from './components/pages/AgentPage'
 import AgentsPage from './components/pages/AgentsPage'
-import PageNotFound from './components/PageNotFound'
+import PageNotFound from './components/pages/PageNotFound'
+import HealthPage from './components/pages/HealthPage'
 
 function App() {
   const { config } = useContext(ThemeContext) as ThemeContextType
@@ -109,8 +110,7 @@ function App() {
   const fetchSession = async (agent: string, session_id: string) => {
     try {
       setLoading(true)
-      const session = await apiService.current.fetch_session(agent, session_id)
-      setHistory(session?.events || [])
+      chatService.current.fetch_session(agent, session_id)
       input_focus()
     } catch (e) {
       console.error(e)
@@ -189,6 +189,7 @@ function App() {
           <Route path="/agents/:agentId" element={<AgentPage />}>
             <Route path="session/:sessionId" element={<AgentPage />} />
           </Route>
+          <Route path="/health" element={<HealthPage />} />
           <Route path="/" element={<Navigate to="/agents" replace />} />
           <Route path="/404" element={<PageNotFound />} />
           <Route path="*" element={<PageNotFound />} />

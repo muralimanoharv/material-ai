@@ -8,6 +8,9 @@ import React from 'react'
 
 import { type ThemeConfig } from '../schema'
 
+export const DARK_BORDER = '#4a5050'
+export const LIGHT_BORDER = '#c4c7c5'
+
 declare module '@mui/material/styles' {
   interface Theme {
     app: {
@@ -190,16 +193,16 @@ const getComponentOverrides = (palette: Palette): ThemeOptions => ({
   },
 })
 
-export const lightTheme = (config: ThemeConfig) =>
+export const getLightTheme = (theme: ThemeConfig) =>
   createTheme({
     ...baseThemeOptions,
-    palette: config.theme.lightPalette,
-    ...getComponentOverrides(config.theme.lightPalette),
+    palette: theme.lightPalette,
+    ...getComponentOverrides(theme.lightPalette),
   })
 
-export const darkTheme = (config: ThemeConfig) =>
+export const getDarkTheme = (theme: ThemeConfig) =>
   createTheme({
     ...baseThemeOptions,
-    palette: config.theme.darkPalette,
-    ...getComponentOverrides(config.theme.darkPalette),
+    palette: theme.darkPalette,
+    ...getComponentOverrides(theme.darkPalette),
   })

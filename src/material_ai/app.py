@@ -4,7 +4,7 @@ import os
 from typing import Optional, Mapping, Any
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.routing import APIRoute
-from google.adk.cli.fast_api import get_fast_api_app, AgentLoader
+from google.adk.cli.fast_api import AgentLoader
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -29,6 +29,32 @@ _logger = logging.getLogger(__name__)
 _app_instance: FastAPI | None = None
 _agent_loader: AgentLoader | None = None
 _lock = threading.Lock()
+logging.getLogger("aiosqlite").setLevel(logging.WARNING)
+logging.getLogger("google_adk").setLevel(logging.WARNING)
+# ####################### This is temp #######################
+from pydantic_core import core_schema
+from pydantic._internal._generate_schema import GenerateSchema
+
+
+def _patched_unknown_type_schema(self, obj):
+    return core_schema.any_schema()
+
+
+GenerateSchema._unknown_type_schema = _patched_unknown_type_schema
+from pydantic.json_schema import GenerateJsonSchema
+from pydantic.errors import PydanticInvalidForJsonSchema
+
+
+def patched_handle_invalid_for_json_schema(self, schema, error_info):
+    return {"type": "object", "title": f"Unknown Type: {error_info}"}
+
+
+GenerateJsonSchema.handle_invalid_for_json_schema = (
+    patched_handle_invalid_for_json_schema
+)
+
+# ####################### This is temp #######################
+from google.adk.cli.fast_api import get_fast_api_app
 
 STATIC_DIR = f"{os.path.dirname(os.path.abspath(__file__))}/ui/dist"
 UI_CONFIG_YAML = f"{os.path.dirname(os.path.abspath(__file__))}/ui/ui_config.yaml"
@@ -97,7 +123,7 @@ def _setup_overrides(
             feedback. If set to None, a default no-op handler that returns a
             200 status code is used instead.
     """
-    ui_config = get_ui_config(ui_config_yaml)
+    ui_config = get_ui_config(ui_config_yaml, agents=get_agent_loader().list_agents())
 
     def override_get_oauth_service() -> IOAuthService:
         return oauth_service
@@ -184,7 +210,7 @@ def _setup_app(
     _setup_logging(config)
 
     if oauth_service == None:
-        oauth_service = get_oauth()
+        oauth_service = get_oauth(config.sso)
 
     _setup_overrides(app, oauth_service, ui_config_yaml, feedback_handler)
 
@@ -235,9 +261,9 @@ def get_app(
                 session_service_uri=config.adk.session_db_url,
                 **adk_kwargs,
             )
+            _agent_loader = AgentLoader(agent_dir)
             _setup_app(app, oauth_service, ui_config_yaml, feedback_handler)
             _app_instance = app
-            _agent_loader = AgentLoader(agent_dir)
 
         return _app_instance
 

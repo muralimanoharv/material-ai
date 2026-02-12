@@ -18,12 +18,13 @@ export default function SignoutButton() {
         return
       }
       console.error(e)
-      setSnack(config.errorMessage)
+      setSnack(config.getErrorMessage())
     }
   }
 
   return (
     <Button
+      data-testid="signout-button"
       onClick={handleSignOut}
       color="inherit"
       variant="contained"

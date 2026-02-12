@@ -62,6 +62,8 @@ body {
 .chat-item-box {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  overflow-x: auto;
 }
 
 .chat-item-box:hover .actions-child {
@@ -74,7 +76,31 @@ body {
   animation-fill-mode: forwards;
 }
 
+.animate-loading-text {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
 .chat-item-box-model .react-markdown > pre {
+  word-wrap: break-word;
+}
+
+pre {
+  display: inline-block;
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  margin: 0;
+  width: 100%;
+}
+
+.truc-text {
   white-space: pre-wrap;
   word-wrap: break-word;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+code {
+  white-space: pre-wrap !important;
 }

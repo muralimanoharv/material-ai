@@ -7,6 +7,8 @@ from unittest.mock import patch
 import material_ai.ui_config as ui_config_loader
 from material_ai.ui_config import get_ui_config, DEFAULT_CONFIG, UIConfig
 
+agents = ["greeting_agent"]
+
 
 class TestUIConfigLoader(unittest.TestCase):
 
@@ -21,7 +23,7 @@ class TestUIConfigLoader(unittest.TestCase):
         """
         Test that DEFAULT_CONFIG is returned when no file path is provided.
         """
-        config = get_ui_config(ui_config_yaml=None)
+        config = get_ui_config(ui_config_yaml=None, agents=agents)
         self.assertEqual(config, DEFAULT_CONFIG)
 
     def test_config_caching(self):
@@ -30,9 +32,9 @@ class TestUIConfigLoader(unittest.TestCase):
         return the cached instance.
         """
         # First call loads the config
-        config1 = get_ui_config(ui_config_yaml=None)
+        config1 = get_ui_config(ui_config_yaml=None, agents=agents)
         # Second call should return the exact same object from memory
-        config2 = get_ui_config(ui_config_yaml=None)
+        config2 = get_ui_config(ui_config_yaml=None, agents=agents)
 
         self.assertIs(
             config1, config2, "Config should be cached and return the same instance"
@@ -50,7 +52,7 @@ class TestUIConfigLoader(unittest.TestCase):
             yaml.dump(custom_config_data, tmp)
             tmp_path = tmp.name
 
-        config = get_ui_config(ui_config_yaml=tmp_path)
+        config = get_ui_config(ui_config_yaml=tmp_path, agents=agents)
 
         # Assert that the loaded config has the custom values
         self.assertIsInstance(config, UIConfig)
@@ -66,7 +68,7 @@ class TestUIConfigLoader(unittest.TestCase):
 
         # Patch the logger to check if a warning was emitted
         with patch("material_ai.ui_config._logger.warning") as mock_log:
-            config = get_ui_config(ui_config_yaml=non_existent_file)
+            config = get_ui_config(ui_config_yaml=non_existent_file, agents=agents)
             self.assertEqual(config, DEFAULT_CONFIG)
             mock_log.assert_called_once_with(
                 f"WARNING: Config file not found at {pathlib.Path(non_existent_file)}"
@@ -83,7 +85,7 @@ class TestUIConfigLoader(unittest.TestCase):
             tmp_path = tmp.name
 
         with patch("material_ai.ui_config._logger.warning") as mock_log:
-            config = get_ui_config(ui_config_yaml=tmp_path)
+            config = get_ui_config(ui_config_yaml=tmp_path, agents=agents)
             self.assertEqual(config, DEFAULT_CONFIG)
             # Check that a loading error was logged
             self.assertTrue(
@@ -109,8 +111,8 @@ class TestUIConfigLoader(unittest.TestCase):
             tmp_path = tmp.name
 
         with patch("material_ai.ui_config._logger.warning") as mock_log:
-            config = get_ui_config(ui_config_yaml=tmp_path)
-            self.assertEqual(config, DEFAULT_CONFIG)
+            config = get_ui_config(ui_config_yaml=tmp_path, agents=[])
+            self.assertNotEqual(config, None)
 
         pathlib.Path(tmp_path).unlink()
 

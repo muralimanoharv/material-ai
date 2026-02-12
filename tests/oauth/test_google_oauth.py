@@ -1,7 +1,8 @@
 import unittest
 import respx
 import httpx
-from unittest.mock import patch, Mock, AsyncMock
+from unittest.mock import patch, Mock, AsyncMock, MagicMock
+import jwt
 
 # --- Assumed Schema Mocks ---
 # In a real project, you would import these from your schema file.
@@ -26,10 +27,13 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
         """Set up a new service instance and SSO config for each test."""
         self.service = GoogleOAuthService()
         self.sso_config = SSOConfig(
+            issuer="google",
             client_id="test_client_id",
             client_secret="test_client_secret",
             redirect_uri="http://localhost/callback",
             session_secret_key="test_secret_key",
+            tenant_id="",
+            scope="openid email profile",
         )
 
     def test_sso_get_redirection_url(self):
@@ -64,6 +68,7 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
                 json={
                     "access_token": "new_access_token",
                     "refresh_token": "new_refresh_token",
+                    "id_token": "new_id_token",
                     "expires_in": 3600,
                 },
             )
@@ -80,7 +85,7 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
             picture="Test pitcure",
         )
         with patch.object(
-            self.service, "sso_get_user_details", new_callable=AsyncMock
+            self.service, "sso_verify_id_token", new_callable=AsyncMock
         ) as mock_get_details:
             mock_get_details.return_value = mock_user_detail
 
@@ -89,7 +94,7 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
             )
 
             # Assertions
-            mock_get_details.assert_awaited_once_with("new_access_token")
+            mock_get_details.assert_awaited_once_with(self.sso_config, "new_id_token")
             self.assertIsInstance(response, OAuthSuccessResponse)
             self.assertEqual(response.access_token, "new_access_token")
             self.assertEqual(response.user_detail.email, "test@example.com")
@@ -130,36 +135,12 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
             )
 
             with patch.object(
-                self.service, "sso_get_user_details", return_value=error_response
+                self.service, "sso_verify_id_token", return_value=error_response
             ) as mock_get_details:
                 response = await self.service.sso_get_access_token(
                     self.sso_config, "auth_code"
                 )
                 self.assertIs(response, error_response)
-
-    @respx.mock
-    async def test_sso_get_user_details_success(self):
-        """
-        Should successfully fetch user details with a valid access token.
-        """
-        user_info_payload = {
-            "sub": "12345",
-            "email": "test@gmail.com",
-            "name": "Test User",
-            "given_name": "Test User",
-            "family_name": "Test User",
-            "picture": "Test Pitcure",
-            "email_verified": True,
-        }
-        respx.get("https://www.googleapis.com/oauth2/v3/userinfo").mock(
-            return_value=httpx.Response(200, json=user_info_payload)
-        )
-
-        response = await self.service.sso_get_user_details("valid_access_token")
-
-        self.assertIsInstance(response, OAuthUserDetail)
-        self.assertEqual(response.email, "test@gmail.com")
-        self.assertEqual(response.sub, "12345")
 
     @respx.mock
     async def test_sso_revoke_refresh_token_success(self):
@@ -170,7 +151,9 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
             return_value=httpx.Response(200)
         )
 
-        response = await self.service.sso_revoke_refresh_token("valid_refresh_token")
+        response = await self.service.sso_revoke_refresh_token(
+            refresh_token="valid_refresh_token", access_token=""
+        )
         self.assertIsNone(response)
 
     @respx.mock
@@ -182,24 +165,13 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
             return_value=httpx.Response(400, text="invalid_token")
         )
 
-        response = await self.service.sso_revoke_refresh_token("invalid_refresh_token")
+        response = await self.service.sso_revoke_refresh_token(
+            "invalid_refresh_token", ""
+        )
 
         self.assertIsInstance(response, OAuthErrorResponse)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.detail, "invalid_token")
-
-    @respx.mock
-    async def test_sso_verify_access_token_success(self):
-        """
-        Should return the user's subject (sub) ID if the token is valid.
-        """
-        respx.post("https://oauth2.googleapis.com/tokeninfo").mock(
-            return_value=httpx.Response(200, json={"sub": "user_subject_id_123"})
-        )
-
-        is_valid = await self.service.sso_verify_access_token("valid_token")
-
-        self.assertEqual(is_valid, "user_subject_id_123")
 
     @respx.mock
     async def test_sso_get_new_access_token_success(self):
@@ -212,6 +184,7 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
                 200,
                 json={
                     "access_token": "brand_new_access_token",
+                    "id_token": "brand_new_id_token",
                     "expires_in": 3599,
                 },
             )
@@ -263,7 +236,7 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
         )
 
         with patch.object(
-            self.service, "sso_get_user_details", new_callable=AsyncMock
+            self.service, "sso_verify_id_token", new_callable=AsyncMock
         ) as mock_get_details:
             # Act
             response = await self.service.sso_get_new_access_token(
@@ -302,6 +275,30 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
             self.assertIs(response, error_response)
 
     @respx.mock
+    async def test_sso_get_user_details_success(self):
+        """
+        Should successfully fetch user details with a valid access token.
+        """
+        user_info_payload = {
+            "sub": "12345",
+            "email": "test@gmail.com",
+            "name": "Test User",
+            "given_name": "Test User",
+            "family_name": "Test User",
+            "picture": "Test Pitcure",
+            "email_verified": True,
+        }
+        respx.get("https://www.googleapis.com/oauth2/v3/userinfo").mock(
+            return_value=httpx.Response(200, json=user_info_payload)
+        )
+
+        response = await self.service.sso_get_user_details("valid_access_token")
+
+        self.assertIsInstance(response, OAuthUserDetail)
+        self.assertEqual(response.email, "test@gmail.com")
+        self.assertEqual(response.sub, "12345")
+
+    @respx.mock
     async def test_sso_get_new_access_token_http_error(self):
         """
         Should return an OAuthErrorResponse on a non-2xx HTTP failure, handled by the decorator.
@@ -320,6 +317,74 @@ class TestGoogleOAuthService(unittest.IsolatedAsyncioTestCase):
         self.assertIsInstance(response, OAuthErrorResponse)
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.detail, {"error": "unauthorized_client"})
+
+    @respx.mock
+    async def test_sso_verify_id_token_success(self):
+        # 1. Mock the JWK Client and Signing Key
+        mock_jwks_client = MagicMock()
+        mock_signing_key = MagicMock()
+        mock_signing_key.key = "public-key"
+        mock_jwks_client.get_signing_key_from_jwt.return_value = mock_signing_key
+
+        # 2. Mock jwt.decode to return fake payload
+        fake_payload = {
+            "sub": "12345",
+            "name": "A B C",
+            "email": "test@gmail.com",
+            "email_verified": True,
+            "picture": "http://image.com/pic.jpg",
+            "given_name": "A",
+            "family_name": "C",
+        }
+
+        # Use patch.object for internal methods and patch for external libs
+        with patch.object(self.service, "get_client", return_value=mock_jwks_client):
+            with patch("jwt.decode", return_value=fake_payload) as mock_decode:
+
+                # 3. Execute
+                result = await self.service.sso_verify_id_token(
+                    self.sso_config, "fake-token"
+                )
+
+                # 4. Assertions
+                assert isinstance(result, OAuthUserDetail)
+                assert result.sub == "12345"
+                assert result.email == "test@gmail.com"
+                assert result.given_name == "A"
+                assert result.family_name == "C"
+
+                mock_decode.assert_called_once_with(
+                    "fake-token",
+                    "public-key",
+                    algorithms=["RS256"],
+                    audience=self.sso_config.client_id,
+                    issuer="https://accounts.google.com",
+                )
+
+    @respx.mock
+    async def test_sso_verify_id_token_invalid_signature(self):
+        # 1. Mock the JWK Client to provide a key
+        mock_jwks_client = MagicMock()
+        mock_signing_key = MagicMock()
+        mock_signing_key.key = "public-key"
+        mock_jwks_client.get_signing_key_from_jwt.return_value = mock_signing_key
+
+        with patch.object(self.service, "get_client", return_value=mock_jwks_client):
+            # 2. Mock jwt.decode to raise a validation error
+            with patch(
+                "jwt.decode",
+                side_effect=jwt.InvalidSignatureError("Signature verification failed"),
+            ):
+
+                # 3. Execute
+                result = await self.service.sso_verify_id_token(
+                    self.sso_config, "invalid-token"
+                )
+
+                # 4. Assertions
+                assert isinstance(result, OAuthErrorResponse)
+                assert result.status_code == 401
+                assert result.detail == "Invalid token"
 
 
 if __name__ == "__main__":

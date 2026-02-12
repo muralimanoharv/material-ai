@@ -105,6 +105,15 @@ def _set_oauth_token_cookies(response: Response, oauth_response: OAuthSuccessRes
         samesite="lax",
     )
 
+    response.set_cookie(
+        key="id_token",
+        value=oauth_response.id_token,
+        httponly=True,
+        secure=False if config.general.debug else True,
+        max_age=oauth_response.expires_in,
+        samesite="lax",
+    )
+
     refresh_token_expiration = (
         oauth_response.expires_in + timedelta(days=2).total_seconds()
     )
@@ -141,10 +150,14 @@ def _remove_cookies(response: Response):
     response.delete_cookie("access_token")
     response.delete_cookie("refresh_token")
     response.delete_cookie("user_details")
+    response.delete_cookie("id_token")
 
 
 async def remove_token(
-    response: Response, refresh_token: str, oauth_service: IOAuthService
+    response: Response,
+    refresh_token: str,
+    oauth_service: IOAuthService,
+    access_token: str = None,
 ) -> Response:
     """Revokes a refresh token and clears authentication cookies.
 
@@ -159,6 +172,8 @@ async def remove_token(
         response: The FastAPI Response object, which will be modified to
                   remove the cookies.
         refresh_token: The refresh token to be revoked. Can be None.
+        oauth_service: the oauth_service instance.
+        access_token: access token
 
     Returns:
         The modified Response object with authentication cookies cleared.
@@ -171,9 +186,7 @@ async def remove_token(
         _remove_cookies(response)
         return
     auth = oauth_service
-    oauth_response = await auth.sso_revoke_refresh_token(refresh_token)
-    if isinstance(oauth_response, OAuthErrorResponse):
-        raise HTTPException(status_code=500)
+    await auth.sso_revoke_refresh_token(refresh_token, access_token)
     _remove_cookies(response)
     return response
 
@@ -238,7 +251,7 @@ async def get_user_details(
 
 
 async def on_callback(
-    authorization_code: str, oauth_service: IOAuthService
+    authorization_code: str, oauth_service: IOAuthService, redirect: str | None
 ) -> Response:
     """Handles the OAuth 2.0 callback after a user authorizes the application.
 
@@ -269,7 +282,11 @@ async def on_callback(
     if isinstance(oauth_response, OAuthErrorResponse):
         raise HTTPException(status_code=500)
 
-    response = RedirectResponse(url="/", status_code=302)
+    url = "/"
+    if redirect:
+        url = f"/#{redirect}"
+
+    response = RedirectResponse(url, status_code=302)
 
     _set_oauth_token_cookies(response, oauth_response)
 

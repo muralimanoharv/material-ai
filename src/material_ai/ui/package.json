@@ -4,26 +4,30 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier --write './*/**/*.{js,jsx,ts,tsx,css,md,json}'",
     "format:check": "prettier --check './*/**/*.{js,jsx,ts,tsx,css,md,json}'",
-    "test": "npx playwright test --ui"
+    "test": "npx playwright test --trace on"
   },
   "dependencies": {
+    "@babel/standalone": "^7.29.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.5",
     "@mui/material": "^7.3.5",
+    "chart.js": "^4.5.1",
     "prettier": "^3.7.3",
     "react": "^19.2.0",
+    "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.68.0",
     "react-is": "^19.2.0",
     "react-markdown": "^10.1.0",
     "react-router": "^7.9.6",
+    "react-syntax-highlighter": "^16.1.0",
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
@@ -32,7 +36,9 @@
     "@types/node": "^24.10.4",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "@vitejs/plugin-react": "^5.1.1",
+    "@types/babel__standalone": "^7.1.9",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",

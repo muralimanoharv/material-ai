@@ -10,6 +10,7 @@ import {
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import SignoutButton from '../SignoutButton'
+import { getInitials } from '../../utils'
 
 export default function UserAvatar() {
   const { user } = useContext(AppContext) as AppContextType
@@ -32,6 +33,7 @@ export default function UserAvatar() {
     <>
       <Tooltip title={user.given_name || 'User'}>
         <IconButton
+          data-testid="user-profile-button"
           id="user-profile-button"
           aria-controls={open ? 'user-profile-menu' : undefined}
           aria-haspopup="true"
@@ -44,7 +46,9 @@ export default function UserAvatar() {
             }}
             alt={user.given_name}
             src={user.picture}
-          />
+          >
+            {!user.picture && getInitials(user.name)}
+          </Avatar>
         </IconButton>
       </Tooltip>
       <Menu
@@ -61,6 +65,7 @@ export default function UserAvatar() {
         }}
       >
         <Box
+          data-testid="user-profile-menu"
           sx={{
             display: 'flex',
             flexDirection: 'column',
@@ -82,11 +87,14 @@ export default function UserAvatar() {
               flexGrow={1}
               fontWeight={700}
               variant="h5"
+              data-testid="user-email"
             >
               <b>{user.email}</b>
             </Typography>
             <IconButton
-              sx={{ position: 'absolute', right: 10 }}
+              aria-label="close"
+              data-testid="user-profile-close"
+              sx={{ position: 'absolute', right: 10, top: 1 }}
               onClick={handleClose}
             >
               <CloseIcon />
@@ -105,8 +113,10 @@ export default function UserAvatar() {
               sx={{ width: 70, height: 70 }}
               alt={user.given_name}
               src={user.picture}
-            />
-            <Typography fontSize={'22px'} variant="h1">
+            >
+              {!user.picture && getInitials(user.name)}
+            </Avatar>
+            <Typography fontSize={'22px'} variant="h1" data-testid="user-name">
               Hi, {user.given_name}!
             </Typography>
             <Box>

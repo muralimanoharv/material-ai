@@ -1,8 +1,8 @@
-import { createContext } from 'react'
+import React, { createContext } from 'react'
 import { type Theme } from '@mui/material/styles'
 import type {
   Agent,
-  AppConfig,
+  AppConfigImpl,
   ChatItem,
   FeedbackDto,
   FileAttachment,
@@ -48,7 +48,7 @@ export interface AppContextType {
 
   // Configuration & Meta
   health: Health | undefined
-  config: AppConfig
+  config: AppConfigImpl
 
   //service
   apiService: ApiService
@@ -68,7 +68,7 @@ export interface AppContextType {
 export interface ThemeContextType {
   theme: ThemeMode
   setTheme: (theme: ThemeMode) => void
-  config: AppConfig
+  config: AppConfigImpl
 }
 
 export interface LayoutContextType {

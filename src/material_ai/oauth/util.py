@@ -4,7 +4,6 @@ import functools
 from json import JSONDecodeError
 from .schema import OAuthErrorResponse
 
-
 _logger = logging.getLogger(__name__)
 
 
@@ -48,14 +47,6 @@ def handle_httpx_errors(url: str = "Unknown API"):
                     status_code=400, detail="Upstream OAuth Error"
                 )
             except httpx.HTTPStatusError as e:
-                _logger.warning(
-                    f"ERROR: Non-200 error code returned from {url}: {e}, body: {e.response.text}"
-                )
-                return OAuthErrorResponse(
-                    status_code=e.response.status_code,
-                    detail=response_json_or_text(e.response),
-                )
-            except httpx.ConnectTimeout as e:
                 _logger.warning(
                     f"ERROR: Non-200 error code returned from {url}: {e}, body: {e.response.text}"
                 )

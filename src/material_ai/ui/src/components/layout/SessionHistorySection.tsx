@@ -2,7 +2,7 @@ import { useContext, type MouseEvent } from 'react'
 import { AppContext, LayoutContext } from '../../context'
 import { Box, IconButton, Typography, useTheme, Tooltip } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { drawerWidth } from '../material/MaterialDrawer'
+import { drawerWidth } from './other/MaterialDrawer'
 import { useNavigate } from 'react-router'
 import { useAgentId, useMobileHook } from '../../hooks'
 import { type Session } from '../../schema'
@@ -76,7 +76,7 @@ function SessionItem({ session, sessionIdx }: SessionItemProps) {
       if (isSelected) context.on_new_chat(agent)
     } catch (e: unknown) {
       console.error(e)
-      context.setSnack(config?.errorMessage || 'Error deleting session')
+      context.setSnack(config.getErrorMessage())
     }
   }
 

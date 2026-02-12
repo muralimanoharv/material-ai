@@ -4,12 +4,14 @@
 .env
 **/__pycache__/
 *.db
+!sports_analytics.db
 dist
 **/*.egg-info/
 .coverage
 htmlcov
 build/
 **/*tfvars
+**/.adk
 **/*.tfstate
 **/*.tfstate.backup
 **/.terraform

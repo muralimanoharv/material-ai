@@ -5,7 +5,7 @@ from .app import get_endpoint_function, get_agent_loader
 from google.adk.cli.adk_web_server import Session
 from google.adk.agents import LlmAgent
 from datetime import datetime, timezone
-from fastapi import APIRouter, Response, Request, Cookie, status, Depends
+from fastapi import APIRouter, Response, Request, Cookie, status, Depends, Query
 from fastapi.responses import FileResponse, RedirectResponse
 from .exec import UnauthorizedException
 from .request import FeedbackRequest
@@ -81,6 +81,7 @@ async def feedback(
 )
 async def logout(
     refresh_token: str | None = Cookie(None),
+    access_token: str | None = Cookie(None),
     oauth_service: IOAuthService = Depends(get_oauth_service),
 ):
     """
@@ -88,7 +89,7 @@ async def logout(
     """
     # Here we logout the user and remove cookies
     response = Response(status_code=200)
-    await remove_token(response, refresh_token, oauth_service)
+    await remove_token(response, refresh_token, oauth_service, access_token)
     return response
 
 
@@ -104,7 +105,9 @@ async def logout(
     },
 )
 async def login(
-    request: Request, oauth_service: IOAuthService = Depends(get_oauth_service)
+    request: Request,
+    oauth_service: IOAuthService = Depends(get_oauth_service),
+    redirect: str | None = Query(default=None),
 ):
     """
     Redirects the user to OAuth 2.0 server for authentication.
@@ -112,8 +115,10 @@ async def login(
     # Generate a secure state token
     state, redirect_url = get_redirection_url(oauth_service)
     request.session["oauth_state"] = state
+    if redirect:
+        request.session["redirect"] = redirect
     _logger.debug(
-        f"DEBUG: Redirecting to OAuth provider with oauth_state token with value: {state}"
+        f"DEBUG: Redirecting to OAuth provider with oauth_state token with value: {state}, redirect: {redirect}"
     )
     return RedirectResponse(url=redirect_url)
 
@@ -141,6 +146,8 @@ async def user(
     """
     Handles user detail retrieval based on session cookies.
     """
+    if not refresh_token:
+        raise UnauthorizedException()
 
     if user_details is not None:
         verified_user_details = verify_user_details(user_details)
@@ -169,20 +176,28 @@ async def user(
 )
 async def callback(
     request: Request,
-    code: str,
-    state: str,
+    code: str = Query(default=None),
+    state: str = Query(default=None),
+    error: str = Query(default=None),
+    error_description: str = Query(default=None),
     oauth_service: IOAuthService = Depends(get_oauth_service),
 ):
     """
     Handles the callback from OAuth2.0 after user authentication.
     """
+    if error:
+        return {
+            "error": error,
+            "error_description": error_description,
+        }
     stored_state = request.session.get("oauth_state")
+    redirect = request.session.get("redirect")
     if not stored_state or stored_state != state:
         _logger.error(
             f"ERROR: Session missmatch stored state: {stored_state}, not same as state: {state}"
         )
         return Response(status_code=403)
-    return await on_callback(code, oauth_service)
+    return await on_callback(code, oauth_service, redirect)
 
 
 @router.get(
@@ -306,3 +321,21 @@ async def agents():
         )
 
     return AgentResponse(agents=agents)
+
+
+@router.get(
+    "/apps/{app_name}/ui",
+)
+async def get_agent_ui(app_name: str):
+    agent_loader = get_agent_loader()
+    if not agent_loader:
+        return Response(status_code=404, content="Agent directory not found")
+
+    AGENT_UI_PATH = f"{agent_loader.agents_dir}/{app_name}/ui/dist"
+    if not os.path.exists(f"{AGENT_UI_PATH}/index.js"):
+        return Response(status_code=404, content="Agent ui not found")
+
+    return FileResponse(
+        path=os.path.join(AGENT_UI_PATH, "index.js"),
+        media_type="application/javascript",
+    )

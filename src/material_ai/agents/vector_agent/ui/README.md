@@ -1,0 +1,1 @@
+Vector React App used to explain text emmeddings and vectorization
