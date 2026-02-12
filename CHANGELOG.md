@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.2.0](https://github.com/muralimanoharv/material-ai/compare/v1.1.18...v1.2.0) (2026-02-12)
+
+
+### Features
+
+* adding support for postgres & bigquery nl2sql agent ([6cdb9d2](https://github.com/muralimanoharv/material-ai/commit/6cdb9d296b41a1f44d0341579d42638a25b1bc56))
+* ui configuration using yaml ([b91c4ea](https://github.com/muralimanoharv/material-ai/commit/b91c4ea7915de6a7c7003d30603113f7ea95ff1f))
+* using babel compiler replacing json ([6b79226](https://github.com/muralimanoharv/material-ai/commit/6b79226809314eb5f96607009e28d2fe59ff11f3))
+
+
+### Bug Fixes
+
+* adding azure oauth and using jwt based verfication ([fe84ac6](https://github.com/muralimanoharv/material-ai/commit/fe84ac6c39fa0eebf3444f1102ee59b46ceb4e68))
+* Adding support for micro frontend ([6ba97cc](https://github.com/muralimanoharv/material-ai/commit/6ba97ccf424bf54748a476e1115d9945426e47d8))
+* code formatting and refactoring ([23bde22](https://github.com/muralimanoharv/material-ai/commit/23bde22ecb32e35224df66c2dda139e73b72e4f4))
+* fix code formatting ([f6aed98](https://github.com/muralimanoharv/material-ai/commit/f6aed98229000473b6c52ed7a637ab00778dd593))
+* test cases ([9f0bc05](https://github.com/muralimanoharv/material-ai/commit/9f0bc05b6bc2dd917697a047df4cfb847e4cd65a))
+
 ## [1.1.18](https://github.com/muralimanoharv/material-ai/compare/v1.1.17...v1.1.18) (2025-12-22)
 
 
