@@ -57,7 +57,7 @@ teardown:
 	cd scripts && ./teardown.sh
 
 clean:
-	rm -rf build/ dist/ src/*.egg-info src/${PACKAGE_NAME}/ui/dist htmlcov/ .coverage /build
+	rm -rf build/ dist/ src/*.egg-info src/${PACKAGE_NAME}/ui/dist src/${PACKAGE_NAME}/agents/vector_agent/ui/dist htmlcov/ .coverage /build
 
 build: clean build-ui
 	PIP_INDEX_URL=https://pypi.org/simple/ python -m build
