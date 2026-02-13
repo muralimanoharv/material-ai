@@ -29,9 +29,11 @@ variable "service_name" {
 }
 
 # Application Config & Secrets (Passed as Env Vars for now)
+variable "sso_issuer" { type = string }
 variable "sso_client_id" { type = string }
 variable "sso_client_secret" { type = string }
 variable "sso_redirect_uri" { type = string }
+variable "sso_scope" { type = string }
 variable "sso_session_secret_key" { type = string }
 variable "config_path" { type = string }
 variable "google_genai_use_vertexai" { type = string }
@@ -218,6 +220,10 @@ resource "google_cloud_run_v2_service" "app_service" {
 
       # Environment Variables
       env {
+        name  = "SSO_ISSUER"
+        value = var.sso_issuer
+      }
+      env {
         name  = "SSO_CLIENT_ID"
         value = var.sso_client_id
       }
@@ -228,6 +234,10 @@ resource "google_cloud_run_v2_service" "app_service" {
       env {
         name  = "SSO_REDIRECT_URI"
         value = var.sso_redirect_uri
+      }
+      env {
+        name  = "SSO_SCOPE"
+        value = var.sso_scope
       }
       env {
         name  = "SSO_SESSION_SECRET_KEY"

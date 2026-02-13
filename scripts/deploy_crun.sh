@@ -15,9 +15,11 @@ source ./setup.sh
   -var="repo_name=$CRUN_CONTAINER_REPO" \
   -var="image_name=$CRUN_IMAGE" \
   -var="service_name=$CRUN_SERVICE" \
+  -var="sso_issuer=$SSO_ISSUER" \
   -var="sso_client_id=$SSO_CLIENT_ID" \
   -var="sso_client_secret=$SSO_CLIENT_SECRET" \
   -var="sso_redirect_uri=$SSO_REDIRECT_URI" \
+  -var="sso_scope=$SSO_SCOPE" \
   -var="sso_session_secret_key=$SSO_SESSION_SECRET_KEY" \
   -var="config_path=$CONFIG_PATH" \
   -var="google_genai_use_vertexai=$GOOGLE_GENAI_USE_VERTEXAI" \

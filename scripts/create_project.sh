@@ -69,7 +69,7 @@ download_terraform() {
 
     # 4. Download
     if command -v curl >/dev/null 2>&1; then
-        curl -LO "$download_url"
+        curl -sLO "$download_url"
     elif command -v wget >/dev/null 2>&1; then
         wget "$download_url"
     else
@@ -97,19 +97,20 @@ download_terraform() {
 
 download_template_files() {
     # URLs for the root directory
-    curl -O https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/config.ini
+    curl -sO https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/config.ini
     # curl -O https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/src/material_ai/ui/ui_config.yaml
-    curl -O https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.dockerignore
-    curl -O https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.gitignore
-    curl -O https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/cloudbuild.yaml
-    curl -O https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.env.example
+    curl -sO https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.dockerignore
+    curl -sO https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.gitignore
+    curl -sO https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/cloudbuild.yaml
+    curl -sO https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/.env.example
     # URLs for the scripts directory
     mkdir -p scripts
-    curl -O -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/setup.sh
-    curl -O -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/auth.sh
-    curl -O -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/deploy_crun.sh
-    curl -O -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/teardown.sh
-    curl -O -P ./scripts https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/main.tf
+    cd scripts
+    curl -sO  https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/setup.sh
+    curl -sO  https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/auth.sh
+    curl -sO  https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/deploy_crun.sh
+    curl -sO  https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/teardown.sh
+    curl -sO  https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/main.tf
 }
 
 
@@ -540,6 +541,15 @@ cat > README.md << EOF
 
 ---
 
+## 🚀 Latest Features
+* **NEW: Agent UI (MAI):** The world is moving to AI agents, so why are we still using UI built for humans alone? MAI (Material Agent Interface) bridges the gap between agentic intelligence and user experience. By dynamically generating UI workflows on the fly, MAI ensures your interface is as adaptive and intelligent as the AI powering it
+* **NEW: Agentic Library:** Why build what's already been perfected? The mateiral_ai agentic library is the foundation for the next generation of AI. It moves the industry from 'custom-coded' to 'component-based' development. Use our library of pre-built agents as your base class, then inherit and scale—turning months of development into minutes, some examples include out of box Nl2Sql Agent.
+* **NEW: Microfrontend:** Break free from the 'chat bubble' constraint. While Material Agent Interface (MAI) offers powerful out-of-the-box components, its true strength lies in its Microfrontend Architecture. This allows you to inject custom, agent-specific UI flows dynamically. Whether your agent requires a data grid, a creative canvas, or a bespoke dashboard, you can orchestrate the exact interface the task demands, ensuring the UI is as specialized as the agent itself.
+* **NEW: Enhacing UI to show thinking:** Experience the "brain" of your agent in real-time. MAI now supports Native Thinking Tracks, allowing users to follow an agent's logic as it unfolds. Instead of staring at a loading spinner, users see the agent's internal monologue and decision-making process. This builds trust and provides immediate context on how the final answer is being constructed.
+* **NEW: Production Ready Deployment Using Terraform:** Skip the manual cloud configuration. With our new Terraform Deployment Suite, you can spin up a production-ready environment for your agents in minutes. We've baked security directly into the code using PoLP (Principle of Least Privilege) architecture, automatically configuring isolated environments and scoped permissions so you can focus on building agents, not managing infrastructure.
+
+Checkout Material AI README.md for more informmation
+
 ## 🚀 Getting Started
 
 You can set up your development environment either locally using Python or with Docker for a more streamlined experience.
@@ -560,6 +570,15 @@ Ensure you have the following tools installed:
 > * **make**: \`sudo apt-get update && sudo apt-get install make\` (Debian/Ubuntu) or \`brew install make\` (macOS).
 
 #### **2. Installation & Setup**
+
+
+🛠️ Prerequisites: SSL Certificate Setup (macOS)
+If you are running this project on **macOS**, you may encounter an \`SSL: CERTIFICATE_VERIFY_FAILED\` error when the application tries to connect to external services (like Google OAuth or APIs).
+
+This happens because Python on macOS does not use the system's default root certificates. To fix this, you must run the certificate installation script bundled with Python:
+\`\`\`bash
+/Applications/Python\ 3.14/Install\ Certificates.command
+\`\`\`
 
 \`\`\`bash
 # 1. Create and activate a virtual environment
@@ -583,10 +602,12 @@ Next, open the new \`.env\` file and add your credentials.
 
 > **⚠️ Important for \`.env\` Configuration:**
 >
+>   * \`SSO_ISSUER\`: Issuer for OAuth "google/azure" 
 >   * \`SSO_CLIENT_ID\`: The Client Id of OAuth
 >   * \`SSO_CLIENT_SECRET\`: The Client Secret of OAuth
 >   * \`SSO_SESSION_SECRET_KEY\`: Generate a strong, random string for this value.
 >   * \`SSO_REDIRECT_URI\`: For local development, this is \`http://localhost:8080/auth\`. **Do not use \`http\` in production.**
+>   * \`SSO_SCOPE\`: Provide SSO Scope Eg: "openid email profile" for Google OAuth**
 >   * \`ADK_SESSION_DB_URL\`: The default \`sqlite\` database is for development only. Use a managed database like PostgreSQL or MySQL in production.
 >   * \`GOOGLE_API_KEY\`: API key for Gemini API, Go to https://aistudio.google.com/apikey to generate API KEY
 
@@ -726,9 +747,13 @@ All UI and theme customizations are managed in a single configuration file: \`ui
 
 You can modify high-level UI elements:
 
-  * **\`title\` & \`greeting\`**: Change the application title and the welcome message.
-  * **\`models\`**: Define the list of AI models available to the user, complete with names and taglines.
-  * **\`feedback\`**: Customize the categories for user feedback.
+* **Application Title & Text:** Update the main \`title\` of the application, the initial \`greeting\` message on the chat screen, and other default text strings.
+* **Agent specific UI Configuration:** 
+    * \`agents:<agent>:title\`: Agent specific title (Default = main.title)
+    * \`agents:<agent>:greeting\`: Agent specific greeting message (Default = main.greeting)
+    * \`agents:<agent>:show_footer\`: If you want to show the footer component (Default = True)
+    * \`agents:<agent>:chat_section_width\`: Amount of chat section width (Default = 760px)
+    * \`agents:<agent>:feedback\`: Configure the \`feedback\` options, such as the categories presented to users when they provide a negative rating.    
 
 ### Theming (Light & Dark Mode)
 
@@ -744,6 +769,10 @@ The \`theme\` section in \`ui_config.yaml\` contains \`lightPalette\` and \`dark
 -----
 
 ## 🔐 Configuring Authentication (SSO)
+
+Material AI is built to be flexible, allowing you to use the default Google SSO/Azure AD for quick setups or integrate a custom SSO provider for specific customer needs.
+Use env variable \`SSO_ISSUER=google\` if you want Google OAuth
+use env variable \`SSO_ISSUER=azure\` if you want Azure AD
 
 You can replace the default Google OAuth service with your own implementation.
 
@@ -777,7 +806,7 @@ This repository contains a production-ready Terraform configuration to deploy a 
 ### Key Features
 
 * **Isolated Identity:** Creates a dedicated Service Account for the Cloud Run service with zero inherited permissions.
-* **Immutable & Idempotent:** Ensures that `terraform destroy` returns your GCP environment to its exact original state without leaving "orphan" permissions or modified shared resources.
+* **Immutable & Idempotent:** Ensures that \`terraform destroy\` returns your GCP environment to its exact original state without leaving "orphan" permissions or modified shared resources.
 * **Zero Side-Effects:** Does not modify the default Compute Engine service account or existing IAM roles.
 
 This project uses a \`Makefile\` command to automate deployment.
@@ -793,14 +822,18 @@ can modify the crun roles under "scripts/main.tf -> search sa_permissions" and a
 as per project requirements
 4. In order to add additional environment variables you will have to modify "scripts/main.tf" to
 pass these env variables to cloud run in below format
+\`\`\`bash
 variable "custom_env_variable" { type = string }
 env {
         name  = "NAME OF ENV"
         value = var.custom_env_variable
 }
+ \`\`\`
 Next modify "scripts/deploy_crun.sh" to pass this env variable to terraform
+\`\`\`bash
 ./terraform apply \
   -var="custom_env_variable=hello world"
+ \`\`\`
 
 
 5. Teardown the Application
@@ -822,6 +855,8 @@ cd scripts
 download_terraform "1.9.5"
 cd ..
 
+echo ""
+echo "Lets give some permissions to execute shell scripts, Don't worry we are just using this for deployment purposes"
 sudo chmod +x ./scripts/*.sh
 sudo chmod +x ./scripts/terraform
 
