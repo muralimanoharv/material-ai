@@ -1,11 +1,15 @@
 from __future__ import annotations
+import os
 from google.adk.agents import SequentialAgent, Agent
 from material_ai.adk.agents import Nl2SqlAgent
 from material_ai.adk.agents import MaiAgent
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(current_dir, "sports_analytics.db")
+
 BQ_URL = "bigquery://healthcare-indsoln-arg-481412/sports_analytics_ds"
 PG_URL = "postgresql://admin:password123@localhost:5432/my_database"
-SQLITE_URL = "sqlite:///sports_analytics.db"
+SQLITE_URL = f"sqlite:////{db_path}"
 
 data_retriever = Nl2SqlAgent(
     name="data_retriever",

@@ -1,12 +1,12 @@
 services:
   material_ai:
     build: .
-    networks:
-      - my-project-network 
     environment:
+     - SSO_ISSUER=${SSO_ISSUER}
      - SSO_CLIENT_ID=${SSO_CLIENT_ID}
      - SSO_CLIENT_SECRET=${SSO_CLIENT_SECRET}
      - SSO_REDIRECT_URI=${SSO_REDIRECT_URI}
+     - SSO_SCOPE=${SSO_SCOPE}
      - SSO_SESSION_SECRET_KEY=${SSO_SESSION_SECRET_KEY}
      - CONFIG_PATH=${CONFIG_PATH}
      - GOOGLE_GENAI_USE_VERTEXAI=${GOOGLE_GENAI_USE_VERTEXAI}
@@ -15,9 +15,5 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./src:/app/src
+      # - ./src:/app/src
       - ./config.ini:/app/config.ini
-
-networks:
-  my-project-network:
-    driver: bridge
