@@ -249,7 +249,7 @@ export class ChatService {
     for (let i = idx - 1; i >= 0; i--) {
       const prevChat = this.historyService.get(i)
       if (!prevChat) return
-      if (prevChat.content.role == 'model') continue
+      if (prevChat?.content.role == 'model') continue
       for (const part of prevChat.content.parts) {
         if (part.text) return part.text
       }
@@ -265,7 +265,10 @@ export class ChatService {
       if (!invokation_id_map.has(invocationId)) {
         invokation_id_map.set(invocationId, [])
       }
-      const role = does_chat_has_func(event) ? 'model' : event.content.role
+      let role = event?.content?.role ? event.content.role : 'model'
+      if (does_chat_has_func(event)) {
+        role = 'model'
+      }
       invokation_id_map
         .get(invocationId)
         ?.push({ ...event, content: { ...event.content, role } })
@@ -274,7 +277,7 @@ export class ChatService {
     for (const id of invokation_id_map.keys()) {
       const chat_history = invokation_id_map.get(id) || []
       for (const event of chat_history) {
-        if (event.content.role == 'user') {
+        if (event?.content.role == 'user') {
           this.historyService.add_history({ ...event, loading_id: id })
         }
       }
@@ -291,7 +294,7 @@ export class ChatService {
         chat_history,
       })
       for (const event of chat_history) {
-        if (event.content.role == 'model') {
+        if (event?.content.role == 'model') {
           this.historyService.add_history({ ...event, loading_id: id })
         }
       }
