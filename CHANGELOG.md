@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.2](https://github.com/muralimanoharv/material-ai/compare/v1.2.1...v1.2.2) (2026-03-17)
+
+
+### Bug Fixes
+
+* deployment cloud run issues ([8c90b30](https://github.com/muralimanoharv/material-ai/commit/8c90b308ceaaf1f1e58f6d160d8efca1d4370f81))
+* deployment cloud run issues ([1e5faa7](https://github.com/muralimanoharv/material-ai/commit/1e5faa7863ca2751ad202765cfced049f9662ef8))
+
 ## [1.2.1](https://github.com/muralimanoharv/material-ai/compare/v1.2.0...v1.2.1) (2026-02-13)
 
 
