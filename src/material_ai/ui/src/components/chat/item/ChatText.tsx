@@ -33,7 +33,7 @@ export default function ChatText({ part, partIdx }: ChatItemProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   const text = part?.text ?? ''
-  const role = chat.content.role
+  const role = chat?.content.role || 'model'
   const isUserMessage = role === 'user'
   const isModelMessage = role === 'model'
   const isCancelled = !!chat.cancelled
@@ -84,11 +84,11 @@ export default function ChatText({ part, partIdx }: ChatItemProps) {
   return (
     <Box
       data-testid={`page-chat-${chatIdx}-part-${partIdx}`}
-      className={`chat-item-box chat-item-box-${chat.content.role}`}
+      className={`chat-item-box chat-item-box-${chat?.content.role || 'model'}`}
     >
       <Box
         sx={{
-          display: chat.content.role == 'user' ? 'flex' : 'block',
+          display: chat?.content.role == 'user' ? 'flex' : 'block',
           flexDirection: 'row',
           gap: '10px',
           alignSelf: alignment,

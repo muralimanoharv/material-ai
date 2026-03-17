@@ -19,7 +19,7 @@ function ChatItemWrapper({
 }: ChatItemWrapperProps) {
   const { chat, chatIdx } = useContext(ChatItemContext) as ChatItemContextType
 
-  const effectiveRole = role || chat.content.role
+  const effectiveRole = role || chat?.content.role || 'model'
 
   return (
     <Box
