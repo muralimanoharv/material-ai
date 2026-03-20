@@ -62,6 +62,7 @@ export default function Layout({ children, showFooter = true }: LayoutProps) {
   }
 
   const shouldShowFooter = () => {
+    if (!showFooter) return false
     if (!context.user) return true
     if (!agentId) return true
     if (showFooter) return context.config.getAgent(agentId)?.show_footer

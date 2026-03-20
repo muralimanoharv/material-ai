@@ -114,18 +114,33 @@ _lock = threading.Lock()
 _logger = logging.getLogger(__name__)
 
 
+def get_default_ui_config(agents: list[str]):
+    default_config = DEFAULT_CONFIG.model_copy()
+    agents_map: Dict[str, AgentInfo] = {}
+    for agent in agents:
+        agents_map[agent] = AgentInfo(
+            title=default_config.title,
+            greeting=default_config.greeting,
+            show_footer=True,
+            chat_section_width="760px",
+            feedback=DEFAULT_FEEDBACK,
+        )
+    default_config.agents = agents_map
+    return default_config
+
+
 def get_ui_config(ui_config_yaml, agents: list[str]) -> UIConfig:
     global _config_instance
     with _lock:
         if _config_instance is None:
             if ui_config_yaml is None:
-                _config_instance = DEFAULT_CONFIG
+                _config_instance = get_default_ui_config(agents)
                 return _config_instance
             config_path = pathlib.Path(ui_config_yaml)
             if not config_path.exists() or not config_path.is_file():
                 msg = f"WARNING: Config file not found at {config_path}"
                 _logger.warning(msg)
-                _config_instance = DEFAULT_CONFIG
+                _config_instance = get_default_ui_config(agents)
                 return _config_instance
             try:
                 with open(config_path, "r") as file:
