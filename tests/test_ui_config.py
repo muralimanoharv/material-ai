@@ -5,7 +5,12 @@ import pathlib
 from unittest.mock import patch
 
 import material_ai.ui_config as ui_config_loader
-from material_ai.ui_config import get_ui_config, DEFAULT_CONFIG, UIConfig
+from material_ai.ui_config import (
+    get_ui_config,
+    DEFAULT_CONFIG,
+    UIConfig,
+    get_default_ui_config,
+)
 
 agents = ["greeting_agent"]
 
@@ -24,7 +29,7 @@ class TestUIConfigLoader(unittest.TestCase):
         Test that DEFAULT_CONFIG is returned when no file path is provided.
         """
         config = get_ui_config(ui_config_yaml=None, agents=agents)
-        self.assertEqual(config, DEFAULT_CONFIG)
+        self.assertEqual(config, get_default_ui_config(agents=agents))
 
     def test_config_caching(self):
         """
@@ -69,7 +74,7 @@ class TestUIConfigLoader(unittest.TestCase):
         # Patch the logger to check if a warning was emitted
         with patch("material_ai.ui_config._logger.warning") as mock_log:
             config = get_ui_config(ui_config_yaml=non_existent_file, agents=agents)
-            self.assertEqual(config, DEFAULT_CONFIG)
+            self.assertEqual(config, get_default_ui_config(agents=agents))
             mock_log.assert_called_once_with(
                 f"WARNING: Config file not found at {pathlib.Path(non_existent_file)}"
             )

@@ -221,6 +221,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Comment the below line for local development hot reloading to work
 COPY src/ src/
 
+COPY ui_config.yaml ui_config.yaml
+
 COPY config.ini .
 
 # Make port 8080 available to the world outside this container
