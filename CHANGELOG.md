@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.4](https://github.com/muralimanoharv/material-ai/compare/v1.2.3...v1.2.4) (2026-03-21)
+
+
+### Bug Fixes
+
+* github action deploy ci cd ([92f914c](https://github.com/muralimanoharv/material-ai/commit/92f914cf7269f2a5c2a71e9e8ef4454f000b7dbb))
+* github action deploy ci cd ([eba8a1a](https://github.com/muralimanoharv/material-ai/commit/eba8a1a6eb22b3cc6ae62c7f5d3dba232557d4cc))
+* terraform build using github actions ([71c34cd](https://github.com/muralimanoharv/material-ai/commit/71c34cde03f63d596d8b83c81f6995a65e750789))
+* terrafrom for github actions ([5f9fdcf](https://github.com/muralimanoharv/material-ai/commit/5f9fdcf83bc7357c67933d810caf47ad5f2e9025))
+* ui agents page & github action ci cd to deploy to crun ([3700b3f](https://github.com/muralimanoharv/material-ai/commit/3700b3f51aef3df874e647caaef834bc0ba53b39))
+* ui agents page & github action ci cd to deploy to crun ([7bcd8d0](https://github.com/muralimanoharv/material-ai/commit/7bcd8d0df021145d4b97695500088b9206e40edc))
+
 ## [1.2.3](https://github.com/muralimanoharv/material-ai/compare/v1.2.2...v1.2.3) (2026-03-20)
 
 
