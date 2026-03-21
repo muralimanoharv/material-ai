@@ -11,15 +11,9 @@ export class AutomationService {
   ) {}
 
   async check_agent(agent: Agent) {
-    const formatModelName = (modelId: string) => {
-      if (!modelId) return ''
-
-      return modelId
-        .split('-')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ')
-    }
     const page = this.page
+    await expect(page.getByTestId('agents-grid-view')).toBeVisible()
+    await page.getByTestId('agents-grid-view').click()
     await expect(
       page.getByTestId(`agents-page-card-${agent.id}-heading`),
     ).toBeVisible()
@@ -37,7 +31,7 @@ export class AutomationService {
     ).toBeVisible()
     await expect(
       page.getByTestId(`agents-page-card-${agent.id}-model`),
-    ).toHaveText(formatModelName(agent.model))
+    ).toHaveText(agent.model)
     await expect(
       page.getByTestId(`agents-page-card-${agent.id}-status`),
     ).toBeVisible()
@@ -50,9 +44,16 @@ export class AutomationService {
     const page = this.page
     await page.goto('/')
     await expect(page.getByTestId('agents-page-header')).toBeVisible()
-    const agent_card = page.getByTestId(`agents-page-card-${id}-heading`)
+    const agent_card = page.getByTestId(`agents-page-row-${id}-heading`)
     await expect(agent_card).toBeVisible()
     await agent_card.click()
+    await expect(
+      page.getByTestId(`agents-page-info-${id}-heading`),
+    ).toBeVisible()
+    await expect(
+      page.getByTestId(`agents-page-info-${id}-chat-button`),
+    ).toBeVisible()
+    await page.getByTestId(`agents-page-info-${id}-chat-button`).click()
   }
 
   async check_title(title: string) {

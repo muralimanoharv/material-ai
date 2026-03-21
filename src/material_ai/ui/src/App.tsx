@@ -22,6 +22,7 @@ import AgentPage from './components/pages/AgentPage'
 import AgentsPage from './components/pages/AgentsPage'
 import PageNotFound from './components/pages/PageNotFound'
 import HealthPage from './components/pages/HealthPage'
+import AgentInfoPage from './components/pages/AgentInfoPage'
 
 function App() {
   const { config } = useContext(ThemeContext) as ThemeContextType
@@ -186,6 +187,7 @@ function App() {
       <AppContext.Provider value={appContext}>
         <Routes>
           <Route path="/agents" element={<AgentsPage />} />
+          <Route path="/agents/info/:agentId" element={<AgentInfoPage />} />
           <Route path="/agents/:agentId" element={<AgentPage />}>
             <Route path="session/:sessionId" element={<AgentPage />} />
           </Route>

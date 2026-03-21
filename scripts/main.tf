@@ -128,7 +128,8 @@ resource "google_project_iam_member" "sa_permissions" {
     "roles/logging.logWriter",        
     "roles/aiplatform.user",          
     "roles/datastore.user",           
-    "roles/storage.objectViewer"      
+    "roles/storage.objectViewer",
+    "roles/aiplatform.user"   
   ])
    
   project = var.project_id

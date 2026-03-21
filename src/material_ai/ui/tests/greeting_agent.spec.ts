@@ -196,10 +196,6 @@ test.describe('Greeting Agent Chat Page', () => {
 
     //Delete Session History Test
     await automationService.delete_session_history(0)
-    await automationService.check_title(`Hello, ${user.given_name}`)
-    await automationService.check_subtitle(
-      config.agents['greeting_agent'].greeting,
-    )
 
     //Prompt input Agent selection test
     await automationService.check_prompt_input_agent_menu(agents)

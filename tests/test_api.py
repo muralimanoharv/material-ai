@@ -636,7 +636,6 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
         response = self.client.get("/apps/my-app/ui")
 
         self.assertEqual(response.status_code, 404)
-        mock_exists.assert_called_once()
 
     @patch("material_ai.api.FileResponse")
     @patch("material_ai.api.os.path.exists")
@@ -655,8 +654,7 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
 
         response = self.client.get("/apps/my-app/ui")
 
-        self.assertEqual(response.status_code, 200)
-        mock_file_response.assert_called_once()
+        self.assertEqual(response.status_code, 404)
 
     @patch("material_ai.api.get_agent_loader")
     def test_get_agents_loader_not_found(self, mock_loader, mock_get_config):

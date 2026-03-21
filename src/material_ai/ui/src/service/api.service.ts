@@ -276,6 +276,18 @@ export class ApiService {
     this.handle_response(response)
   }
 
+  async get_agent_readme(agent: string): Promise<string> {
+    const response = await fetch(`${HOST}/apps/${agent}/readme`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    })
+
+    return await response.text()
+  }
+
   handle_response(response: Response) {
     if (response.status === 200) return
 

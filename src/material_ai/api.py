@@ -331,11 +331,37 @@ async def get_agent_ui(app_name: str):
     if not agent_loader:
         return Response(status_code=404, content="Agent directory not found")
 
-    AGENT_UI_PATH = f"{agent_loader.agents_dir}/{app_name}/ui/dist"
-    if not os.path.exists(f"{AGENT_UI_PATH}/index.js"):
-        return Response(status_code=404, content="Agent ui not found")
+    for agent in agent_loader.list_agents():
+        if agent == app_name:
+            AGENT_UI_PATH = f"{agent_loader.agents_dir}/{app_name}/ui/dist"
+            if not os.path.exists(f"{AGENT_UI_PATH}/index.js"):
+                return Response(status_code=404, content="Agent ui not found")
 
-    return FileResponse(
-        path=os.path.join(AGENT_UI_PATH, "index.js"),
-        media_type="application/javascript",
-    )
+            return FileResponse(
+                path=os.path.join(AGENT_UI_PATH, "index.js"),
+                media_type="application/javascript",
+            )
+
+    return Response(status_code=404, content="Agent ui not found")
+
+
+@router.get(
+    "/apps/{app_name}/readme",
+)
+async def get_agent_ui(app_name: str):
+    agent_loader = get_agent_loader()
+    if not agent_loader:
+        return Response(status_code=404, content="Agent directory not found")
+
+    for agent in agent_loader.list_agents():
+        if agent == app_name:
+            AGENT_UI_PATH = f"{agent_loader.agents_dir}/{app_name}"
+            if not os.path.exists(f"{AGENT_UI_PATH}/README.md"):
+                return Response(status_code=404, content="Agent readme not found")
+
+            return FileResponse(
+                path=os.path.join(AGENT_UI_PATH, "README.md"),
+                media_type="text/markdown",
+            )
+
+    return Response(status_code=404, content=f"Agent readme not found")
