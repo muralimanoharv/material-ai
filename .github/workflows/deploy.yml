@@ -54,9 +54,9 @@ jobs:
       # --- 3. BUILD PROJECT ---
       - name: Build Project
         run: |
-          # Ensure .venv is in path if make build requires it
+          # Ensure .venv is in path if make build-ui requires it
           echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
-          make build
+          make build-ui
         working-directory: .
 
       # --- 4. GCP AUTHENTICATION ---
