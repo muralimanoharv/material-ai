@@ -23,6 +23,6 @@ source ./setup.sh
   -var="sso_session_secret_key=$SSO_SESSION_SECRET_KEY" \
   -var="config_path=$CONFIG_PATH" \
   -var="google_genai_use_vertexai=$GOOGLE_GENAI_USE_VERTEXAI" \
-  -var="google_api_key=$GOOGLE_API_KEY" \
   -var="adk_session_db_url=$ADK_SESSION_DB_URL" 
+  # -var="google_api_key=$GOOGLE_API_KEY" \
 
