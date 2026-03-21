@@ -1,0 +1,60 @@
+name: "Deploy to Cloud Run"
+
+on:
+  push:
+    branches:
+      - main # Triggers when a PR is merged into main
+
+permissions:
+  contents: 'read'
+  id-token: 'write'
+
+jobs:
+  terraform-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./scripts
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 1. Authenticate to GCP using Workload Identity Federation
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: '${{ secrets.WIF_PROVIDER }}'
+          service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'
+
+      # 2. Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.0"
+
+      # 3. Terraform Init
+      # This will connect to your GCS backend (ensure you added the backend block to your .tf file)
+      - name: Terraform Init
+        run: terraform init
+
+      # 4. Terraform Apply
+      # We use -auto-approve because there is no human to type "yes" in the CI/CD pipeline
+      - name: Terraform Apply
+        env:
+          # Mapping secrets to environment variables that Terraform can read
+          TF_VAR_project_id: ${{ secrets.PROJECT_ID }}
+          TF_VAR_region: "us-central1"
+          TF_VAR_repo_name: "material-ai-crun-repository"
+          TF_VAR_image_name: "material-ai"
+          TF_VAR_service_name: "material-ai-crun"
+          TF_VAR_sso_issuer: "google"
+          TF_VAR_sso_client_id: ${{ secrets.SSO_CLIENT_ID }}
+          TF_VAR_sso_client_secret: ${{ secrets.SSO_CLIENT_SECRET }}
+          TF_VAR_sso_redirect_uri: ${{ secrets.SSO_REDIRECT_URI }}
+          TF_VAR_sso_scope: "openid email profile"
+          TF_VAR_sso_session_secret_key: ${{ secrets.SSO_SESSION_SECRET_KEY }}
+          TF_VAR_config_path: "config.ini"
+          TF_VAR_google_genai_use_vertexai: "true"
+          TF_VAR_adk_session_db_url: "sqlite:///./my_agent_data.db"
+        run: terraform apply -auto-approve

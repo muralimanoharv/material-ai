@@ -22,6 +22,7 @@ import SettingsButton from './buttons/SettingsButton'
 import { useAgentId, useMobileHook } from '../../hooks'
 import AgentsButton from './buttons/AgentsButton'
 import DrawerSigninButton from './DrawerSigninButton'
+import { useLocation } from 'react-router'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -32,7 +33,7 @@ interface FlexibleDrawerProps {
   children: React.ReactNode
 }
 
-export default function Layout({ children, showFooter = true }: LayoutProps) {
+export default function Layout({ children, showFooter = false }: LayoutProps) {
   const [settingsDrawerOpen, setSettingsDrawerOpen] = React.useState(false)
   const [themeDrawerOpen, setThemeDrawerOpen] = React.useState(false)
 
@@ -42,6 +43,12 @@ export default function Layout({ children, showFooter = true }: LayoutProps) {
   const agentId = useAgentId()
 
   const context = React.useContext(AppContext) as AppContextType
+
+  const location = useLocation()
+
+  const showChatButtons = () => {
+    return context.user && agentId && !location.pathname.includes('info')
+  }
 
   const {
     drawerOpen: open,
@@ -63,6 +70,7 @@ export default function Layout({ children, showFooter = true }: LayoutProps) {
 
   const shouldShowFooter = () => {
     if (!showFooter) return false
+    if (context.loading) return false
     if (!context.user) return true
     if (!agentId) return true
     if (showFooter) return context.config.getAgent(agentId)?.show_footer
@@ -99,7 +107,7 @@ export default function Layout({ children, showFooter = true }: LayoutProps) {
                 <DrawerSigninButton />
               </Box>
             )}
-            {context.user && agentId && <NewChatButton />}
+            {showChatButtons() && <NewChatButton />}
 
             <Box
               onMouseLeave={() => setHoverOpen(false)}
@@ -112,7 +120,7 @@ export default function Layout({ children, showFooter = true }: LayoutProps) {
                 overflowX: 'hidden',
               }}
             >
-              {context.user && agentId && <SessionHistorySection />}
+              {showChatButtons() && <SessionHistorySection />}
             </Box>
             <SettingsButton />
           </Box>

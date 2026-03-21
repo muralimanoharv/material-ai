@@ -3,7 +3,7 @@ import { Box } from '@mui/material'
 import { withLayout } from '../../hooks'
 import { AppContext, type AppContextType } from '../../context'
 import Greeting from '../Greeting'
-import AgentList from '../agents/AgentList'
+import AgentCatalog from '../agents/AgentCatalog'
 
 function AgentsPage() {
   const { agents, user, setSessions } = useContext(AppContext) as AppContextType
@@ -26,7 +26,7 @@ function AgentsPage() {
         gap: '10px',
       }}
     >
-      <AgentList agents={agents} />
+      <AgentCatalog agents={agents} />
     </Box>
   )
 }
