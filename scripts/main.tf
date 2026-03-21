@@ -37,7 +37,10 @@ variable "sso_scope" { type = string }
 variable "sso_session_secret_key" { type = string }
 variable "config_path" { type = string }
 variable "google_genai_use_vertexai" { type = string }
-variable "google_api_key" { type = string }
+variable "google_api_key" { 
+  type = string
+  default = ""
+}
 variable "adk_session_db_url" { type = string }
 
 
