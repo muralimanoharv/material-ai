@@ -29,19 +29,34 @@ variable "service_name" {
 }
 
 # Application Config & Secrets (Passed as Env Vars for now)
-variable "sso_issuer" { type = string }
+variable "sso_issuer" { 
+  type = string 
+  default = "google"
+}
 variable "sso_client_id" { type = string }
 variable "sso_client_secret" { type = string }
 variable "sso_redirect_uri" { type = string }
-variable "sso_scope" { type = string }
+variable "sso_scope" { 
+  type = string
+  default = "openid email profile"
+}
 variable "sso_session_secret_key" { type = string }
-variable "config_path" { type = string }
-variable "google_genai_use_vertexai" { type = string }
+variable "config_path" { 
+  type = string
+  default = "config.ini" 
+}
+variable "google_genai_use_vertexai" { 
+  type = string
+  default = "true"
+}
 variable "google_api_key" { 
   type = string
   default = ""
 }
-variable "adk_session_db_url" { type = string }
+variable "adk_session_db_url" { 
+  type = string
+  default = "sqlite:///./my_agent_data.db"
+}
 
 
 
