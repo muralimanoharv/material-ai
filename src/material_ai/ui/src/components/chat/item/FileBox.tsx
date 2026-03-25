@@ -72,6 +72,10 @@ export default function FileBox(props: FileBoxProps) {
     }
   }
 
+  const cardBg = theme.palette.background.card || theme.palette.grey[100]
+  const cardHoverBg =
+    theme.palette.background.cardHover || theme.palette.grey[200]
+
   // Image Rendering Logic
   if (
     ['jpg', 'jpeg', 'png', 'svg', 'gif', 'webp'].includes(
@@ -85,24 +89,59 @@ export default function FileBox(props: FileBoxProps) {
 
     return (
       <Tooltip title={fileName} key={fileName}>
-        <img
-          style={{
+        <Box
+          sx={{
+            position: 'relative',
             width: '80px',
             height: '80px',
-            objectFit: 'cover',
-            cursor: 'pointer',
+            display: 'inline-block',
+            mr: 1,
+            '&:hover .file-clear-button-image': {
+              opacity: '1',
+            },
           }}
-          src={imgSrc}
-          onClick={onClick}
-          alt={fileName}
-        />
+        >
+          <img
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              cursor: 'pointer',
+              borderRadius: '4px', // Optional: looks better with MUI
+            }}
+            src={imgSrc}
+            onClick={onClick}
+            alt={fileName}
+          />
+
+          {showClear && onClearFile && (
+            <IconButton
+              data-testid="clear-file"
+              onClick={(e) => {
+                e.stopPropagation()
+                onClearFile(fileName)
+              }}
+              className="file-clear-button-image"
+              sx={{
+                backgroundColor: theme.palette.background.default,
+                opacity: '0',
+                position: 'absolute',
+                right: 3,
+                top: 3,
+                width: '18px',
+                height: '18px',
+                '&:hover': {
+                  backgroundColor: cardHoverBg,
+                },
+              }}
+            >
+              <ClearIcon sx={{ fontSize: '12px' }} fontSize="small" />
+            </IconButton>
+          )}
+        </Box>
       </Tooltip>
     )
   }
-
-  const cardBg = theme.palette.background.card || theme.palette.grey[100]
-  const cardHoverBg =
-    theme.palette.background.cardHover || theme.palette.grey[200]
 
   return (
     <Tooltip title={fileName} key={fileName}>

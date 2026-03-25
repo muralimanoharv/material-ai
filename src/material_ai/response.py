@@ -1,3 +1,4 @@
+from __future__ import annotations
 import pydantic
 from pydantic import Field
 from typing import Any, List
@@ -79,12 +80,21 @@ class HistoryResponse(pydantic.BaseModel):
     history: List[History]
 
 
+class Tool(pydantic.BaseModel):
+    name: str
+    description: str | None
+    type: str
+
+
 class Agent(pydantic.BaseModel):
     id: str
     name: str
+    type: str
     description: str
     model: str
     status: str
+    tools: List[Tool]
+    sub_agents: List[Agent] = []
 
 
 class AgentResponse(pydantic.BaseModel):

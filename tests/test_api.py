@@ -679,11 +679,17 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
         # 3. Create mock agent objects with required attributes
         # First agent is an LlmAgent (with a model)
         mock_llm_agent = MagicMock(spec=LlmAgent)
+        mock_llm_agent.name = "greeting_agent"
+        mock_llm_agent.tools = []
+        mock_llm_agent.sub_agents = []
         mock_llm_agent.description = "Says hello"
         mock_llm_agent.model = "gpt-4"
 
         # Second agent is a generic agent (no model)
         mock_generic_agent = MagicMock()
+        mock_generic_agent.name = "data_agent"
+        mock_generic_agent.tools = []
+        mock_generic_agent.sub_agents = []
         mock_generic_agent.description = "Processes data"
         # Ensure it's not seen as an LlmAgent
 
@@ -727,6 +733,9 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
 
         mock_agent = MagicMock()
         mock_agent.description = "Test Description"
+        mock_agent.name = ""
+        mock_agent.tools = []
+        mock_agent.sub_agents = []
         mock_loader_instance.load_agent.return_value = mock_agent
 
         # Act
@@ -744,17 +753,20 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
     def test_get_agents_formatting_logic(self, mock_loader, mock_get_config):
         """Tests the snake_case to Title Case conversion."""
         mock_loader_instance = MagicMock()
+        mock_base_agent = MagicMock()
         mock_loader.return_value = mock_loader_instance
         mock_loader_instance.list_agents.return_value = ["chat_helper_agent"]
-
-        mock_agent = MagicMock()
-        mock_agent.description = "Helpful agent"
-        mock_loader_instance.load_agent.return_value = mock_agent
+        mock_base_agent.tools = []
+        mock_base_agent.sub_agents = []
+        mock_base_agent.name = "mock_agent"
+        mock_base_agent.description = "mock_description"
+        mock_loader_instance.load_agent.return_value = mock_base_agent
 
         response = self.client.get("/agents")
 
+        self.assertEqual(response.status_code, 200)
         # Verify 'chat_helper_agent' becomes 'Chat Helper Agent'
-        self.assertEqual(response.json()["agents"][0]["name"], "Chat Helper Agent")
+        self.assertEqual(response.json()["agents"][0]["name"], "Mock Agent")
 
     @patch("material_ai.api.get_endpoint_function")
     @patch("material_ai.api.get_user")

@@ -544,6 +544,7 @@ cat > README.md << EOF
 ---
 
 ## 🚀 Latest Features
+* **Integrated UI & Backend Orchestration:** Material AI employs a unified Cloud Run deployment for both UI and Backend, streamlining configuration management while fortifying security against CORS and XSS vulnerabilities through optimized headers and integrated UI caching
 * **NEW: Agent UI (MAI):** The world is moving to AI agents, so why are we still using UI built for humans alone? MAI (Material Agent Interface) bridges the gap between agentic intelligence and user experience. By dynamically generating UI workflows on the fly, MAI ensures your interface is as adaptive and intelligent as the AI powering it
 * **NEW: Agentic Library:** Why build what's already been perfected? The mateiral_ai agentic library is the foundation for the next generation of AI. It moves the industry from 'custom-coded' to 'component-based' development. Use our library of pre-built agents as your base class, then inherit and scale—turning months of development into minutes, some examples include out of box Nl2Sql Agent.
 * **NEW: Microfrontend:** Break free from the 'chat bubble' constraint. While Material Agent Interface (MAI) offers powerful out-of-the-box components, its true strength lies in its Microfrontend Architecture. This allows you to inject custom, agent-specific UI flows dynamically. Whether your agent requires a data grid, a creative canvas, or a bespoke dashboard, you can orchestrate the exact interface the task demands, ensuring the UI is as specialized as the agent itself.

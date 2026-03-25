@@ -22,10 +22,12 @@ import {
   Terminal as ModelIcon,
   DescriptionOutlined as DocIcon,
 } from '@mui/icons-material'
+import HubOutlinedIcon from '@mui/icons-material/HubOutlined'
 import { useNavigate } from 'react-router'
 import type { Agent } from '../../schema'
 import { AppContext, type AppContextType } from '../../context'
 import Markdown from 'react-markdown'
+import AgentFlow from './AgentGraph'
 
 interface AgentInfoPageProps {
   agent: Agent
@@ -216,6 +218,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                   <Button
                     variant="outlined"
                     fullWidth
+                    disabled
                     startIcon={<EnterpriseIcon />}
                     sx={{
                       py: 1.5,
@@ -233,7 +236,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                       },
                     }}
                   >
-                    Deploy to Gemini Enterprise
+                    Deploy to Gemini Enterprise (Coming Soon)
                   </Button>
                 </Grid>
 
@@ -241,6 +244,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                   <Button
                     variant="outlined"
                     fullWidth
+                    disabled
                     startIcon={<EngineIcon />}
                     sx={{
                       py: 1.5,
@@ -258,7 +262,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                       },
                     }}
                   >
-                    Deploy to Agent Engine
+                    Deploy to Agent Engine (Coming Soon)
                   </Button>
                 </Grid>
 
@@ -266,6 +270,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                   <Button
                     variant="outlined"
                     fullWidth
+                    disabled
                     startIcon={<CatalogIcon />}
                     sx={{
                       py: 1.5,
@@ -283,7 +288,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                       },
                     }}
                   >
-                    Deploy to Agent Catalog
+                    Deploy to Agent Catalog (Coming Soon)
                   </Button>
                 </Grid>
               </Grid>
@@ -325,6 +330,40 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
               >
                 <Markdown>{readme}</Markdown>
               </Paper>
+              <Divider
+                sx={{ my: 4, borderColor: alpha(theme.palette.divider, 0.1) }}
+              />
+              <Box>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  sx={{ mb: 3 }}
+                >
+                  <HubOutlinedIcon sx={{ color: theme.palette.primary.main }} />
+                  <Typography
+                    variant="h6"
+                    sx={{ fontWeight: 800, color: theme.palette.text.primary }}
+                  >
+                    Visualization
+                  </Typography>
+                </Stack>
+
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 4,
+                    borderRadius: 4,
+                    border: `1px solid ${theme.palette.divider}`,
+                    display: 'grid',
+                    gridTemplateColumns: 'minmax(0, 1fr)',
+                    width: '100%',
+                    overflowX: 'auto',
+                  }}
+                >
+                  <AgentFlow data={agent} events={[]} allowLiveMode={false} />
+                </Paper>
+              </Box>
             </Box>
           </Stack>
         </Grid>

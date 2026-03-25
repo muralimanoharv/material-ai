@@ -3,7 +3,7 @@ import logging
 import psutil
 from .app import get_endpoint_function, get_agent_loader
 from google.adk.cli.adk_web_server import Session
-from google.adk.agents import LlmAgent
+from google.adk.agents import LlmAgent, BaseAgent
 from datetime import datetime, timezone
 from fastapi import APIRouter, Response, Request, Cookie, status, Depends, Query
 from fastapi.responses import FileResponse, RedirectResponse
@@ -26,7 +26,7 @@ from .auth import (
 from .auth import IOAuthService, FeedbackHandler, get_user
 from .oauth import OAuthUserDetail
 from .response import UserSuccessResponse, HealthResponse, History, HistoryResponse
-from .response import Agent, AgentResponse, List
+from .response import Agent, AgentResponse, List, Tool
 from .ui_config import UIConfig
 
 _logger = logging.getLogger(__name__)
@@ -287,6 +287,46 @@ async def history(app_name: str, user: OAuthUserDetail = Depends(get_user)):
     return HistoryResponse(history=history)
 
 
+def get_agent(agent: BaseAgent) -> Agent:
+    def format_agent_name(name: str):
+        """
+        Converts snake_case (greeting_agent) to Title Case (Greeting Agent).
+        """
+        if not name:
+            return ""
+        return name.replace("_", " ").title()
+
+    model = ""
+    if isinstance(agent, LlmAgent):
+        model = agent.model
+    tools: List[Tool] = []
+    sub_agents: List[Agent] = []
+    if hasattr(agent, "tools") and agent.tools:
+        for tool in agent.tools:
+            if callable(tool):
+                tools.append(
+                    Tool(name=tool.__name__, description=tool.__doc__, type="tool")
+                )
+            else:
+                tool_name = getattr(tool, "name", str(tool))
+                tool_desc = getattr(tool, "description", str(tool))
+                tools.append(Tool(name=tool_name, description=tool_desc, type="tool"))
+    if hasattr(agent, "sub_agents") and agent.sub_agents:
+        for sub_agent in agent.sub_agents:
+            sub_agents.append(get_agent(sub_agent))
+
+    return Agent(
+        id=agent.name,
+        type="agent",
+        model=model,
+        name=format_agent_name(agent.name),
+        description=agent.description,
+        status="active",
+        tools=tools,
+        sub_agents=sub_agents,
+    )
+
+
 @router.get(
     "/agents",
     summary="Get list of active agents",
@@ -297,28 +337,9 @@ async def agents():
         return []
     agents: List[Agent] = []
 
-    def format_agent_name(name):
-        """
-        Converts snake_case (greeting_agent) to Title Case (Greeting Agent).
-        """
-        if not name:
-            return ""
-        return name.replace("_", " ").title()
-
     for agent in agent_loader.list_agents():
         base_agent = agent_loader.load_agent(agent)
-        model = ""
-        if isinstance(base_agent, LlmAgent):
-            model = base_agent.model
-        agents.append(
-            Agent(
-                id=agent,
-                model=model,
-                name=format_agent_name(agent),
-                description=base_agent.description,
-                status="active",
-            )
-        )
+        agents.append(get_agent(base_agent))
 
     return AgentResponse(agents=agents)
 

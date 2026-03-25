@@ -594,7 +594,6 @@ const AgentCatalog: React.FC<AgentCatalogProps> = ({ agents = [] }) => {
                   textAlign: 'center',
                   py: 15,
                   borderRadius: 5,
-                  bgcolor: alpha(theme.palette.action.hover, 0.2),
                 }}
               >
                 <Typography

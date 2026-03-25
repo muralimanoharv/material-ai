@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import {
   useContext,
   useState,
+  useRef,
   type SyntheticEvent,
   type KeyboardEvent,
   type ClipboardEvent,
@@ -29,17 +30,20 @@ import FileSelectMenu from '../menu/FileSelectMenu'
 import AgentSelectMenu from '../menu/AgentSelectMenu'
 import FileBox from '../chat/item/FileBox'
 import { useAgentId, useSessionId } from '../../hooks'
+import { fileToBase64 } from '../../utils'
 
 export default function PromptInput() {
   const {
     promptLoading,
     files,
     setFiles,
+    setSnack,
     user,
     config,
     chatService,
     setPromptRef,
   } = useContext(AppContext) as AppContextType
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const session_id = useSessionId()
   const agent = useAgentId() as string
 
@@ -87,11 +91,64 @@ export default function PromptInput() {
   }
 
   const handlePaste = (e: ClipboardEvent<HTMLDivElement>) => {
+    const fileItems = e.clipboardData.items
+    const blobs: File[] = []
+    for (let i = 0; i < fileItems.length; i++) {
+      const fileItem = fileItems[i].getAsFile()
+      if (!fileItem) continue
+      blobs.push(fileItem)
+    }
+    handleFileChange(blobs)
     e.preventDefault()
     const text = e.clipboardData.getData('text/plain')
     const currentPrompt = prompt
     const newPrompt = currentPrompt + text
     setPrompt(newPrompt)
+  }
+
+  const fileExists = (name: string) => {
+    const currentFiles = files ?? []
+    return !!currentFiles.find((file) => file.name === name)
+  }
+
+  const onFileUpload = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = async (uploadedFiles: File[]) => {
+    const newFiles = [...(files || [])]
+
+    if (uploadedFiles && uploadedFiles?.length) {
+      const selectedFiles = Array.from(uploadedFiles)
+
+      for (const file of selectedFiles) {
+        if (fileExists(file.name)) {
+          setSnack(`You already uploaded a file named ${file.name}`)
+          continue
+        }
+
+        try {
+          const { data, type } = await fileToBase64(file)
+          newFiles.push({
+            name: file.name,
+            version: 0,
+            type: 'upload',
+            inlineData: {
+              data,
+              mimeType: type,
+            },
+          })
+        } catch (error) {
+          console.error('Error processing file', file.name, error)
+          setSnack(`Failed to process ${file.name}`)
+        }
+      }
+    }
+
+    setFiles([...newFiles])
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
   }
 
   return (
@@ -113,6 +170,7 @@ export default function PromptInput() {
           flexDirection: 'column',
           display: 'flex',
           border,
+
           borderRadius: '24px',
           boxSizing: 'border-box',
           transition:
@@ -192,7 +250,23 @@ export default function PromptInput() {
           <Box
             sx={{ display: 'flex', justifyContent: 'flex-start', gap: '5px' }}
           >
-            <FileSelectMenu setFiles={setFiles} files={files} />
+            <input
+              ref={fileInputRef}
+              onChange={(e) => {
+                if (!e.target.files) return
+                const blobList = []
+                for (let i = 0; i < e.target.files.length; i++) {
+                  blobList.push(e.target.files[i])
+                }
+                handleFileChange(blobList)
+              }}
+              type="file"
+              id="file-upload"
+              name="myFile"
+              multiple
+              style={{ display: 'none' }}
+            />
+            <FileSelectMenu onFileUpload={onFileUpload} />
             <AgentSelectMenu />
           </Box>
           <Box
