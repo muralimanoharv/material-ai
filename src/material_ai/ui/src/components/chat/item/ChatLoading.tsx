@@ -1,7 +1,12 @@
-import { Box, Button, Collapse, useTheme } from '@mui/material'
+import { Box, Button, Collapse, Drawer, useTheme } from '@mui/material'
 import LoadingIndicator from './LoadingIndicator'
 import React, { useContext, useState } from 'react'
-import { ChatItemContext, type ChatItemContextType } from '../../../context'
+import {
+  AppContext,
+  ChatItemContext,
+  type AppContextType,
+  type ChatItemContextType,
+} from '../../../context'
 import ChatItemWrapper from './ChatItemWrapper'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
@@ -9,15 +14,22 @@ import type { ChatPart } from '../../../schema'
 import { does_chat_has_func } from '../../../utils'
 import ChatFunctionResponse from './ChatFunctionResponse'
 import ChatFunctionCall from './ChatFunctionCall'
+import HubOutlinedIcon from '@mui/icons-material/HubOutlined'
 import ChatTextRenderer from './ChatTextRenderer'
 import { DARK_BORDER, LIGHT_BORDER } from '../../../assets/themes'
 import LoadingDots from './LoadingDots'
+import AgentGraph from '../../agents/AgentGraph'
+import { useAgentId } from '../../../hooks'
 
 function ChatLoading(): React.JSX.Element | null {
+  const { agents } = useContext(AppContext) as AppContextType
   const { chat } = useContext(ChatItemContext) as ChatItemContextType
   const [showThinking, setShowThinking] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const theme = useTheme()
-
+  const agentId = useAgentId()
+  const agent = agents.find((agent) => agent.id === agentId)
+  if (!agent) return null
   if (!chat.loading) return null
 
   let border = `1px solid ${LIGHT_BORDER}`
@@ -34,6 +46,30 @@ function ChatLoading(): React.JSX.Element | null {
 
   return (
     <ChatItemWrapper partIdx="loading" role="model">
+      <Drawer
+        anchor="right"
+        sx={{
+          '& .MuiDrawer-paper': {
+            width: '80%',
+            boxSizing: 'border-box',
+          },
+        }}
+        ModalProps={{
+          keepMounted: true,
+        }}
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+      >
+        <Box>
+          <AgentGraph
+            data={agent}
+            events={chat.chat_history
+              ?.filter((chat) => does_chat_has_func(chat))
+              .map((chat) => chat.content.parts)}
+            initialMode="live"
+          />
+        </Box>
+      </Drawer>
       <Box
         className="gemini-loader-container"
         sx={{
@@ -56,7 +92,7 @@ function ChatLoading(): React.JSX.Element | null {
                 <LoadingIndicator />
               )}
             </Box>
-            <Box display="flex">
+            <Box display="flex" gap="10px">
               <Button
                 data-testid="chat-loading-toggle"
                 sx={{
@@ -80,6 +116,18 @@ function ChatLoading(): React.JSX.Element | null {
                 >
                   {loadingText}
                 </span>
+              </Button>
+              <Button
+                startIcon={<HubOutlinedIcon fontSize="small" />}
+                sx={{
+                  borderRadius: '50px',
+                  fontWeight: 500,
+                  color: theme.palette.text.primary,
+                  padding: '8px 16px',
+                }}
+                onClick={() => setDrawerOpen(true)}
+              >
+                Agent Graph
               </Button>
             </Box>
           </Box>

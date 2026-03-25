@@ -92,11 +92,13 @@ export interface ArtifactDelta {
 }
 
 export interface FunctionCallPart {
+  id: string
   name: string
   args: Record<string, unknown>
 }
 
 export interface FunctionResponsePart {
+  id: string
   name: string
   response: {
     result: unknown
@@ -170,13 +172,22 @@ export interface SendOptions {
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 
+export interface Tool {
+  name: string
+  description: string
+  type: 'agent' | 'tool'
+}
+
 export interface Agent {
   id: string
   name: string
+  type: 'agent' | 'tool'
   description: string
   status: 'active' | 'inactive'
   model: string
   lastUsed: string
+  tools: Tool[]
+  sub_agents: Agent[]
 }
 
 export interface AgentResponse {

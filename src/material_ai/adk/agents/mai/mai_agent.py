@@ -26,6 +26,7 @@ class MaiAgent(Agent):
             - UI Icons: "@mui/icons-material": "^7.3.5"
             - Charts: react-chartjs-2 ^5.3.1 & chart.js ^4.5.1
             - Forms: "react-hook-form": "^7.68.0"
+            - Diagrams or Graphs: "@xyflow/react": "^12.10.1"
             
             ### Critical Implementation Rules:
             1. IMPORTS: Always use NAMED IMPORTS. Use 'import { Grid, Box, Card, ... } from "@mui/material"'. @mui does not have Grid2 use only Grid
@@ -41,11 +42,12 @@ class MaiAgent(Agent):
               - Ensure cards have 'display: flex', 'flexDirection: column', and 'height: 100%' for uniform row height.
             5. DOM SAFETY: Generate layouts starting with a <Box> or <Grid container>. Do not include <html>, <body>, or <head> tags.
             6. Do not add styles such that it impacts styling to parent components
-            6. CHART REGISTRATION: When using Chart.js, remember to import and register components from 'chart.js/auto' or manually register 'registerables'.
-            7. Make sure you make the app interactive, so that user can playaround with app like when he clicks some button we want to change the UI accordingly
-            8. If you add any buttons to the app, make sure the buttons actually has some impact on the UI.
-            9. We want to make sure the created JSX is valid otherwise we get Expected corresponding JSX closing tag for Erron on UI.
-            10. Overflow & Containment Rule: Whenever generating components that could potentially exceed the parent's width (such as Tables, Charts, or multi-column Grids), you MUST wrap them in a safety container to prevent layout breaking:
+            7. React Flow: Use this package to draw diagrams or graphs as requested by user make sure you cater to theme of the app use useTheme hook to display colors
+            8. CHART REGISTRATION: When using Chart.js, remember to import and register components from 'chart.js/auto' or manually register 'registerables'.
+            9. Make sure you make the app interactive, so that user can playaround with app like when he clicks some button we want to change the UI accordingly
+            10. If you add any buttons to the app, make sure the buttons actually has some impact on the UI.
+            11. We want to make sure the created JSX is valid otherwise we get Expected corresponding JSX closing tag for Erron on UI.
+            12. Overflow & Containment Rule: Whenever generating components that could potentially exceed the parent's width (such as Tables, Charts, or multi-column Grids), you MUST wrap them in a safety container to prevent layout breaking:
                 - Wrap the component in a <Box> with the following sx props:
                 - sx={{ 
                         display: 'grid', 
@@ -57,7 +59,7 @@ class MaiAgent(Agent):
                 - For Tables specifically, always use the <TableContainer> component with 'overflowX: "auto"' to ensure the header and body scroll together.
 
             ### Tool Usage:
-            - If you are unsure of a specific MUI v7 component API or a Chart.js property, use 'google_search' to verify the latest documentation.
+            - If you are unsure of a specific MUI v7 component API or a Chart.js or @xyflow/react property, use 'google_search' to verify the latest documentation.
 
             ### BEHAVIORAL PROTOCOL:
             1. GREET & ACKNOWLEDGE: Start every response by briefly greeting the user and summarizing what you are about to build or modify.

@@ -20,6 +20,8 @@ const loaders: Record<string, () => Promise<any>> = {
   'react-chartjs-2': () => import('react-chartjs-2'),
   '@mui/icons-material': () => import('@mui/icons-material'),
   'react-hook-form': () => import('react-hook-form'),
+  '@xyflow/react': () => import('@xyflow/react'),
+  '@xyflow/react/dist/style.css': () => import('@xyflow/react/dist/style.css'),
 }
 
 interface PreviewErrorBoundaryProps {
