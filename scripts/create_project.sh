@@ -121,7 +121,7 @@ echo "-------------------------------------------------"
 
 # --- CONFIGURATION ---
 DEFAULT_PROJECT_NAME="my-awesome-agent"
-DEFAULT_PROJECT_VERSION=1.2.4 # x-release-please-version
+DEFAULT_PROJECT_VERSION=1.3.0 # x-release-please-version
 
 # 1. Get Project Name and Generate Variables
 read -p "§ Project Name (default: ${DEFAULT_PROJECT_NAME}): " PROJECT_NAME
