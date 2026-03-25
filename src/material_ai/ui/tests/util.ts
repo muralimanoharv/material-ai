@@ -160,8 +160,9 @@ export class AutomationService {
     })
     const fileBox = page.getByTestId(`prompt-input-file-${fileName}`)
     await expect(fileBox).toBeVisible()
+    await page.mouse.click(0, 0)
     await expect(fileBox.getByTestId('clear-file')).toBeVisible()
-    fileBox.getByTestId('clear-file').click()
+    await fileBox.getByTestId('clear-file').click()
     await expect(fileBox).not.toBeVisible()
     await page.locator('input[type="file"]').setInputFiles({
       name: fileName,
@@ -169,6 +170,7 @@ export class AutomationService {
       buffer,
     })
     await expect(fileBox).toBeVisible()
+    await page.mouse.click(0, 0)
     await expect(fileBox.getByTestId('clear-file')).toBeVisible()
   }
 
