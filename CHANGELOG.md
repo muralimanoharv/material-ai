@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.0](https://github.com/muralimanoharv/material-ai/compare/v1.2.4...v1.3.0) (2026-03-25)
+
+
+### Features
+
+* add agent graph feature ([416854f](https://github.com/muralimanoharv/material-ai/commit/416854faf651e38c47e92e447003e9c8c9a3e365))
+* add agent graph feature ([c717034](https://github.com/muralimanoharv/material-ai/commit/c717034bbadf05daf1f58e7cf681ba9b215a6e17))
+
 ## [1.2.4](https://github.com/muralimanoharv/material-ai/compare/v1.2.3...v1.2.4) (2026-03-21)
 
 
