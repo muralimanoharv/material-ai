@@ -28,8 +28,11 @@ class TestUIConfigLoader(unittest.TestCase):
         """
         Test that DEFAULT_CONFIG is returned when no file path is provided.
         """
-        config = get_ui_config(ui_config_yaml=None, agents=agents)
-        self.assertEqual(config, get_default_ui_config(agents=agents))
+
+        with patch("material_ai.ui_config.get_agent_loader") as mock_get_agent_loader:
+            mock_get_agent_loader.return_value.list_agents.return_value = agents
+            config = get_ui_config(ui_config_yaml=None)
+            self.assertEqual(config, get_default_ui_config(agents=agents))
 
     def test_config_caching(self):
         """
@@ -37,9 +40,9 @@ class TestUIConfigLoader(unittest.TestCase):
         return the cached instance.
         """
         # First call loads the config
-        config1 = get_ui_config(ui_config_yaml=None, agents=agents)
+        config1 = get_ui_config(ui_config_yaml=None)
         # Second call should return the exact same object from memory
-        config2 = get_ui_config(ui_config_yaml=None, agents=agents)
+        config2 = get_ui_config(ui_config_yaml=None)
 
         self.assertIs(
             config1, config2, "Config should be cached and return the same instance"
@@ -57,7 +60,7 @@ class TestUIConfigLoader(unittest.TestCase):
             yaml.dump(custom_config_data, tmp)
             tmp_path = tmp.name
 
-        config = get_ui_config(ui_config_yaml=tmp_path, agents=agents)
+        config = get_ui_config(ui_config_yaml=tmp_path)
 
         # Assert that the loaded config has the custom values
         self.assertIsInstance(config, UIConfig)
@@ -73,11 +76,15 @@ class TestUIConfigLoader(unittest.TestCase):
 
         # Patch the logger to check if a warning was emitted
         with patch("material_ai.ui_config._logger.warning") as mock_log:
-            config = get_ui_config(ui_config_yaml=non_existent_file, agents=agents)
-            self.assertEqual(config, get_default_ui_config(agents=agents))
-            mock_log.assert_called_once_with(
-                f"WARNING: Config file not found at {pathlib.Path(non_existent_file)}"
-            )
+            with patch(
+                "material_ai.ui_config.get_agent_loader"
+            ) as mock_get_agent_loader:
+                mock_get_agent_loader.return_value.list_agents.return_value = agents
+                config = get_ui_config(ui_config_yaml=non_existent_file)
+                self.assertEqual(config, get_default_ui_config(agents=agents))
+                mock_log.assert_called_once_with(
+                    f"WARNING: Config file not found at {pathlib.Path(non_existent_file)}"
+                )
 
     def test_get_config_with_invalid_yaml_syntax(self):
         """
@@ -90,7 +97,7 @@ class TestUIConfigLoader(unittest.TestCase):
             tmp_path = tmp.name
 
         with patch("material_ai.ui_config._logger.warning") as mock_log:
-            config = get_ui_config(ui_config_yaml=tmp_path, agents=agents)
+            config = get_ui_config(ui_config_yaml=tmp_path)
             self.assertEqual(config, DEFAULT_CONFIG)
             # Check that a loading error was logged
             self.assertTrue(
@@ -116,7 +123,7 @@ class TestUIConfigLoader(unittest.TestCase):
             tmp_path = tmp.name
 
         with patch("material_ai.ui_config._logger.warning") as mock_log:
-            config = get_ui_config(ui_config_yaml=tmp_path, agents=[])
+            config = get_ui_config(ui_config_yaml=tmp_path)
             self.assertNotEqual(config, None)
 
         pathlib.Path(tmp_path).unlink()
