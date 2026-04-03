@@ -4,6 +4,8 @@ import logging
 import pathlib
 import yaml
 from typing import List, Optional, Dict, Any
+
+from material_ai.agent_loader import get_agent_loader
 from .theme import ThemeConfig
 
 
@@ -129,8 +131,9 @@ def get_default_ui_config(agents: list[str]):
     return default_config
 
 
-def get_ui_config(ui_config_yaml, agents: list[str]) -> UIConfig:
+def get_ui_config(ui_config_yaml) -> UIConfig:
     global _config_instance
+    agents = get_agent_loader().list_agents()
     with _lock:
         if _config_instance is None:
             if ui_config_yaml is None:

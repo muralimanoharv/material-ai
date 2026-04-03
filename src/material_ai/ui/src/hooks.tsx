@@ -3,6 +3,7 @@ import { useParams } from 'react-router'
 import Layout from './components/layout/Layout'
 import { useContext } from 'react'
 import { AppContext, type AppContextType } from './context'
+import Greeting from './components/Greeting'
 
 export const useMobileHook = (): boolean => {
   const theme = useTheme()
@@ -40,7 +41,7 @@ export const withLayout = (
             : true
         }
       >
-        <Component {...props} />
+        {context.user ? <Component {...props} /> : <Greeting />}
       </Layout>
     )
   }

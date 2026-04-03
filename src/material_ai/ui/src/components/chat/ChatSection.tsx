@@ -45,6 +45,12 @@ export default function ChatSection({
           '& .chat-item-box:last-of-type .actions-child-model': {
             opacity: '1',
           },
+          '& .chat-item-box:last-of-type .agent-trace-button': {
+            opacity: '1',
+          },
+          '& .chat-item-box:nth-last-of-type(2) .agent-trace-button': {
+            opacity: '1',
+          },
           // Add spacing at bottom for the fixed footer input
           '& .chat-item-box:last-of-type': {
             marginBottom: '500px',

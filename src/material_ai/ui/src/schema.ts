@@ -66,7 +66,7 @@ export class AppConfigImpl {
       return undefined
     }
     if (!this.config.agents[agentId]) {
-      throw new Error(`Agent with id ${agentId} not found`)
+      return undefined
     }
     return this.config.agents[agentId]
   }

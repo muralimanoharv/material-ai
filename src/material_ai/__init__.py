@@ -2,7 +2,8 @@ __app_name__ = "material_ai"
 __version__ = "1.3.0"
 
 from .app import get_app
-from .request import FeedbackRequest
+from .config import get_config
+from .request import FeedbackRequest, Microfrontend
 from .oauth import (
     IOAuthService,
     OAuthRedirectionResponse,

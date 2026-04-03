@@ -1,23 +1,26 @@
 import threading
 import logging
 import os
+from pathlib import Path
 from typing import Optional, Mapping, Any
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.routing import APIRoute
-from google.adk.cli.fast_api import AgentLoader
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from material_ai.agent_loader import init_agent_loader, get_agent_loader
 from .middleware import AddXAppHeaderMiddleware, AuthMiddleware
 from .handler import http_exception_handler
 from .config import get_config, Config
 from .exec import ConfigError
+from .request import Microfrontend
 from .oauth import get_oauth
 from .log_config import setup_structured_logging
 from .auth import (
     get_oauth_service,
     get_ui_configuration,
     get_feedback_handler,
+    get_mirco_frontend,
 )
 from .auth import FeedbackHandler
 from .oauth import IOAuthService
@@ -27,7 +30,7 @@ from . import __app_name__, __version__
 _lock = threading.Lock()
 _logger = logging.getLogger(__name__)
 _app_instance: FastAPI | None = None
-_agent_loader: AgentLoader | None = None
+
 _lock = threading.Lock()
 logging.getLogger("aiosqlite").setLevel(logging.WARNING)
 logging.getLogger("google_adk").setLevel(logging.WARNING)
@@ -100,6 +103,7 @@ def _setup_overrides(
     oauth_service: IOAuthService,
     ui_config_yaml: str,
     feedback_handler: FeedbackHandler,
+    micro_frontend: Microfrontend,
 ):
     """Sets up dependency overrides for the FastAPI application.
 
@@ -122,8 +126,12 @@ def _setup_overrides(
         feedback_handler (FeedbackHandler): The handler for processing
             feedback. If set to None, a default no-op handler that returns a
             200 status code is used instead.
+        micro_frontend (Microfrontend): Use this to provide custom ui pages as per requirement.
     """
-    ui_config = get_ui_config(ui_config_yaml, agents=get_agent_loader().list_agents())
+    ui_config = get_ui_config(ui_config_yaml)
+
+    def override_get_micro_frontend() -> Microfrontend:
+        return micro_frontend
 
     def override_get_oauth_service() -> IOAuthService:
         return oauth_service
@@ -139,6 +147,7 @@ def _setup_overrides(
     app.dependency_overrides[get_oauth_service] = override_get_oauth_service
     app.dependency_overrides[get_ui_configuration] = override_get_ui_configuration
     app.dependency_overrides[get_feedback_handler] = override_get_feedback_handler
+    app.dependency_overrides[get_mirco_frontend] = override_get_micro_frontend
 
 
 def _setup_middleware(app: FastAPI, oauth_service: IOAuthService):
@@ -176,7 +185,7 @@ def _setup_middleware(app: FastAPI, oauth_service: IOAuthService):
         app_name=__app_name__,
         app_version=__version__,
     )
-    app.add_middleware(AuthMiddleware, oauth_service=oauth_service)
+    # app.add_middleware(AuthMiddleware, oauth_service=oauth_service)
 
 
 def _setup_app(
@@ -184,6 +193,7 @@ def _setup_app(
     oauth_service: IOAuthService = None,
     ui_config_yaml: str = None,
     feedback_handler: FeedbackHandler = None,
+    micro_frontend: Microfrontend | None = None,
 ) -> None:
     """
     Configures the FastAPI application with middleware, logging,
@@ -197,6 +207,7 @@ def _setup_app(
             service for authentication. Defaults to GoogleOAuthService.
         ui_config_yaml (str): The file path to the UI configuration YAML.
         feedback_handler: A handler function to handle user feedback
+        micro_frontend (Microfrontend): Use this to provide custom ui pages as per requirement.
 
     Raises:
         RuntimeError: If the configuration is invalid or cannot be loaded.
@@ -212,7 +223,9 @@ def _setup_app(
     if oauth_service == None:
         oauth_service = get_oauth(config.sso)
 
-    _setup_overrides(app, oauth_service, ui_config_yaml, feedback_handler)
+    _setup_overrides(
+        app, oauth_service, ui_config_yaml, feedback_handler, micro_frontend
+    )
 
     _setup_middleware(app, oauth_service)
 
@@ -223,11 +236,16 @@ def _setup_app(
     app.mount("/", StaticFiles(directory=STATIC_DIR), name="static")
 
 
+current_file = Path(__file__).resolve()
+agents_page = current_file.parent / "ui" / "agents_page" / "dist" / "index.js"
+
+
 def get_app(
     agent_dir: str = AGENT_DIR,
     oauth_service: IOAuthService = None,
     ui_config_yaml: str = UI_CONFIG_YAML,
     feedback_handler: FeedbackHandler = None,
+    micro_frontend: Microfrontend | None = None,
     adk_kwargs: Optional[Mapping[str, Any]] = {},
 ):
     """Factory function to get the singleton FastAPI application instance.
@@ -245,15 +263,17 @@ def get_app(
         ui_config_yaml (str): The file path to the UI configuration YAML.
         feedback_handler: A handler function to handle user feedback. caller can implement
             their own feedback logic.
+        micro_frontend (Microfrontend): Use this to provide custom ui pages as per requirement.
 
     Returns:
         FastAPI: The singleton instance of the FastAPI application.
     """
     global _app_instance
-    global _agent_loader
     with _lock:
         if _app_instance is None:
+            init_agent_loader(agent_dir)
             config = get_config()
+
             app = get_fast_api_app(
                 agents_dir=agent_dir,
                 web=False,
@@ -261,8 +281,9 @@ def get_app(
                 session_service_uri=config.adk.session_db_url,
                 **adk_kwargs,
             )
-            _agent_loader = AgentLoader(agent_dir)
-            _setup_app(app, oauth_service, ui_config_yaml, feedback_handler)
+            _setup_app(
+                app, oauth_service, ui_config_yaml, feedback_handler, micro_frontend
+            )
             _app_instance = app
 
         return _app_instance
@@ -284,7 +305,3 @@ def get_endpoint_function(function_name: str):
             if route.name == function_name:
                 return route.endpoint
     return None
-
-
-def get_agent_loader() -> AgentLoader | None:
-    return _agent_loader

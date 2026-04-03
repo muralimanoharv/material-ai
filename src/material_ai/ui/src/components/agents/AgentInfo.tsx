@@ -22,7 +22,7 @@ import {
   Terminal as ModelIcon,
   DescriptionOutlined as DocIcon,
 } from '@mui/icons-material'
-import HubOutlinedIcon from '@mui/icons-material/HubOutlined'
+import AccountTree from '@mui/icons-material/AccountTree'
 import { useNavigate } from 'react-router'
 import type { Agent } from '../../schema'
 import { AppContext, type AppContextType } from '../../context'
@@ -225,6 +225,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                       borderRadius: 3,
                       textTransform: 'none',
                       fontWeight: 700,
+                      fontSize: '8px',
                       color: theme.palette.text.primary,
                       borderColor: theme.palette.divider,
                       '&:hover': {
@@ -249,6 +250,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                     sx={{
                       py: 1.5,
                       borderRadius: 3,
+                      fontSize: '8px',
                       textTransform: 'none',
                       fontWeight: 700,
                       color: theme.palette.text.primary,
@@ -276,6 +278,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                       py: 1.5,
                       borderRadius: 3,
                       textTransform: 'none',
+                      fontSize: '8px',
                       fontWeight: 700,
                       color: theme.palette.text.primary,
                       borderColor: theme.palette.divider,
@@ -340,12 +343,12 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                   alignItems="center"
                   sx={{ mb: 3 }}
                 >
-                  <HubOutlinedIcon sx={{ color: theme.palette.primary.main }} />
+                  <AccountTree sx={{ color: theme.palette.primary.main }} />
                   <Typography
                     variant="h6"
                     sx={{ fontWeight: 800, color: theme.palette.text.primary }}
                   >
-                    Visualization
+                    Trace
                   </Typography>
                 </Stack>
 

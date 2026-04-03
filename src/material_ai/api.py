@@ -1,14 +1,16 @@
 import os
 import logging
 import psutil
-from .app import get_endpoint_function, get_agent_loader
+from pathlib import Path
+from material_ai.agent_loader import get_agent_loader
+from .app import get_endpoint_function
 from google.adk.cli.adk_web_server import Session
 from google.adk.agents import LlmAgent, BaseAgent
 from datetime import datetime, timezone
 from fastapi import APIRouter, Response, Request, Cookie, status, Depends, Query
 from fastapi.responses import FileResponse, RedirectResponse
 from .exec import UnauthorizedException
-from .request import FeedbackRequest
+from .request import FeedbackRequest, Microfrontend
 from .app import STATIC_DIR
 from . import __version__, __app_name__
 import json
@@ -22,6 +24,7 @@ from .auth import (
     get_oauth_service,
     get_ui_configuration,
     get_feedback_handler,
+    get_mirco_frontend,
 )
 from .auth import IOAuthService, FeedbackHandler, get_user
 from .oauth import OAuthUserDetail
@@ -369,7 +372,7 @@ async def get_agent_ui(app_name: str):
 @router.get(
     "/apps/{app_name}/readme",
 )
-async def get_agent_ui(app_name: str):
+async def get_agent_readme(app_name: str):
     agent_loader = get_agent_loader()
     if not agent_loader:
         return Response(status_code=404, content="Agent directory not found")
@@ -386,3 +389,24 @@ async def get_agent_ui(app_name: str):
             )
 
     return Response(status_code=404, content=f"Agent readme not found")
+
+
+@router.get("/micro_frontend/{ui}")
+async def get_ui(ui: str, micro_frontend: Microfrontend = Depends(get_mirco_frontend)):
+    file_path_str: str | None = getattr(micro_frontend, ui, None)
+
+    if not file_path_str:
+        return Response(
+            status_code=404,
+            content=f"UI component '{ui}' not configured in microfrontend",
+        )
+
+    file_path = Path(file_path_str).resolve()
+
+    if not file_path.is_file():
+        return Response(
+            status_code=404,
+            content=f"JavaScript file for '{ui}' not found at {file_path_str}",
+        )
+
+    return FileResponse(path=file_path, media_type="application/javascript")

@@ -16,6 +16,7 @@ format:
 			(cd "$$d" && $(REACT_FORMAT_CMD)) || exit 1; \
 		fi; \
 	done
+	@cd src/${PACKAGE_NAME}/ui/agents_page && $(REACT_FORMAT_CMD)
 	@cd src/${PACKAGE_NAME}/ui && $(REACT_FORMAT_CMD)
 
 check-format:
@@ -35,6 +36,9 @@ build-mf:
 
 
 build-ui: build-mf
+	@echo "Building Microfrontend agents page...🚀"
+	@cd src/${PACKAGE_NAME}/ui/agents_page && $(REACT_BUILD_CMD)
+	@echo "MMicrofrontend agents page build complete.✅"
 	@echo "Building UI...🚀"
 	@cd src/${PACKAGE_NAME}/ui && $(REACT_BUILD_CMD)
 	@echo "UI build complete.✅"

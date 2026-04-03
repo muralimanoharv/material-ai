@@ -1,12 +1,24 @@
 import * as React from 'react'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import { Box, Button, Tooltip, Typography } from '@mui/material'
-import { AppContext, type AppContextType } from '../../context'
-import { AutoAwesome } from '@mui/icons-material'
+import {
+  Menu,
+  MenuItem,
+  Box,
+  Button,
+  Tooltip,
+  Typography,
+  TextField,
+  InputAdornment,
+  Divider
+} from '@mui/material'
+import { 
+  AutoAwesome, 
+  Search as SearchIcon, 
+  Close as CloseIcon 
+} from '@mui/icons-material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import { menuNeedsLogin } from './hoc'
 import { useNavigate } from 'react-router'
+import { AppContext, type AppContextType } from '../../context'
+import { menuNeedsLogin } from './hoc'
 import { useAgentId } from '../../hooks'
 import type { Agent } from '../../schema'
 import { formatModelName } from '../../utils'
@@ -14,6 +26,7 @@ import { formatModelName } from '../../utils'
 interface AgentSelectMenuBodyProps {
   agents: Agent[]
   handleClose: () => void
+  searchQuery: string
 }
 
 interface AgentItemProps {
@@ -23,6 +36,7 @@ interface AgentItemProps {
 
 export default function AgentSelectMenu() {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null)
+  const [searchQuery, setSearchQuery] = React.useState('')
 
   const { agents } = React.useContext(AppContext) as AppContextType
 
@@ -34,7 +48,16 @@ export default function AgentSelectMenu() {
 
   const handleClose = () => {
     setAnchorEl(null)
+    setSearchQuery('')
   }
+
+  // Filter agents based on the search query
+  const filteredAgents = React.useMemo(() => {
+    return agents.filter((agent) =>
+      agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      agent.model.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  }, [agents, searchQuery])
 
   return (
     <div>
@@ -68,20 +91,72 @@ export default function AgentSelectMenu() {
         onClose={handleClose}
         MenuListProps={{
           'aria-labelledby': 'agent-button',
+          sx: { p: 0 } // Remove padding to keep header and search tight
         }}
       >
         <Box sx={{ width: 320 }}>
           <Typography
             sx={{
-              padding: '8px 16px',
+              padding: '12px 16px 8px 16px',
             }}
             variant="h4"
           >
             Choose your agent
           </Typography>
+          
+          {/* Search Bar Section */}
+          <Box sx={{ px: 2, pb: 1 }}>
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Search agents..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              variant="outlined"
+              autoFocus
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+                endAdornment: searchQuery && (
+                  <InputAdornment position="end">
+                    <Button 
+                      onClick={() => setSearchQuery('')} 
+                      sx={{ minWidth: 0, p: 0.5, color: 'text.secondary' }}
+                    >
+                      <CloseIcon fontSize="small" />
+                    </Button>
+                  </InputAdornment>
+                )
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '8px'
+                }
+              }}
+            />
+          </Box>
+          <Divider />
         </Box>
 
-        <AgentSelectMenuBody agents={agents} handleClose={handleClose} />
+        {/* Scrollable Container with Safety Rule applied */}
+        <Box 
+          sx={{ 
+            maxHeight: '300px', 
+            display: 'grid', 
+            gridTemplateColumns: 'minmax(0, 1fr)', 
+            width: '100%', 
+            overflowY: 'auto' 
+          }}
+        >
+          <AgentSelectMenuBody 
+            agents={filteredAgents} 
+            handleClose={handleClose} 
+            searchQuery={searchQuery}
+          />
+        </Box>
       </Menu>
     </div>
   )
@@ -89,11 +164,21 @@ export default function AgentSelectMenu() {
 
 const AgentSelectMenuBody = menuNeedsLogin<AgentSelectMenuBodyProps>(
   (props) => {
+    if (props.agents.length === 0) {
+      return (
+        <Box sx={{ p: 3, textAlign: 'center' }}>
+          <Typography variant="body2" color="text.secondary">
+            No agents found
+          </Typography>
+        </Box>
+      )
+    }
+
     return (
       <Box>
         {props.agents.map((agent) => (
           <AgentItem
-            key={agent.name}
+            key={agent.id}
             agent={agent}
             handleClose={props.handleClose}
           />
@@ -106,8 +191,7 @@ const AgentSelectMenuBody = menuNeedsLogin<AgentSelectMenuBodyProps>(
 
 function AgentItem({ agent, handleClose }: AgentItemProps) {
   const navigate = useNavigate()
-
-  const selectedAgent = useAgentId()
+  const selectedAgentId = useAgentId()
 
   return (
     <MenuItem
@@ -117,6 +201,7 @@ function AgentItem({ agent, handleClose }: AgentItemProps) {
         handleClose()
       }}
       data-testid={`prompt-input-agent-${agent.id}`}
+      sx={{ py: 1 }}
     >
       <Box
         sx={{
@@ -125,20 +210,41 @@ function AgentItem({ agent, handleClose }: AgentItemProps) {
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
+          gap: 1
         }}
       >
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'column',
+            overflow: 'hidden'
           }}
         >
-          <Typography variant="h5">{agent.name}</Typography>
-          <Typography variant="h6">{formatModelName(agent.model)}</Typography>
+          <Typography 
+            variant="h5" 
+            sx={{ 
+              whiteSpace: 'nowrap', 
+              overflow: 'hidden', 
+              textOverflow: 'ellipsis' 
+            }}
+          >
+            {agent.name}
+          </Typography>
+          <Typography 
+            variant="h6" 
+            color="text.secondary"
+            sx={{ 
+              whiteSpace: 'nowrap', 
+              overflow: 'hidden', 
+              textOverflow: 'ellipsis' 
+            }}
+          >
+            {formatModelName(agent.model)}
+          </Typography>
         </Box>
-        {selectedAgent === agent.id ? (
-          <Box mt={'5px'}>
-            <CheckCircleIcon color="primary" />
+        {selectedAgentId === agent.id ? (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <CheckCircleIcon color="primary" fontSize="small" />
           </Box>
         ) : null}
       </Box>

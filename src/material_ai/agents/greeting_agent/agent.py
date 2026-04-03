@@ -2,9 +2,13 @@ from google.adk.agents import Agent
 from google.genai.types import Part, Blob
 from google.adk.tools.tool_context import ToolContext
 from material_ai.oauth import oauth_user_details_context
+from material_ai import get_config
 import csv
 import io
 import time
+
+config = get_config()
+agent_env = config.get_agent("greeting_agent")
 
 
 def say_hello():
@@ -64,7 +68,7 @@ async def create_csv(tool_context: ToolContext = None) -> str:
 # The agent will automatically use the tools you provide in the list.
 root_agent = Agent(
     name="greeting_agent",
-    model="gemini-3-flash-preview",
+    model=agent_env.get_env("model", "gemini-3-flash-preview"),
     description="An agent that can greet users.",
     instruction="""
     Use 'say_hello' tool to greet user, If user asks about himself use 'who_am_i' tool,
