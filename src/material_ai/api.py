@@ -239,7 +239,7 @@ async def health_check():
     }
 
     return HealthResponse(
-        status="notok",
+        status="ok",
         uptime=str(uptime_delta),
         system=system_data,
         debug=config.general.debug,
@@ -255,7 +255,7 @@ async def health_check():
     tags=["Configuration"],
 )
 async def config(
-    accept_language: Optional[str] = Header(None, alias="Accept-Language"),
+    accept_language: Optional[str] = Header("en", alias="Accept-Language"),
     ui_configuration: UIConfigManager = Depends(get_ui_configuration),
 ):
     return ui_configuration.get_ui_config(language_code=accept_language)

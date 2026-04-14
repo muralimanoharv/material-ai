@@ -20,7 +20,7 @@ from material_ai.api import (
     LlmAgent,
     UnauthorizedException,
 )
-from material_ai.ui_config import UIConfig
+from material_ai.ui_config import UIConfig, DEFAULT_CONFIG, UIConfigManager
 from material_ai.config import Config, SSOConfig, ADKConfig, GeneralConfig, GoogleConfig
 import material_ai.app as app_module
 from material_ai.oauth import OAuthErrorResponse
@@ -221,6 +221,7 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
             "family_name": "Test User",
             "picture": "Test pitcure",
             "email_verified": True,
+            "language": "en",
         }
         user_details_json = json.dumps(user_data)
 
@@ -459,7 +460,7 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
         mock_psutil.disk_usage.return_value = mock_disk
 
         # --- Act: Make a request to the endpoint ---
-        response = self.client.get("/health")
+        response = self.client.get("/api/health")
 
         # --- Assert: Check the response ---
         self.assertEqual(response.status_code, 200)
@@ -493,10 +494,10 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
         """Should return the mocked UI configuration."""
         response = self.client.get("/config")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json().get("title"), self.mock_ui_config.title)
-        self.assertEqual(response.json().get("greeting"), self.mock_ui_config.greeting)
+        self.assertEqual(response.json().get("title"), DEFAULT_CONFIG.title)
+        self.assertEqual(response.json().get("greeting"), DEFAULT_CONFIG.greeting)
         self.assertEqual(
-            response.json().get("errorMessage"), self.mock_ui_config.errorMessage
+            response.json().get("errorMessage"), DEFAULT_CONFIG.errorMessage
         )
 
     def test_api_without_cookies(self, mock_get_config):
@@ -837,65 +838,7 @@ class TestAPIEndpoints(unittest.IsolatedAsyncioTestCase):
 
 
 def create_dummy_ui_config() -> UIConfig:
-    return UIConfig(
-        title="Test",
-        greeting="Test greeting",
-        errorMessage="Test error message",
-        agents={
-            "greeting_agent": {
-                "title": "Greeting Agent",
-                "greeting": "What a great day to chat with you!",
-                "show_footer": "true",
-                "chat_section_width": "760px",
-                "feedback": {
-                    "positive": {"value": "GOOD", "categories": []},
-                    "negative": {"value": "BAD", "categories": []},
-                },
-            }
-        },
-        theme={
-            "lightPalette": {
-                "mode": "light",
-                "primary": {"main": ""},
-                "background": {
-                    "default": "",
-                    "paper": "",
-                    "card": "",
-                    "cardHover": "",
-                    "history": "",
-                },
-                "text": {
-                    "primary": "",
-                    "secondary": "",
-                    "tertiary": "",
-                    "h5": "",
-                    "selected": "",
-                    "tagline": "",
-                },
-                "tooltip": {"background": "", "text": ""},
-            },
-            "darkPalette": {
-                "mode": "dark",
-                "primary": {"main": ""},
-                "background": {
-                    "default": "",
-                    "paper": "",
-                    "card": "",
-                    "cardHover": "",
-                    "history": "",
-                },
-                "text": {
-                    "primary": "",
-                    "secondary": "",
-                    "tertiary": "",
-                    "h5": "",
-                    "selected": "",
-                    "tagline": "",
-                },
-                "tooltip": {"background": "", "text": ""},
-            },
-        },
-    )
+    return UIConfigManager(yaml=DEFAULT_CONFIG.__dict__)
 
 
 def create_dummy_config(debug_mode: bool = True) -> Config:
