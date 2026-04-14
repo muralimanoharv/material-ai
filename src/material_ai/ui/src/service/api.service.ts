@@ -257,11 +257,14 @@ export class ApiService {
   }
 
   async get_agent_readme(agent: string): Promise<string> {
-    const response = await fetch(`${HOST}/apps/${agent}/readme`, {
-      method: 'GET',
-      headers: this.get_default_headers(),
-      credentials: 'include',
-    })
+    const response = await fetch(
+      `${HOST}/apps/${agent}/readme?language=${getI18n()}`,
+      {
+        method: 'GET',
+        headers: this.get_default_headers(),
+        credentials: 'include',
+      },
+    )
 
     return await response.text()
   }

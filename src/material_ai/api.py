@@ -378,7 +378,10 @@ async def get_agent_ui(app_name: str):
 )
 async def get_agent_readme(
     app_name: str,
-    language: Optional[str] = Header(None, alias="Accept-Language"),
+    language: str = Query(
+        default="en",
+        description="The language code for the readme (e.g., 'en', 'ja', 'hi')",
+    ),
 ):
     agent_loader = get_agent_loader()
     if not agent_loader:
