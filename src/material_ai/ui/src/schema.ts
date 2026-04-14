@@ -32,10 +32,140 @@ export interface AgentConfig {
   feedback: FeedbackConfig
 }
 
+interface Buttons {
+  stopResponse: string
+  copyPrompt: string
+  editPrompt: string
+  thumbsUp: string
+  thumbsDown: string
+  redo: string
+  share: string
+  copyResponse: string
+  addFiles: string
+  selectAgent: string
+  submit: string
+  executeNext: string
+  blueprint: string
+  trace: string
+  showThinking: string
+  agentTrace: string
+  reset: string
+  reCenter: string
+  uploadFile: string
+  newChat: string
+  signIn: string
+  signOut: string
+  settingsAndHelp: string
+  theme: string
+  lightTheme: string
+  darkTheme: string
+  systemTheme: string
+  health: string
+  agents: string
+  backToRegistry: string
+  interactWithAgent: string
+  deployToGeminiEnterprize: string
+  deployToAgentEngine: string
+  deployToAgentCatalog: string
+}
+
+interface UploadFileMenu {
+  logOutTitle: string
+  title: string
+}
+
+interface AgentsMenu {
+  title: string
+  placeholder: string
+  logOutTitle: string
+}
+
+interface Drawer {
+  logOutTitle: string
+  logOutSubTitle: string
+}
+
+interface Footer {
+  title: string
+}
+
+interface PromptInput {
+  placeholder: string
+  logOutPlaceholder: string
+}
+
+interface LoginPage {
+  title: string
+  subTitle: string
+}
+
+interface AgentsPages {
+  title: string
+  subTitle: string
+  countText: string
+  placeholder: string
+  agentIdentityCol: string
+  agentDescriptionCol: string
+  agentModelCol: string
+  agentStatusCol: string
+}
+
+interface AgentInfoPage {
+  agentOperations: string
+  documentation: string
+  trace: string
+}
+
+interface AgentTrace {
+  blueprintTitle: string
+  traceTitle: string
+  systemEventLog: string
+  initiatedFuncCall: string
+  receivedFuncResp: string
+  event: string
+  arguments: string
+  executionResponse: string
+  agentCore: string
+  awaitingPackets: string
+}
+
+interface ChatPage {
+  negativeFeedbackTitle: string
+  negativeFeedbackSubtitle: string
+  other: string
+  feedback: string
+  placeholder: string
+}
+
+interface Pages {
+  loginPage: LoginPage
+  agentsPage: AgentsPages
+  agentInfoPage: AgentInfoPage
+  chatPage: ChatPage
+}
+export interface Language {
+  code: string
+  label: string
+}
+
 export interface AppConfig {
   greeting: string
   title: string
   errorMessage: string
+  stopResponse: string
+  promptCopyMessage: string
+  responseCopyMessage: string
+  feedbackSuccessMessage: string
+  feedbackNegativeMessage: string
+  buttons: Buttons
+  uploadFileMenu: UploadFileMenu
+  drawer: Drawer
+  footer: Footer
+  agentTrace: AgentTrace
+  promptInput: PromptInput
+  languages: Language[]
+  agentsMenu: AgentsMenu
+  pages: Pages
   theme: ThemeConfig
   agents: Record<string, AgentConfig>
 }
@@ -61,6 +191,10 @@ export class AppConfigImpl {
     return agentConfig.greeting
   }
 
+  get() {
+    return this.config
+  }
+
   getAgent(agentId: string | undefined): AgentConfig | undefined {
     if (!agentId) {
       return undefined
@@ -77,6 +211,10 @@ export class AppConfigImpl {
 
   getErrorMessage() {
     return this.config.errorMessage
+  }
+
+  getStopResponseMessage() {
+    return this.config.stopResponse
   }
 }
 

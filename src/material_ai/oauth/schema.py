@@ -47,6 +47,7 @@ class OAuthUserDetail(pydantic.BaseModel):
     picture: Optional[str]
     email: Optional[str]
     email_verified: Optional[bool]
+    language: Optional[str] = "en"
 
 
 class OAuthSuccessResponse(pydantic.BaseModel):

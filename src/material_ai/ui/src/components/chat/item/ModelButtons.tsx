@@ -51,7 +51,7 @@ export default function ModelButtons(props: ModelButtonsProps) {
       filledIcon: <ThumbUpIcon fontSize="small" />,
       value: config.getAgent(agent)?.feedback.positive.value,
       dataTestId: 'thumbs-up-button',
-      tooltip: 'Good response',
+      tooltip: config.get().buttons.thumbsUp,
       onClick: async () => {
         if (
           feedback?.feedback_category ===
@@ -72,7 +72,7 @@ export default function ModelButtons(props: ModelButtonsProps) {
       filledIcon: <ThumbDownIcon fontSize="small" />,
       value: config.getAgent(agent)?.feedback.negative.value,
       dataTestId: 'thumbs-down-button',
-      tooltip: 'Bad response',
+      tooltip: config.get().buttons.thumbsDown,
       onClick: async () => {
         if (
           feedback?.feedback_category ===
@@ -92,7 +92,7 @@ export default function ModelButtons(props: ModelButtonsProps) {
     },
     {
       icon: <RefreshIcon fontSize="small" />,
-      tooltip: 'Redo',
+      tooltip: config.get().buttons.redo,
       dataTestId: 'redo-button',
       onClick: () => {
         let prompt = chat.prompt
@@ -107,7 +107,7 @@ export default function ModelButtons(props: ModelButtonsProps) {
     },
     {
       icon: <ShareOutlinedIcon fontSize="small" />,
-      tooltip: 'Share & export',
+      tooltip: config.get().buttons.share,
       dataTestId: 'share-button',
       onClick: () => {
         // Implement share logic
@@ -115,11 +115,11 @@ export default function ModelButtons(props: ModelButtonsProps) {
     },
     {
       icon: <CopyAllOutlinedIcon fontSize="small" />,
-      tooltip: 'Copy response',
+      tooltip: config.get().buttons.copyResponse,
       dataTestId: 'copy-button',
       onClick: async () => {
         await navigator.clipboard.writeText(props.part?.text || '')
-        setSnack('Copied to clipboard')
+        setSnack(config.get().responseCopyMessage)
       },
     },
   ]

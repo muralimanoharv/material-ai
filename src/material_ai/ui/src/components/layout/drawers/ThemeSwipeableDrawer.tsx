@@ -7,11 +7,17 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import { Typography } from '@mui/material'
-import { LayoutContext, type LayoutContextType } from '../../../context'
+import {
+  AppContext,
+  LayoutContext,
+  type AppContextType,
+  type LayoutContextType,
+} from '../../../context'
 import MaterialList from '../other/MaterialList'
 import type { ThemeMode } from '../../../schema'
 
 export default function ThemeSwipeableDrawer() {
+  const { config } = React.useContext(AppContext) as AppContextType
   const {
     setThemeDrawerOpen,
     setSettingsDrawerOpen,
@@ -41,7 +47,17 @@ export default function ThemeSwipeableDrawer() {
       <Box p={2}>
         <Typography variant="h5">Select a theme</Typography>
         <MaterialList>
-          {['System', 'Light', 'Dark'].map((themeType) => {
+          {[
+            {
+              themeType: 'System',
+              label: config.get().buttons.systemTheme,
+            },
+            {
+              themeType: 'Light',
+              label: config.get().buttons.lightTheme,
+            },
+            { themeType: 'Dark', label: config.get().buttons.darkTheme },
+          ].map(({ themeType, label }) => {
             const value = themeType.toLowerCase() as ThemeMode
             return (
               <ListItem disablePadding key={themeType}>
@@ -54,7 +70,7 @@ export default function ThemeSwipeableDrawer() {
                     setTheme(value)
                   }}
                 >
-                  <ListItemText primary={themeType} />
+                  <ListItemText primary={label} />
                   {currentTheme === value ? (
                     <CheckCircleOutlineIcon
                       data-testid={`page-theme-${value}-selected`}

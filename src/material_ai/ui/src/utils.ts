@@ -146,3 +146,15 @@ export const getInitials = (name: string) => {
   }
   return name.slice(0, 2).toUpperCase()
 }
+
+export const getI18n = () => {
+  return localStorage.getItem('i18n') || 'en'
+}
+
+export const setI18n = (lang: string) => {
+  localStorage.setItem('i18n', lang)
+  const event = new CustomEvent('i18n', {
+    detail: { value: lang },
+  })
+  window.dispatchEvent(event)
+}

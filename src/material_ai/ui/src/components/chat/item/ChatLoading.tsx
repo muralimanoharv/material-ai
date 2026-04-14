@@ -30,7 +30,7 @@ import AgentGraph from '../../agents/AgentGraph'
 import { useAgentId } from '../../../hooks'
 
 function ChatLoading(): React.JSX.Element | null {
-  const { agents } = useContext(AppContext) as AppContextType
+  const { agents, config } = useContext(AppContext) as AppContextType
   const { chat } = useContext(ChatItemContext) as ChatItemContextType
   const [showThinking, setShowThinking] = useState(false)
   const [traceOpen, setTraceOpen] = useState(false)
@@ -45,7 +45,7 @@ function ChatLoading(): React.JSX.Element | null {
     border = `1px solid ${DARK_BORDER}`
   }
   const loadingText = chat.loading_finished ? (
-    'Show thinking'
+    config.get().buttons.showThinking
   ) : chat.loading_message ? (
     chat.loading_message
   ) : (
@@ -157,7 +157,7 @@ function ChatLoading(): React.JSX.Element | null {
                     transition: 'opacity 0.5s ease-in-out',
                   }}
                 >
-                  Agent Trace
+                  {config.get().buttons.agentTrace}
                 </Button>
               </Stack>
             </Box>

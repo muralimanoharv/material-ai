@@ -99,6 +99,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
             user_details = OAuthUserDetail(**json.loads(decoded_user_details))
 
+            user_details.language = request.headers.get("accept-language", "en")
+
             oauth_user_details_context.set(user_details)
             body_bytes = await request.body()
 

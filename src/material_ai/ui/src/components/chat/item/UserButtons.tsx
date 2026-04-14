@@ -9,7 +9,7 @@ interface UserButtonsProps {
 }
 
 export default function UserButtons(props: UserButtonsProps) {
-  const { setSnack, setPrompt, input_focus } = useContext(
+  const { setSnack, setPrompt, input_focus, config } = useContext(
     AppContext,
   ) as AppContextType
 
@@ -22,18 +22,18 @@ export default function UserButtons(props: UserButtonsProps) {
         transition: 'opacity 0.5s ease',
       }}
     >
-      <Tooltip title="Copy prompt">
+      <Tooltip title={config.get().buttons.copyPrompt}>
         <IconButton
           data-testid="copy-prompt-button"
           onClick={async () => {
             await navigator.clipboard.writeText(props.text)
-            setSnack('Prompt copied')
+            setSnack(config.get().promptCopyMessage)
           }}
         >
           <CopyAllOutlinedIcon fontSize="small" />
         </IconButton>
       </Tooltip>
-      <Tooltip title="Edit prompt">
+      <Tooltip title={config.get().buttons.editPrompt}>
         <IconButton
           data-testid="edit-prompt-button"
           onClick={() => {

@@ -139,7 +139,7 @@ In the agentic era, a "chat bubble" isn't always the right interface. Sometimes 
 
 MAI treats your agent’s folder as a standalone micro-app. At runtime, the system scans for a pre-built bundle and mounts it directly into the dashboard.
 
-##### Quick Start: Injecting Your Custom UI
+##### Quick Start: Injecting Your Custom UI for Agent
 
 1. Navigate to your agent's directory: `agents/<your_agent>/ui/`.
 2. Develop your interface using your preferred React setup.
@@ -148,6 +148,94 @@ MAI treats your agent’s folder as a standalone micro-app. At runtime, the syst
 
 > **Pro Tip:** Check out the `src/material_ai/agents/vector_agent/ui` folder for a reference implementation of a custom UI flow.
 
+##### Quick Start: Injecting Your Custom UI for Landing Page
+
+1. You can also completely customize the landing agents page using microfrontend
+2. Initialize the path as shown below
+```python
+
+current_file = Path(__file__).resolve()
+agents_page = current_file.parent / "ui" / "agents_page" / "dist" / "index.js"
+get_app(micro_frontend=Microfrontend(agents_page=str(agents_page)))
+
+```
+
+> **Pro Tip:** Check out the `src/material_ai/ui/agents_page` folder for a reference implementation of a custom landing page implementation.
+
+### 4. Agent Environment Configuration
+
+Managing environment variables for multiple agents often leads to naming collisions and configuration bloat. **Material AI** solves this through a centralized `config.ini` system that streamlines variable retrieval while ensuring agent isolation. By automatically namespacing your variables, the framework ensures that `MODEL` for one agent never overrides the `MODEL` of another.
+
+#### Configuration Definition
+In your `config.ini`, group your variables under the specific agent's name. Use uppercase headers to match standard environment variable conventions.
+
+```ini
+[GREETING_AGENT]
+MODEL=gemini-3-flash-preview
+```
+
+#### Runtime Implementation
+The `get_config()` helper allows you to fetch these variables dynamically. When you call `agent_env.get_env("model")`, the system intelligently searches for `GREETING_AGENT_MODEL`.
+
+```python
+from google.adk.agents import Agent
+from material_ai import get_config
+
+# Initialize configuration
+config = get_config()
+agent_env = config.get_agent("greeting_agent")
+
+root_agent = Agent(
+    name="greeting_agent",
+    # Logic: OS Env -> config.ini -> Hardcoded Default
+    model=agent_env.get_env("model", "gemini-3-flash-preview")
+)
+```
+
+#### Variable Resolution Hierarchy
+The `get_env` method follows a specific resolution order to allow for flexible deployments. It first checks for an OS-level variable (e.g., `os.getenv('GREETING_AGENT_MODEL')`). If that is not found, it retrieves the value from your `config.ini`. If the key is missing from both, it falls back to the default value provided in the function call. This hierarchy allows you to easily override local settings in production environments without changing your code.
+
+
+### 4. Multi-language support
+he Material AI application supports full internationalization through a Nested Mapping Structure in the ui_config.yaml file. Users can customize the interface by adding new language codes to the languages array and then providing the corresponding translations for every UI property (buttons, headers, and agent-specific greetings) as property-value pairs. This allows for a completely dynamic UI that can scale to any locale without changing the underlying application code.
+
+#### Implementation Summary
+
+To support internationalization (i18n) and allow users to customize languages in your app, the system follows a **nested mapping structure** within the `ui_config.yaml`.
+
+#### 1. Language Registration
+Users must first define the available languages in the global `languages` list. This controls the UI language selector.
+```yaml
+languages:
+  - code: en
+    label: English
+  - code: ja
+    label: 日本語
+  - code: hi # New Language
+    label: हिन्दी
+```
+
+#### 2. Property Translation
+Every UI string property is converted from a single string to an object where keys match the language codes defined above.
+```yaml
+# Before (Single Language)
+submit: Submit
+
+# After (Multi-Language)
+submit:
+  en: Submit
+  ja: 送信
+  hi: सबमिट करें
+```
+
+#### 3. Customization Workflow
+* **Add Language:** Add a new entry to the `languages` array.
+* **Translate:** Navigate through the YAML and add the corresponding key (e.g., `hi: ...`) to every text property.
+* **Agent Specifics:** Different agents can have their own specific greetings and titles translated under the `agents` block.
+
+This approach ensures that the application remains "language-agnostic" at the code level, retrieving strings dynamically based on the user's active locale setting.
+
+---
 
 ## 🚀 Setting Up Locally
 

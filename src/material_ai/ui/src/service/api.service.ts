@@ -13,6 +13,7 @@ import {
   type Health,
   AppConfigImpl,
 } from '../schema'
+import { getI18n } from '../utils'
 
 interface ApiServiceContext {
   getUser: () => User | undefined
@@ -30,9 +31,7 @@ export class ApiService {
   async send_message_api(message: SendMessageApiArgs) {
     const response = await fetch(`${HOST}/run`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: this.get_default_headers(),
       credentials: 'include',
       body: JSON.stringify({
         app_name: message.app_name,
@@ -64,9 +63,7 @@ export class ApiService {
     } = dto
     const response = await fetch(`${HOST}/run_sse`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: this.get_default_headers(),
       credentials: 'include',
       body: JSON.stringify({
         app_name,
@@ -101,6 +98,7 @@ export class ApiService {
       `${HOST}/apps/${agent}/users/${this.context.getUser()?.sub}/sessions`,
       {
         method: 'POST',
+        headers: this.get_default_headers(),
         credentials: 'include',
       },
     )
@@ -115,9 +113,7 @@ export class ApiService {
   async fetch_sessions(app: string): Promise<Session[]> {
     const response = await fetch(`${HOST}/apps/${app}/history`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: this.get_default_headers(),
       credentials: 'include',
     })
 
@@ -134,9 +130,7 @@ export class ApiService {
       `${HOST}/apps/${agent}/users/${this.context.getUser()?.sub}/sessions/${session_id}`,
       {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.get_default_headers(),
         credentials: 'include',
       },
     )
@@ -151,9 +145,7 @@ export class ApiService {
   async fetch_agents(): Promise<Agent[]> {
     const response = await fetch(`${HOST}/agents`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: this.get_default_headers(),
       credentials: 'include',
     })
 
@@ -167,9 +159,7 @@ export class ApiService {
   async fetch_user(): Promise<User> {
     const response = await fetch(`${HOST}/user`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: this.get_default_headers(),
       credentials: 'include',
     })
 
@@ -181,11 +171,9 @@ export class ApiService {
   }
 
   async fetch_health(): Promise<Health> {
-    const response = await fetch(`${HOST}/health`, {
+    const response = await fetch(`${HOST}/api/health`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: this.get_default_headers(),
       credentials: 'include',
     })
 
@@ -199,9 +187,7 @@ export class ApiService {
   async send_feedback(dto: FeedbackDto): Promise<string> {
     const response = await fetch(`${HOST}/feedback`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: this.get_default_headers(),
       credentials: 'include',
       body: JSON.stringify({
         feedback_category: dto.feedback_category,
@@ -229,9 +215,7 @@ export class ApiService {
       `${HOST}/apps/${agent}/users/${this.context.getUser()?.sub}/sessions/${dto.session}/artifacts/${dto.artifact_name}?version=${dto.version}`,
       {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.get_default_headers(),
         credentials: 'include',
       },
     )
@@ -251,9 +235,7 @@ export class ApiService {
       `${HOST}/apps/${agent}/users/${this.context.getUser()?.sub}/sessions/${session_id}`,
       {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.get_default_headers(),
         credentials: 'include',
       },
     )
@@ -268,9 +250,7 @@ export class ApiService {
   async sign_out(): Promise<void> {
     const response = await fetch(`${HOST}/logout`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: this.get_default_headers(),
       credentials: 'include',
     })
     this.handle_response(response)
@@ -279,13 +259,18 @@ export class ApiService {
   async get_agent_readme(agent: string): Promise<string> {
     const response = await fetch(`${HOST}/apps/${agent}/readme`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: this.get_default_headers(),
       credentials: 'include',
     })
 
     return await response.text()
+  }
+
+  get_default_headers() {
+    return {
+      'Content-Type': 'application/json',
+      'Accept-Language': getI18n(),
+    }
   }
 
   handle_response(response: Response) {

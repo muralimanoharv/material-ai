@@ -25,7 +25,7 @@ import HealthPage from './components/pages/HealthPage'
 import AgentInfoPage from './components/pages/AgentInfoPage'
 
 function App() {
-  const { config } = useContext(ThemeContext) as ThemeContextType
+  const { config, refreshConfig } = useContext(ThemeContext) as ThemeContextType
 
   // const [session, setSession] = useState<string | undefined>()
   const [user, setUser] = useState<User | undefined>(undefined)
@@ -153,6 +153,7 @@ function App() {
     apiService: apiService.current,
     chatService: chatService.current,
     historyService: historyService.current,
+    refreshConfig,
   }
 
   const onAppLoad = async () => {

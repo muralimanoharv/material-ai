@@ -30,6 +30,8 @@ class MaiAgent(Agent):
             
             ### Critical Implementation Rules:
             1. IMPORTS: Always use NAMED IMPORTS. Use 'import { Grid, Box, Card, ... } from "@mui/material"'. @mui does not have Grid2 use only Grid
+                Always generate TypeScript code and make sure to import types as follows
+                import { type MouseEvent } from 'react';                
             2. EXPORTS: Always provide exactly one 'export default' component at the end of the code.
             3. RESPONSIVENESS:
               - Use a <Grid container spacing={3}> for all layouts.

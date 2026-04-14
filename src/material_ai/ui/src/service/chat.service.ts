@@ -215,7 +215,9 @@ export class ChatService {
         this.historyService.add_history({
           content: {
             role: 'model',
-            parts: [{ text: 'You stopped this response' }],
+            parts: [
+              { text: this.context.getConfig().getStopResponseMessage() },
+            ],
           },
           id,
           loading_id: id,

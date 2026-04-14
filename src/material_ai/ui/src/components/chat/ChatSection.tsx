@@ -13,7 +13,6 @@ import ChatLoading from './item/ChatLoading'
 import ChatUserFiles from './item/ChatUserFiles'
 import type { ChatItem, ChatPart, FeedbackDto } from '../../schema'
 import ChatText from './item/ChatText'
-import { useAgentId } from '../../hooks'
 
 export default function ChatSection({
   maxWidth = CHAT_SECTION_WIDTH,
@@ -81,8 +80,6 @@ function ChatItemSection(props: ChatItemSectionProps) {
 
   const { chat, chatIdx } = props
 
-  const agentId = useAgentId()
-
   const postPostiveFeedback = async ({
     feedback_category,
     feedback_text,
@@ -93,9 +90,7 @@ function ChatItemSection(props: ChatItemSectionProps) {
       await context.apiService.send_feedback(dto)
 
       setFeedback(dto)
-      context.setSnack(
-        `Thank you! Your feedback helps make ${config.getTitle(agentId)} better for everyone`,
-      )
+      context.setSnack(config.get().feedbackSuccessMessage)
     } catch (e: unknown) {
       console.error(e)
       context.setSnack(config.getErrorMessage())
@@ -112,9 +107,7 @@ function ChatItemSection(props: ChatItemSectionProps) {
 
       setFeedback(dto)
       setNegativeFeedbackToggle(false)
-      context.setSnack(
-        `Thank you for helping improve ${config.getTitle(agentId)}`,
-      )
+      context.setSnack(config.get().feedbackNegativeMessage)
     } catch (e: unknown) {
       console.error(e)
       context.setSnack(config.getErrorMessage())

@@ -20,6 +20,11 @@ def who_am_i():
     return user_details
 
 
+def get_language():
+    user_details = oauth_user_details_context.get()
+    return user_details.language
+
+
 def throw_error():
     raise Exception("Error: Tool execution timed out or failed")
 
@@ -70,12 +75,20 @@ root_agent = Agent(
     name="greeting_agent",
     model=agent_env.get_env("model", "gemini-3-flash-preview"),
     description="An agent that can greet users.",
-    instruction="""
+    instruction=f"""
+    Call 'get_language' tool to response in that language, this tool will give the language of the user
     Use 'say_hello' tool to greet user, If user asks about himself use 'who_am_i' tool,
     If the users ask about a csv file use 'create_csv' tool
     If the user says 'say_10' use 'say_hi_10_after_seconds' tool and greet user
     If the user says 'error' use 'throw_error' tool
     Just provide simple text, we dont want any markdown
     """,
-    tools=[say_hello, who_am_i, create_csv, say_hi_10_after_seconds, throw_error],
+    tools=[
+        say_hello,
+        who_am_i,
+        create_csv,
+        say_hi_10_after_seconds,
+        throw_error,
+        get_language,
+    ],
 )

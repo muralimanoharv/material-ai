@@ -1,5 +1,6 @@
 import os
 import logging
+from typing import Optional
 import psutil
 from pathlib import Path
 from material_ai.agent_loader import get_agent_loader
@@ -7,7 +8,7 @@ from .app import get_endpoint_function
 from google.adk.cli.adk_web_server import Session
 from google.adk.agents import LlmAgent, BaseAgent
 from datetime import datetime, timezone
-from fastapi import APIRouter, Response, Request, Cookie, status, Depends, Query
+from fastapi import APIRouter, Header, Response, Request, Cookie, status, Depends, Query
 from fastapi.responses import FileResponse, RedirectResponse
 from .exec import UnauthorizedException
 from .request import FeedbackRequest, Microfrontend
@@ -30,7 +31,7 @@ from .auth import IOAuthService, FeedbackHandler, get_user
 from .oauth import OAuthUserDetail
 from .response import UserSuccessResponse, HealthResponse, History, HistoryResponse
 from .response import Agent, AgentResponse, List, Tool
-from .ui_config import UIConfig
+from .ui_config import UIConfig, UIConfigManager
 
 _logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -204,7 +205,7 @@ async def callback(
 
 
 @router.get(
-    "/health",
+    "/api/health",
     summary="Get service health and system information",
     response_model=HealthResponse,
     tags=["Monitoring"],
@@ -238,7 +239,7 @@ async def health_check():
     }
 
     return HealthResponse(
-        status="ok",
+        status="notok",
         uptime=str(uptime_delta),
         system=system_data,
         debug=config.general.debug,
@@ -253,8 +254,11 @@ async def health_check():
     response_model=UIConfig,
     tags=["Configuration"],
 )
-async def config(ui_configuration: UIConfig = Depends(get_ui_configuration)):
-    return ui_configuration
+async def config(
+    accept_language: Optional[str] = Header(None, alias="Accept-Language"),
+    ui_configuration: UIConfigManager = Depends(get_ui_configuration),
+):
+    return ui_configuration.get_ui_config(language_code=accept_language)
 
 
 @router.get(
@@ -372,7 +376,10 @@ async def get_agent_ui(app_name: str):
 @router.get(
     "/apps/{app_name}/readme",
 )
-async def get_agent_readme(app_name: str):
+async def get_agent_readme(
+    app_name: str,
+    language: Optional[str] = Header(None, alias="Accept-Language"),
+):
     agent_loader = get_agent_loader()
     if not agent_loader:
         return Response(status_code=404, content="Agent directory not found")
@@ -380,6 +387,12 @@ async def get_agent_readme(app_name: str):
     for agent in agent_loader.list_agents():
         if agent == app_name:
             AGENT_UI_PATH = f"{agent_loader.agents_dir}/{app_name}"
+            if os.path.exists(f"{AGENT_UI_PATH}/README_{language}.md"):
+                return FileResponse(
+                    path=os.path.join(AGENT_UI_PATH, f"README_{language}.md"),
+                    media_type="text/markdown",
+                )
+
             if not os.path.exists(f"{AGENT_UI_PATH}/README.md"):
                 return Response(status_code=404, content="Agent readme not found")
 

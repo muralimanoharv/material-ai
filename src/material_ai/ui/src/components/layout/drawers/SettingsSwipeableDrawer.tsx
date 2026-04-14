@@ -10,7 +10,11 @@ import MonitorHeartIcon from '@mui/icons-material/MonitorHeart'
 import PaletteIcon from '@mui/icons-material/Palette'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
 import ThemeSwipeableDrawer from './ThemeSwipeableDrawer'
-import { LayoutContext } from '../../../context'
+import {
+  AppContext,
+  LayoutContext,
+  type AppContextType,
+} from '../../../context'
 import MaterialList from '../other/MaterialList'
 import { useNavigate } from 'react-router'
 
@@ -22,6 +26,7 @@ interface LayoutContextType {
 }
 
 export default function SettingsSwipeableDrawer() {
+  const { config } = React.useContext(AppContext) as AppContextType
   const { setThemeDrawerOpen, setSettingsDrawerOpen, settingsDrawerOpen } =
     React.useContext(LayoutContext) as unknown as LayoutContextType
 
@@ -54,7 +59,7 @@ export default function SettingsSwipeableDrawer() {
                 <ListItemIcon>
                   <PaletteIcon />
                 </ListItemIcon>
-                <ListItemText primary={'Theme'} />
+                <ListItemText primary={config.get().buttons.theme} />
                 <ArrowRightIcon />
               </ListItemButton>
             </ListItem>
@@ -72,7 +77,7 @@ export default function SettingsSwipeableDrawer() {
                 <ListItemIcon>
                   <MonitorHeartIcon />
                 </ListItemIcon>
-                <ListItemText primary={'Health'} />
+                <ListItemText primary={config.get().buttons.health} />
                 <ArrowRightIcon />
               </ListItemButton>
             </ListItem>

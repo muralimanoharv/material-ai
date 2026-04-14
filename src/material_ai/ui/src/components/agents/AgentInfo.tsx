@@ -44,6 +44,17 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
   const [readme, setReadme] = useState('')
 
   useEffect(() => {
+    const handleCustomChange = () => {
+      context.apiService.get_agent_readme(agent.id).then((response) => {
+        setReadme(response)
+      })
+    }
+
+    window.addEventListener('i18n', handleCustomChange)
+    return () => window.removeEventListener('i18n', handleCustomChange)
+  }, [])
+
+  useEffect(() => {
     context.apiService.get_agent_readme(agent.id).then((response) => {
       setReadme(response)
     })
@@ -79,7 +90,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
               },
             }}
           >
-            Back to Registry
+            {context.config.get().buttons.backToRegistry}
           </Button>
         </Grid>
 
@@ -128,7 +139,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                 letterSpacing: '-0.01em',
               }}
             >
-              {agent.name}
+              {context.config.getAgent(agent.id)?.title || agent.name}
             </Typography>
 
             {/* Description Body */}
@@ -155,7 +166,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                   mb: 0.5,
                 }}
               >
-                Deployment Model
+                {context.config.get().pages.agentsPage.agentModelCol}
               </Typography>
               <Stack direction="row" spacing={1} alignItems="center">
                 <ModelIcon
@@ -184,7 +195,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                   color: theme.palette.text.primary,
                 }}
               >
-                Agent Operations
+                {context.config.get().pages.agentInfoPage.agentOperations}
               </Typography>
 
               <Grid container spacing={2}>
@@ -210,7 +221,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                       },
                     }}
                   >
-                    Interact with Agent
+                    {context.config.get().buttons.interactWithAgent}
                   </Button>
                 </Grid>
 
@@ -237,7 +248,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                       },
                     }}
                   >
-                    Deploy to Gemini Enterprise (Coming Soon)
+                    {context.config.get().buttons.deployToGeminiEnterprize}
                   </Button>
                 </Grid>
 
@@ -264,7 +275,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                       },
                     }}
                   >
-                    Deploy to Agent Engine (Coming Soon)
+                    {context.config.get().buttons.deployToAgentEngine}
                   </Button>
                 </Grid>
 
@@ -291,7 +302,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                       },
                     }}
                   >
-                    Deploy to Agent Catalog (Coming Soon)
+                    {context.config.get().buttons.deployToAgentCatalog}
                   </Button>
                 </Grid>
               </Grid>
@@ -314,7 +325,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                   variant="h6"
                   sx={{ fontWeight: 800, color: theme.palette.text.primary }}
                 >
-                  Documentation
+                  {context.config.get().pages.agentInfoPage.documentation}
                 </Typography>
               </Stack>
 
@@ -348,7 +359,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                     variant="h6"
                     sx={{ fontWeight: 800, color: theme.palette.text.primary }}
                   >
-                    Trace
+                    {context.config.get().pages.agentInfoPage.trace}
                   </Typography>
                 </Stack>
 

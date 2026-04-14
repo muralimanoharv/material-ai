@@ -38,7 +38,7 @@ export default function AgentSelectMenu() {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null)
   const [searchQuery, setSearchQuery] = React.useState('')
 
-  const { agents } = React.useContext(AppContext) as AppContextType
+  const { agents, config } = React.useContext(AppContext) as AppContextType
 
   const open = Boolean(anchorEl)
 
@@ -62,7 +62,7 @@ export default function AgentSelectMenu() {
 
   return (
     <div>
-      <Tooltip title="Add files">
+      <Tooltip title={config.get().buttons.selectAgent}>
         <Button
           id="agent-button"
           data-testid="prompt-input-agent-menu"
@@ -75,10 +75,10 @@ export default function AgentSelectMenu() {
             borderRadius: '24px',
             padding: '0 16px',
             height: '40px',
-            width: '120px',
+            width: 'max-content',
           }}
         >
-          Agents
+          {config.get().buttons.agents}
         </Button>
       </Tooltip>
       <Menu
@@ -102,7 +102,7 @@ export default function AgentSelectMenu() {
             }}
             variant="h4"
           >
-            Choose your agent
+            {config.get().agentsMenu.title}
           </Typography>
 
           {/* Search Bar Section */}
@@ -110,7 +110,7 @@ export default function AgentSelectMenu() {
             <TextField
               fullWidth
               size="small"
-              placeholder="Search agents..."
+              placeholder={config.get().agentsMenu.placeholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               variant="outlined"
@@ -187,10 +187,11 @@ const AgentSelectMenuBody = menuNeedsLogin<AgentSelectMenuBodyProps>(
       </Box>
     )
   },
-  'Sign in to select agents',
+  (config) => config.agentsMenu.logOutTitle,
 )
 
 function AgentItem({ agent, handleClose }: AgentItemProps) {
+  const { config } = React.useContext(AppContext) as AppContextType
   const navigate = useNavigate()
   const selectedAgentId = useAgentId()
 
@@ -229,7 +230,7 @@ function AgentItem({ agent, handleClose }: AgentItemProps) {
               textOverflow: 'ellipsis',
             }}
           >
-            {agent.name}
+            {config.getAgent(agent.id)?.title || agent.name}
           </Typography>
           <Typography
             variant="h6"

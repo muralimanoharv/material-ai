@@ -218,8 +218,8 @@ export default function PromptInput() {
             }}
             placeholder={
               user
-                ? `Ask ${config.getTitle(agent)}`
-                : `Sign in to ask ${config.getTitle(agent)}`
+                ? config.get().promptInput.placeholder
+                : config.get().promptInput.logOutPlaceholder
             }
             inputProps={{
               'aria-label': `Ask ${config.getTitle(agent)}`,
@@ -279,7 +279,7 @@ export default function PromptInput() {
           >
             {/* <ModelSelectMenu /> */}
             {promptLoading ? (
-              <Tooltip title="Stop response">
+              <Tooltip title={config.get().buttons.stopResponse}>
                 <IconButton
                   data-testid="page-prompt-input-cancel"
                   onClick={() => chatService.cancel_api()}
@@ -298,7 +298,7 @@ export default function PromptInput() {
                 </IconButton>
               </Tooltip>
             ) : (
-              <Tooltip title="Submit">
+              <Tooltip title={config.get().buttons.submit}>
                 <IconButton
                   disabled={!prompt || !user}
                   data-testid="page-prompt-input-submit"
@@ -319,9 +319,7 @@ export default function PromptInput() {
       <Box
         sx={{ textAlign: 'center', marginTop: '16px', marginBottom: '16px' }}
       >
-        <Typography variant="h6">
-          {config.getTitle(agent)} can make mistakes, so double-check it
-        </Typography>
+        <Typography variant="h6">{config.get().footer.title}</Typography>
       </Box>
     </Box>
   )

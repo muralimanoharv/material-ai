@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useContext } from 'react'
 import {
   Grid,
   Box,
@@ -37,23 +37,17 @@ import {
 } from '@mui/icons-material'
 import type { Agent } from '../../schema'
 import { useNavigate } from 'react-router'
+import { AppContext, type AppContextType } from '../../context'
 
 interface AgentCatalogProps {
   agents?: Agent[]
-}
-
-// Unified Terminology Constants
-const TERMS = {
-  IDENTITY: 'Agent Identity',
-  DESCRIPTION: 'Description',
-  ENGINE: 'Model',
-  STATUS: 'Status',
 }
 
 /**
  * Animated Counter Component for Total Agent Count
  */
 const AnimatedCounter: React.FC<{ target: number }> = ({ target }) => {
+  const { config } = useContext(AppContext) as AppContextType
   const theme: Theme = useTheme()
 
   return (
@@ -85,7 +79,7 @@ const AnimatedCounter: React.FC<{ target: number }> = ({ target }) => {
           display: 'block',
         }}
       >
-        Agents
+        {config.get().pages.agentsPage.countText}
       </Typography>
     </Box>
   )
@@ -93,6 +87,7 @@ const AnimatedCounter: React.FC<{ target: number }> = ({ target }) => {
 
 const AgentCatalog: React.FC<AgentCatalogProps> = ({ agents = [] }) => {
   const theme: Theme = useTheme()
+  const { config } = useContext(AppContext) as AppContextType
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('table')
   const navigate = useNavigate()
@@ -166,7 +161,7 @@ const AgentCatalog: React.FC<AgentCatalogProps> = ({ agents = [] }) => {
                   color: theme.palette.text.primary,
                 }}
               >
-                Agent Catalog
+                {config.get().pages.agentsPage.title}
               </Typography>
               <Stack
                 direction="row"
@@ -181,7 +176,7 @@ const AgentCatalog: React.FC<AgentCatalogProps> = ({ agents = [] }) => {
                   variant="body1"
                   sx={{ color: theme.palette.text.secondary, fontWeight: 500 }}
                 >
-                  Agent Registry Dashboard
+                  {config.get().pages.agentsPage.subTitle}
                 </Typography>
               </Stack>
             </Box>
@@ -221,7 +216,7 @@ const AgentCatalog: React.FC<AgentCatalogProps> = ({ agents = [] }) => {
               <SearchIcon sx={{ color: theme.palette.primary.main, mr: 1.5 }} />
               <InputBase
                 fullWidth
-                placeholder="Search registry by identity, description, or model engine..."
+                placeholder={config.get().pages.agentsPage.placeholder}
                 value={searchTerm}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setSearchTerm(e.target.value)
@@ -324,7 +319,7 @@ const AgentCatalog: React.FC<AgentCatalogProps> = ({ agents = [] }) => {
                               color="text.secondary"
                               sx={{ fontWeight: 800, mb: 0.5 }}
                             >
-                              {TERMS.STATUS}
+                              {config.get().pages.agentsPage.agentStatusCol}
                             </Typography>
                             <StatusBadge
                               status={agent.status}
@@ -339,7 +334,7 @@ const AgentCatalog: React.FC<AgentCatalogProps> = ({ agents = [] }) => {
                           color="primary"
                           sx={{ fontWeight: 800, letterSpacing: 1.2 }}
                         >
-                          {TERMS.IDENTITY}
+                          {config.get().pages.agentsPage.agentIdentityCol}
                         </Typography>
                         <Typography
                           variant="h6"
@@ -350,7 +345,7 @@ const AgentCatalog: React.FC<AgentCatalogProps> = ({ agents = [] }) => {
                           }}
                           data-testid={`agents-page-card-${agent.id}-heading`}
                         >
-                          {agent.name}
+                          {config.getAgent(agent.id)?.title || agent.name}
                         </Typography>
 
                         <Typography
@@ -358,7 +353,7 @@ const AgentCatalog: React.FC<AgentCatalogProps> = ({ agents = [] }) => {
                           color="text.secondary"
                           sx={{ fontWeight: 800 }}
                         >
-                          {TERMS.DESCRIPTION}
+                          {config.get().pages.agentsPage.agentDescriptionCol}
                         </Typography>
                         <Typography
                           variant="body2"
@@ -398,7 +393,7 @@ const AgentCatalog: React.FC<AgentCatalogProps> = ({ agents = [] }) => {
                               color="text.secondary"
                               sx={{ fontWeight: 800 }}
                             >
-                              {TERMS.ENGINE}
+                              {config.get().pages.agentsPage.agentModelCol}
                             </Typography>
                             <Typography
                               variant="body2"
@@ -452,7 +447,7 @@ const AgentCatalog: React.FC<AgentCatalogProps> = ({ agents = [] }) => {
                           py: 2.5,
                         }}
                       >
-                        {TERMS.IDENTITY}
+                        {config.get().pages.agentsPage.agentIdentityCol}
                       </TableCell>
                       <TableCell
                         sx={{
@@ -462,7 +457,7 @@ const AgentCatalog: React.FC<AgentCatalogProps> = ({ agents = [] }) => {
                           textTransform: 'uppercase',
                         }}
                       >
-                        {TERMS.DESCRIPTION}
+                        {config.get().pages.agentsPage.agentDescriptionCol}
                       </TableCell>
                       <TableCell
                         sx={{
@@ -472,7 +467,7 @@ const AgentCatalog: React.FC<AgentCatalogProps> = ({ agents = [] }) => {
                           textTransform: 'uppercase',
                         }}
                       >
-                        {TERMS.ENGINE}
+                        {config.get().pages.agentsPage.agentModelCol}
                       </TableCell>
                       <TableCell
                         sx={{
@@ -482,7 +477,7 @@ const AgentCatalog: React.FC<AgentCatalogProps> = ({ agents = [] }) => {
                           textTransform: 'uppercase',
                         }}
                       >
-                        {TERMS.STATUS}
+                        {config.get().pages.agentsPage.agentStatusCol}
                       </TableCell>
                     </TableRow>
                   </TableHead>
@@ -527,7 +522,7 @@ const AgentCatalog: React.FC<AgentCatalogProps> = ({ agents = [] }) => {
                                 data-testid={`agents-page-row-${agent.id}-heading`}
                                 sx={{ fontWeight: 800 }}
                               >
-                                {agent.name}
+                                {config.getAgent(agent.id)?.title || agent.name}
                               </Typography>
                               <Typography
                                 variant="caption"

@@ -2,57 +2,53 @@ import { useState, useEffect, type ReactNode } from 'react'
 import { type AppConfig, AppConfigImpl } from '../schema'
 import { AppThemeProvider } from './AppThemeProvider'
 import { HOST } from '../service/api.service'
+import { getI18n } from '../utils'
 
 interface AppConfigProviderProps {
   children: ReactNode
 }
 
 export function AppConfigProvider({ children }: AppConfigProviderProps) {
-  const [config, setConfig] = useState<AppConfigImpl | undefined>(() => {
-    try {
-      const storedConfig = sessionStorage.getItem('config')
-      return storedConfig
-        ? new AppConfigImpl(JSON.parse(storedConfig))
-        : undefined
-    } catch {
-      return undefined
-    }
-  })
+  const [config, setConfig] = useState<AppConfigImpl | undefined>(undefined)
 
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const initConfig = async () => {
-      if (config) return
+  const refreshConfig = async () => {
+    try {
+      const response = await fetch(`${HOST}/config`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept-Language': getI18n(),
+        },
+      })
 
-      try {
-        const response = await fetch(`${HOST}/config`, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-        })
+      if (!response.ok) {
+        throw new Error(`Failed to fetch config: ${response.statusText}`)
+      }
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch config: ${response.statusText}`)
-        }
+      const data = (await response.json()) as AppConfig
 
-        const data = (await response.json()) as AppConfig
-
-        sessionStorage.setItem('config', JSON.stringify(data))
-        setConfig(new AppConfigImpl(data))
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message)
-        } else {
-          setError('Unknown error')
-        }
+      setConfig(new AppConfigImpl(data))
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError('Unknown error')
       }
     }
+  }
 
-    initConfig()
+  useEffect(() => {
+    refreshConfig()
   }, [])
 
   if (error) return <div>Error loading application: {error}</div>
   if (!config) return null
 
-  return <AppThemeProvider config={config}>{children}</AppThemeProvider>
+  return (
+    <AppThemeProvider config={config} refreshConfig={refreshConfig}>
+      {children}
+    </AppThemeProvider>
+  )
 }

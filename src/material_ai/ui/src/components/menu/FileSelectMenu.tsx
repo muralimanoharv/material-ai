@@ -11,6 +11,7 @@ import {
 import AddIcon from '@mui/icons-material/Add'
 import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined'
 import { menuNeedsLogin } from './hoc'
+import { AppContext, type AppContextType } from '../../context'
 
 interface FileSelectMenuProps {
   onFileUpload: () => void
@@ -20,15 +21,8 @@ interface FileSelectMenuBodyProps {
   onFileUpload: () => void
 }
 
-const FILE_OPTIONS = [
-  {
-    title: 'Upload files',
-    icon: <AttachFileOutlinedIcon fontSize="small" />,
-    dataTestId: 'prompt-input-upload-files',
-  },
-]
-
 function FileSelectMenu(props: FileSelectMenuProps) {
+  const { config } = React.useContext(AppContext) as AppContextType
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null)
 
   const open = Boolean(anchorEl)
@@ -43,7 +37,7 @@ function FileSelectMenu(props: FileSelectMenuProps) {
 
   return (
     <div>
-      <Tooltip title="Add files">
+      <Tooltip title={config.get().buttons.addFiles}>
         <IconButton
           data-testid="prompt-input-file-menu"
           id="file-button"
@@ -77,23 +71,35 @@ function FileSelectMenu(props: FileSelectMenuProps) {
   )
 }
 
-const FileSelectMenuBody = menuNeedsLogin<FileSelectMenuBodyProps>((props) => {
-  return (
-    <Box sx={{ width: 200 }}>
-      {FILE_OPTIONS.map(({ title, icon, dataTestId }) => {
-        return (
-          <MenuItem
-            data-testid={dataTestId}
-            onClick={() => props.onFileUpload()}
-            key={title}
-          >
-            <ListItemIcon>{icon}</ListItemIcon>
-            <Typography variant="h5">{title}</Typography>
-          </MenuItem>
-        )
-      })}
-    </Box>
-  )
-}, 'Sign in to upload files')
+const FileSelectMenuBody = menuNeedsLogin<FileSelectMenuBodyProps>(
+  (props) => {
+    const { config } = React.useContext(AppContext) as AppContextType
+
+    const FILE_OPTIONS = [
+      {
+        title: config.get().buttons.uploadFile,
+        icon: <AttachFileOutlinedIcon fontSize="small" />,
+        dataTestId: 'prompt-input-upload-files',
+      },
+    ]
+    return (
+      <Box>
+        {FILE_OPTIONS.map(({ title, icon, dataTestId }) => {
+          return (
+            <MenuItem
+              data-testid={dataTestId}
+              onClick={() => props.onFileUpload()}
+              key={title}
+            >
+              <ListItemIcon>{icon}</ListItemIcon>
+              <Typography variant="h5">{title}</Typography>
+            </MenuItem>
+          )
+        })}
+      </Box>
+    )
+  },
+  (config) => config.uploadFileMenu.logOutTitle,
+)
 
 export default FileSelectMenu

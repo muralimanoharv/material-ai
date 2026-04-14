@@ -272,7 +272,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
   initialMode = 'static',
   allowLiveMode = true,
 }) => {
-  const { health } = useContext(AppContext) as AppContextType
+  const { health, config } = useContext(AppContext) as AppContextType
   const theme: Theme = useTheme()
   const isMdDown = useMediaQuery(theme.breakpoints.down('md'))
   const isSmDown = useMediaQuery(theme.breakpoints.down('sm'))
@@ -601,7 +601,9 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
             {!isSmDown && (
               <Box sx={{ minWidth: 120 }}>
                 <Typography variant="subtitle2" fontWeight="900" noWrap>
-                  {mode === 'live' ? 'Execution Trace' : 'Agent Blueprint'}
+                  {mode === 'live'
+                    ? config.get().agentTrace.traceTitle
+                    : config.get().agentTrace.blueprintTitle}
                 </Typography>
                 <Typography
                   variant="caption"
@@ -630,7 +632,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                   <BlueprintIcon fontSize="small" sx={{ mr: { md: 1 } }} />
                   {!isMdDown && (
                     <Typography variant="caption" fontWeight="700">
-                      Blueprint
+                      {config.get().buttons.blueprint}
                     </Typography>
                   )}
                 </ToggleButton>
@@ -638,7 +640,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                   <TraceIcon sx={{ fontSize: 12, mr: { md: 1 } }} />
                   {!isMdDown && (
                     <Typography variant="caption" fontWeight="700">
-                      Trace
+                      {config.get().buttons.trace}
                     </Typography>
                   )}
                 </ToggleButton>
@@ -663,7 +665,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                 startIcon={<PlayIcon />}
                 sx={{ borderRadius: 2, height: 36, px: 2 }}
               >
-                Execute Next
+                {config.get().buttons.executeNext}
               </Button>
             )}
             <Button
@@ -679,7 +681,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                 borderColor: 'divider',
               }}
             >
-              Reset
+              {config.get().buttons.reset}
             </Button>
             <Button
               variant="contained"
@@ -690,7 +692,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
               startIcon={<CenterIcon />}
               sx={{ borderRadius: 2, height: 36, px: 2 }}
             >
-              Recenter
+              {config.get().buttons.reCenter}
             </Button>
           </Stack>
         </Stack>
@@ -886,7 +888,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                                 color="text.secondary"
                                 fontWeight="900"
                               >
-                                Arguments
+                                {config.get().agentTrace.arguments}
                               </Typography>
                             </Stack>
                             <Paper
@@ -937,7 +939,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                                 color="text.secondary"
                                 fontWeight="900"
                               >
-                                Execution Response
+                                {config.get().agentTrace.executionResponse}
                               </Typography>
                             </Stack>
                             <Paper
@@ -1092,7 +1094,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                       fontWeight="800"
                       sx={{ letterSpacing: 2 }}
                     >
-                      AGENT CORE v7.3
+                      {`${config.get().agentTrace.agentCore} v${health?.version}`}
                     </Typography>
                   </Box>
                 </>
@@ -1124,7 +1126,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
               <Stack direction="row" spacing={1.5} alignItems="center">
                 <LogIcon color="warning" />
                 <Typography variant="subtitle2" fontWeight="900">
-                  SYSTEM EVENT LOG
+                  {config.get().agentTrace.systemEventLog}
                 </Typography>
               </Stack>
             </Box>
@@ -1132,7 +1134,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
               {liveHistory.length === 0 ? (
                 <Box sx={{ textAlign: 'center', mt: 8, opacity: 0.4 }}>
                   <Typography variant="caption">
-                    Awaiting execution packets...
+                    {config.get().agentTrace.awaitingPackets}
                   </Typography>
                 </Box>
               ) : (
@@ -1163,7 +1165,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                           sx={{ mb: 1 }}
                         >
                           <Chip
-                            label={`Event #${i + 1}`}
+                            label={`${config.get().agentTrace.event} #${i + 1}`}
                             size="small"
                             sx={{
                               height: 16,
@@ -1185,8 +1187,8 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                           display="block"
                         >
                           {isCall
-                            ? 'INITIATED FUNCTION CALL'
-                            : 'RECEIVED FUNCTION RESPONSE'}
+                            ? config.get().agentTrace.initiatedFuncCall
+                            : config.get().agentTrace.receivedFuncResp}
                         </Typography>
                         <Typography
                           variant="caption"

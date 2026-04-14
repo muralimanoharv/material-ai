@@ -56,7 +56,7 @@ export default function ChatNegativeFeebackSelection() {
           // otherwise TypeScript might complain. 'body1' is the standard fallback.
           variant="body1"
         >
-          What went wrong?
+          {config.get().pages.chatPage.negativeFeedbackTitle}
         </Typography>
         <IconButton
           onClick={() => {
@@ -68,7 +68,7 @@ export default function ChatNegativeFeebackSelection() {
         </IconButton>
       </Box>
       <Typography variant="h4">
-        Your feedback helps make {config.getTitle(agentId)} better for everyone.
+        {config.get().pages.chatPage.negativeFeedbackSubtitle}
       </Typography>
       <Box>
         <MaterialList>
@@ -119,7 +119,7 @@ export default function ChatNegativeFeebackSelection() {
                   sx={{ display: 'flex', justifyContent: 'space-between' }}
                   onClick={() => setOtherBox(!otherBox)}
                 >
-                  <Box>Other</Box>
+                  <Box>{config.get().pages.chatPage.other}</Box>
                   {otherBox && <CheckIcon fontSize="small" />}
                 </Box>
                 {otherBox && (
@@ -137,9 +137,9 @@ export default function ChatNegativeFeebackSelection() {
                         autoFocus
                         fullWidth
                         id="outlined-basic"
-                        label="Feedback"
+                        label={config.get().pages.chatPage.feedback}
                         variant="outlined"
-                        placeholder="Provide additional feedback"
+                        placeholder={config.get().pages.chatPage.placeholder}
                       />
                     </Box>
                     <Box>
@@ -158,7 +158,7 @@ export default function ChatNegativeFeebackSelection() {
                         }}
                         variant="contained"
                       >
-                        Submit
+                        {config.get().buttons.submit}
                       </Button>
                     </Box>
                   </>

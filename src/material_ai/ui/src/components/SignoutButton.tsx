@@ -30,7 +30,7 @@ export default function SignoutButton() {
       variant="contained"
       sx={{ padding: '10px 24px' }}
     >
-      Sign out
+      {context.config.get().buttons.signOut}
     </Button>
   )
 }
