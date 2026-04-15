@@ -174,6 +174,7 @@ const AgentCatalog: React.FC<AgentCatalogProps> = ({ agents = [] }) => {
                 />
                 <Typography
                   variant="body1"
+                  data-testid="agents-page-sub-header"
                   sx={{ color: theme.palette.text.secondary, fontWeight: 500 }}
                 >
                   {config.get().pages.agentsPage.subTitle}

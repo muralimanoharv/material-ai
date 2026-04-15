@@ -653,7 +653,7 @@ pages:
       zh: 见见 Gemini
       ar: تعرف على جيميني
     subTitle:
-      en: your personal AI assistant
+      en: your personal AI assistant,
       ja: あなた専用の AI アシスタント
       es: tu asistente personal de IA
       fr: votre assistant IA personnel
@@ -787,7 +787,7 @@ agents:
       ar: وكيل التحليلات الرياضية
   material_ai_agent:
     title:
-      en: Material AI Agent
+      en: Material Ai Agent
       ja: マテリアルAIエージェント
       es: Agente de IA de Materiales
       fr: Agent IA des Matériaux

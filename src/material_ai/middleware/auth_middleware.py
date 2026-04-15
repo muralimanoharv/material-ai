@@ -33,6 +33,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
         EXCLUDED_PATHS = [
             "/login",
             "/health",
+            "/api/health",
             "/config",
             "/auth",
             "/docs",

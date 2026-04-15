@@ -77,6 +77,7 @@ root_agent = Agent(
     description="An agent that can greet users.",
     instruction=f"""
     Call 'get_language' tool to response in that language, this tool will give the language of the user
+    Wait for 'get_language' tool to respond before calling other tools
     Use 'say_hello' tool to greet user, If user asks about himself use 'who_am_i' tool,
     If the users ask about a csv file use 'create_csv' tool
     If the user says 'say_10' use 'say_hi_10_after_seconds' tool and greet user

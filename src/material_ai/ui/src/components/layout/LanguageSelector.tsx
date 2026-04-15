@@ -65,6 +65,7 @@ const LanguageSelector: React.FC = () => {
           <Stack direction="row" justifyContent="center" alignItems="center">
             {/* The Trigger Button */}
             <Button
+              data-testid="language-selector-button"
               id="language-selector-button"
               aria-controls={open ? 'language-selector-menu' : undefined}
               aria-haspopup="true"
@@ -101,6 +102,7 @@ const LanguageSelector: React.FC = () => {
 
             {/* The Dropdown Menu */}
             <Menu
+              data-testid="language-selector-menu"
               id="language-selector-menu"
               anchorEl={anchorEl}
               open={open}
@@ -135,6 +137,7 @@ const LanguageSelector: React.FC = () => {
             >
               {languages.map((lang: Language) => (
                 <MenuItem
+                  data-testid={`language-selector-menu-item-${lang.code}`}
                   key={lang.code}
                   selected={lang.code === selectedLang.code}
                   onClick={() => handleClose(lang)}

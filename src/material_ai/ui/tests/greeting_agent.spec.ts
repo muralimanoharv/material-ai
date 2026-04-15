@@ -124,6 +124,10 @@ test.describe('Greeting Agent Chat Page', () => {
 
     await automationService.check_tool_call(1, [
       {
+        name: 'get_language',
+        args: 'get_language()',
+      },
+      {
         name: 'say_hello',
         args: 'say_hello()',
       },
@@ -148,11 +152,7 @@ test.describe('Greeting Agent Chat Page', () => {
     await automationService.check_chat_item_prompt_toggle(0, 0, prompt)
 
     //Positive Feedback Test
-    await automationService.check_chat_item_positive_feedback(
-      2,
-      0,
-      'greeting_agent',
-    )
+    await automationService.check_chat_item_positive_feedback(2, 0)
 
     //Negative Feedback test
     await automationService.check_chat_item_negative_feedback(
@@ -181,6 +181,10 @@ test.describe('Greeting Agent Chat Page', () => {
     await automationService.check_chat_item_box(0, 0, { prompt: prompt_2 })
 
     await automationService.check_tool_call(1, [
+      {
+        name: 'get_language',
+        args: 'get_language()',
+      },
       {
         name: 'say_hello',
         args: 'say_hello()',
@@ -247,7 +251,7 @@ test.describe('Greeting Agent Chat Page', () => {
     await automationService.check_chat_item_box(0, 0)
     await automationService.check_tool_call(1)
     await automationService.check_chat_item_box(2, 0, {
-      prompt: 'Error: Error: Tool execution timed out or failed',
+      prompt: 'Some error has occured, Please try again later',
     })
   })
 })

@@ -27,7 +27,7 @@ export const useAgentId = (): string => {
 
 export const withLayout = (
   Component: React.FC,
-  options?: { showFooter?: boolean },
+  options?: { showFooter?: boolean; needUser?: boolean },
 ) => {
   return (props: Record<string, string>) => {
     const context = useContext(AppContext) as AppContextType
@@ -41,7 +41,15 @@ export const withLayout = (
             : true
         }
       >
-        {context.user ? <Component {...props} /> : <Greeting />}
+        {!options?.needUser ? (
+          context.user ? (
+            <Component {...props} />
+          ) : (
+            <Greeting />
+          )
+        ) : (
+          <Component {...props} />
+        )}
       </Layout>
     )
   }

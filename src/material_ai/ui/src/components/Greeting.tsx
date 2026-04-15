@@ -84,7 +84,7 @@ function Greeting({ greeting }: { greeting?: string }) {
             variant="h1"
             className="tagline-text"
           >
-            {config.get().pages.loginPage.subTitle},
+            {config.get().pages.loginPage.subTitle}
           </Typography>
         </>
       )}

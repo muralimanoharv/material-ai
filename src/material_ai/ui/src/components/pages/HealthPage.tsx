@@ -29,6 +29,9 @@ function HealthPage() {
   if (!health) return null
   return <HealthDashboard data={health} />
 }
-const HealthPageWithLayout = withLayout(HealthPage, { showFooter: false })
+const HealthPageWithLayout = withLayout(HealthPage, {
+  showFooter: false,
+  needUser: true,
+})
 
 export default HealthPageWithLayout
