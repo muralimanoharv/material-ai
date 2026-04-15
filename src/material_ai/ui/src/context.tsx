@@ -49,6 +49,7 @@ export interface AppContextType {
   // Configuration & Meta
   health: Health | undefined
   config: AppConfigImpl
+  refreshConfig: () => void
 
   //service
   apiService: ApiService
@@ -69,6 +70,7 @@ export interface ThemeContextType {
   theme: ThemeMode
   setTheme: (theme: ThemeMode) => void
   config: AppConfigImpl
+  refreshConfig: () => void
 }
 
 export interface LayoutContextType {

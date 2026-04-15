@@ -217,11 +217,7 @@ export class AutomationService {
     )
   }
 
-  async check_chat_item_positive_feedback(
-    chat: number,
-    part: number,
-    agent: string,
-  ) {
+  async check_chat_item_positive_feedback(chat: number, part: number) {
     const page = this.page
     const id = `page-chat-${chat}-part-${part}`
     await expect(
@@ -230,8 +226,10 @@ export class AutomationService {
 
     await page.getByTestId(id).getByTestId('thumbs-up-button').click()
 
+    await expect(page.getByTestId('snack-bar-message')).toBeVisible()
+
     await expect(page.getByTestId('snack-bar-message')).toHaveText(
-      `Thank you! Your feedback helps make ${this.config.agents[agent].title} better for everyone`,
+      `Thank you! Your feedback helps make Agent better for everyone`,
     )
   }
 
@@ -258,8 +256,10 @@ export class AutomationService {
       )
       .click()
 
+    await expect(page.getByTestId('snack-bar-message')).toBeVisible()
+
     await expect(page.getByTestId('snack-bar-message')).toHaveText(
-      `Thank you for helping improve ${config.agents[agent].title}`,
+      `Thank you for helping improve Agent`,
     )
     await page.getByTestId(id).getByTestId('thumbs-down-button').click()
     await page.getByTestId(id).getByTestId('thumbs-down-button').click()
@@ -276,8 +276,9 @@ export class AutomationService {
       .getByTestId('feedback-category-other-submit')
       .click()
 
+    await expect(page.getByTestId('snack-bar-message')).toBeVisible()
     await expect(page.getByTestId('snack-bar-message')).toHaveText(
-      `Thank you for helping improve ${config.agents[agent].title}`,
+      `Thank you for helping improve Agent`,
     )
   }
 
@@ -433,7 +434,7 @@ export async function check_config(page: Page): Promise<AppConfig> {
 
 export async function check_health(page: Page): Promise<Health> {
   await page.goto('/')
-  const response = await page.context().request.get('/health')
+  const response = await page.context().request.get('/api/health')
   expect(response.ok()).toBeTruthy()
   expect(response.status()).toBe(200)
   const health = await response.json()

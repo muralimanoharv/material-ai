@@ -7,7 +7,7 @@ test('has title', async ({ page }) => {
 })
 
 test('backend health check returns 200', async ({ request }) => {
-  const response = await request.get('/health')
+  const response = await request.get('/api/health')
   expect(response.ok()).toBeTruthy()
   const body = await response.json()
   expect(body.status).toBe('ok')
@@ -25,7 +25,7 @@ test('backend config check returns 200', async ({ page, request }) => {
   await expect(page.getByTestId(`page-header`)).toHaveText(body.title)
   await expect(page.getByTestId(`page-title`)).toHaveText(`Meet ${body.title},`)
   await expect(page.getByTestId(`page-subtitle`)).toHaveText(
-    'your personal AI assistant',
+    'your personal AI assistant,',
   )
 })
 

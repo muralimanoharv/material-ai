@@ -1,10 +1,16 @@
 import { useContext } from 'react'
-import { LayoutContext, type LayoutContextType } from '../../context'
+import {
+  AppContext,
+  LayoutContext,
+  type AppContextType,
+  type LayoutContextType,
+} from '../../context'
 import { Box, Typography, useTheme } from '@mui/material'
 import SigninButton from '../SigninButton'
 
 function DrawerSigninButton() {
   const { isDrawerOpen } = useContext(LayoutContext) as LayoutContextType
+  const { config } = useContext(AppContext) as AppContextType
   const theme = useTheme()
   return (
     <Box
@@ -33,9 +39,9 @@ function DrawerSigninButton() {
           gap: '5px',
         }}
       >
-        <Typography variant="h5">Sign in to start saving your chats</Typography>
+        <Typography variant="h5">{config.get().drawer.logOutTitle}</Typography>
         <Typography variant="h6" sx={{ textWrap: 'wrap' }}>
-          Once you're signed in, you can access your recent chats here.
+          {config.get().drawer.logOutSubTitle}
         </Typography>
       </Box>
       <SigninButton varient="text" />

@@ -22,7 +22,7 @@ import {
   Terminal as ModelIcon,
   DescriptionOutlined as DocIcon,
 } from '@mui/icons-material'
-import HubOutlinedIcon from '@mui/icons-material/HubOutlined'
+import AccountTree from '@mui/icons-material/AccountTree'
 import { useNavigate } from 'react-router'
 import type { Agent } from '../../schema'
 import { AppContext, type AppContextType } from '../../context'
@@ -42,6 +42,17 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
   const navigate = useNavigate()
 
   const [readme, setReadme] = useState('')
+
+  useEffect(() => {
+    const handleCustomChange = () => {
+      context.apiService.get_agent_readme(agent.id).then((response) => {
+        setReadme(response)
+      })
+    }
+
+    window.addEventListener('i18n', handleCustomChange)
+    return () => window.removeEventListener('i18n', handleCustomChange)
+  }, [])
 
   useEffect(() => {
     context.apiService.get_agent_readme(agent.id).then((response) => {
@@ -79,7 +90,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
               },
             }}
           >
-            Back to Registry
+            {context.config.get().buttons.backToRegistry}
           </Button>
         </Grid>
 
@@ -128,7 +139,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                 letterSpacing: '-0.01em',
               }}
             >
-              {agent.name}
+              {context.config.getAgent(agent.id)?.title || agent.name}
             </Typography>
 
             {/* Description Body */}
@@ -155,7 +166,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                   mb: 0.5,
                 }}
               >
-                Deployment Model
+                {context.config.get().pages.agentsPage.agentModelCol}
               </Typography>
               <Stack direction="row" spacing={1} alignItems="center">
                 <ModelIcon
@@ -184,7 +195,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                   color: theme.palette.text.primary,
                 }}
               >
-                Agent Operations
+                {context.config.get().pages.agentInfoPage.agentOperations}
               </Typography>
 
               <Grid container spacing={2}>
@@ -210,7 +221,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                       },
                     }}
                   >
-                    Interact with Agent
+                    {context.config.get().buttons.interactWithAgent}
                   </Button>
                 </Grid>
 
@@ -225,6 +236,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                       borderRadius: 3,
                       textTransform: 'none',
                       fontWeight: 700,
+                      fontSize: '8px',
                       color: theme.palette.text.primary,
                       borderColor: theme.palette.divider,
                       '&:hover': {
@@ -236,7 +248,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                       },
                     }}
                   >
-                    Deploy to Gemini Enterprise (Coming Soon)
+                    {context.config.get().buttons.deployToGeminiEnterprize}
                   </Button>
                 </Grid>
 
@@ -249,6 +261,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                     sx={{
                       py: 1.5,
                       borderRadius: 3,
+                      fontSize: '8px',
                       textTransform: 'none',
                       fontWeight: 700,
                       color: theme.palette.text.primary,
@@ -262,7 +275,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                       },
                     }}
                   >
-                    Deploy to Agent Engine (Coming Soon)
+                    {context.config.get().buttons.deployToAgentEngine}
                   </Button>
                 </Grid>
 
@@ -276,6 +289,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                       py: 1.5,
                       borderRadius: 3,
                       textTransform: 'none',
+                      fontSize: '8px',
                       fontWeight: 700,
                       color: theme.palette.text.primary,
                       borderColor: theme.palette.divider,
@@ -288,7 +302,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                       },
                     }}
                   >
-                    Deploy to Agent Catalog (Coming Soon)
+                    {context.config.get().buttons.deployToAgentCatalog}
                   </Button>
                 </Grid>
               </Grid>
@@ -311,7 +325,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                   variant="h6"
                   sx={{ fontWeight: 800, color: theme.palette.text.primary }}
                 >
-                  Documentation
+                  {context.config.get().pages.agentInfoPage.documentation}
                 </Typography>
               </Stack>
 
@@ -340,12 +354,12 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                   alignItems="center"
                   sx={{ mb: 3 }}
                 >
-                  <HubOutlinedIcon sx={{ color: theme.palette.primary.main }} />
+                  <AccountTree sx={{ color: theme.palette.primary.main }} />
                   <Typography
                     variant="h6"
                     sx={{ fontWeight: 800, color: theme.palette.text.primary }}
                   >
-                    Visualization
+                    {context.config.get().pages.agentInfoPage.trace}
                   </Typography>
                 </Stack>
 

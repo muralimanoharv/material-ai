@@ -227,12 +227,18 @@ class TestGetAppFactory(unittest.TestCase):
         # Ensure exactly four middlewares were added
         self.assertEqual(mock_app.add_middleware.call_count, 4)
 
+    @patch("material_ai.app.get_mirco_frontend")
     @patch("material_ai.app.get_feedback_handler")
     @patch("material_ai.app.get_ui_configuration")
     @patch("material_ai.app.get_oauth_service")
     @patch("material_ai.app.get_ui_config")
     def test_overrides_with_feedback_handler(
-        self, mock_get_ui_config, mock_get_oauth, mock_get_ui, mock_get_feedback
+        self,
+        mock_get_ui_config,
+        mock_get_oauth,
+        mock_get_ui,
+        mock_get_feedback,
+        mock_get_mirco_frontend,
     ):
         """
         Verify that dependencies are overridden correctly when a feedback_handler is provided.
@@ -243,6 +249,7 @@ class TestGetAppFactory(unittest.TestCase):
         mock_oauth_service = MagicMock()
         mock_ui_config_yaml = "path/to/config.yaml"
         mock_feedback_handler = MagicMock()
+        mock_micro_frontend = MagicMock()
         mock_ui_config = MagicMock()
         mock_get_ui_config.return_value = mock_ui_config
 
@@ -252,24 +259,18 @@ class TestGetAppFactory(unittest.TestCase):
             oauth_service=mock_oauth_service,
             ui_config_yaml=mock_ui_config_yaml,
             feedback_handler=mock_feedback_handler,
+            micro_frontend=mock_micro_frontend,
         )
 
         # Assert
         # Check that the config was fetched
-        mock_get_ui_config.assert_called_once_with(
-            mock_ui_config_yaml,
-            agents=[
-                "greeting_agent",
-                "material_ai_agent",
-                "sports_analytics_agent",
-                "vector_agent",
-            ],
-        )
+        mock_get_ui_config.assert_called_once_with(mock_ui_config_yaml)
 
         # Check that the overrides dictionary was populated correctly
         self.assertIn(mock_get_oauth, mock_app.dependency_overrides)
         self.assertIn(mock_get_ui, mock_app.dependency_overrides)
         self.assertIn(mock_get_feedback, mock_app.dependency_overrides)
+        self.assertIn(mock_get_mirco_frontend, mock_app.dependency_overrides)
 
         # Verify the content of the override functions
         self.assertEqual(
@@ -278,6 +279,10 @@ class TestGetAppFactory(unittest.TestCase):
         self.assertEqual(mock_app.dependency_overrides[mock_get_ui](), mock_ui_config)
         self.assertEqual(
             mock_app.dependency_overrides[mock_get_feedback](), mock_feedback_handler
+        )
+        self.assertEqual(
+            mock_app.dependency_overrides[mock_get_mirco_frontend](),
+            mock_micro_frontend,
         )
 
     @patch("material_ai.app.Response")

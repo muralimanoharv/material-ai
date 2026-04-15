@@ -4,12 +4,22 @@ import threading
 import logging
 import pydantic
 import pathlib
+
+from material_ai.agent_loader import get_agent_loader
 from .exec import ConfigError
-from typing import Any
+from typing import Any, Dict, Optional
 from dotenv import load_dotenv
 from .oauth import SSOConfig
 
 load_dotenv()
+
+
+class AgentEnvProxy:
+    def __init__(self, data: dict):
+        self._data = data
+
+    def get_env(self, env_name: str, default_value: str | None = None):
+        return self._data.get(env_name.upper(), default_value)
 
 
 class GeneralConfig(pydantic.BaseModel):
@@ -30,6 +40,11 @@ class Config(pydantic.BaseModel):
     general: GeneralConfig
     adk: ADKConfig
     google: GoogleConfig
+    agents: Optional[Dict[str, Dict[str, str]]] = {}
+
+    def get_agent(self, agent_name: str):
+        agent_data = self.agents.get(agent_name.upper(), {})
+        return AgentEnvProxy(agent_data)
 
 
 _logger = logging.getLogger(__name__)
@@ -65,7 +80,8 @@ def get_config() -> Config:
                 raise ConfigError(msg)
 
             try:
-                _config_instance = _configure(config_path)
+                agents = get_agent_loader().list_agents()
+                _config_instance = _configure(config_path, agents)
             except Exception as e:
                 msg = f"ERROR: Error loading configuration: {e}"
                 _logger.error(msg, exc_info=e)
@@ -73,7 +89,7 @@ def get_config() -> Config:
     return _config_instance
 
 
-def _configure(path: pathlib.Path) -> Config:
+def _configure(path: pathlib.Path, agents: list[str] = []) -> Config:
     """Load configuration from config.ini and populate pydantic models.
     Environment variables take precedence over config file values.
     Environment variable naming convention: SECTION_PARAMETER
@@ -113,7 +129,20 @@ def _configure(path: pathlib.Path) -> Config:
         ),
         api_key=get_config_value(config_parser, "GOOGLE", "api_key"),
     )
-    return Config(sso=sso, general=general, adk=adk, google=google)
+    agents_dict = {}
+    for agent in agents:
+        agent_dict = {}
+        env_variables = {}
+        if config_parser.has_section(agent.upper()):
+            env_variables = dict(config_parser[agent.upper()])
+        for key, value in env_variables.items():
+            agent_dict[key] = get_config_value(
+                config_parser, agent.upper(), key.upper(), value
+            )
+
+        agents_dict[agent.upper()] = agent_dict
+
+    return Config(sso=sso, general=general, adk=adk, google=google, agents=agents_dict)
 
 
 # We use this sentinel object to detect if a default value was provided

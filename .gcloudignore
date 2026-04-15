@@ -91,6 +91,7 @@ src/material_ai/agents/*/ui/*
 # 5. WHITELIST: ONLY ALLOW DIST
 # Now, explicitly bring back ONLY the dist folder
 !src/material_ai/ui/dist/
+!src/material_ai/ui/agents_page/dist/
 !src/material_ai/ui/ui_config.yaml
 !src/material_ai/agents/*/ui/dist
 !sports_analytics.db

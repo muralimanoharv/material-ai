@@ -12,7 +12,9 @@ import {
 import { useMobileHook } from '../../../hooks'
 
 export default function AgentsButton() {
-  const { promptLoading, user } = useContext(AppContext) as AppContextType
+  const { promptLoading, user, config } = useContext(
+    AppContext,
+  ) as AppContextType
   const navigate = useNavigate()
 
   const { setOpen } = useContext(LayoutContext) as LayoutContextType
@@ -39,7 +41,7 @@ export default function AgentsButton() {
           }}
         />
       }
-      title="Agents"
+      title={config.get().buttons.agents}
       onClick={() => {
         navigate('/agents')
         if (isMobile) setOpen(false)

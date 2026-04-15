@@ -10,10 +10,6 @@ function Greeting({ greeting }: { greeting?: string }) {
   const theme = useTheme()
   const agentId = useAgentId()
 
-  const getTitle = () => {
-    return config.getTitle(agentId)
-  }
-
   const getGreeting = () => {
     return config.getGreeting(agentId)
   }
@@ -76,7 +72,7 @@ function Greeting({ greeting }: { greeting?: string }) {
               userSelect: 'none',
             }}
           >
-            Meet {getTitle()},
+            {config.get().pages.loginPage.title},
           </Typography>
           <Typography
             sx={{ userSelect: 'none' }}
@@ -88,7 +84,7 @@ function Greeting({ greeting }: { greeting?: string }) {
             variant="h1"
             className="tagline-text"
           >
-            your personal AI assistant
+            {config.get().pages.loginPage.subTitle}
           </Typography>
         </>
       )}

@@ -11,10 +11,11 @@ import { useAgentId, useMobileHook } from '../../hooks'
 import SigninButton from '../SigninButton'
 import UserAvatar from './UserAvatar'
 import { useNavigate } from 'react-router'
+import LanguageSelector from './LanguageSelector'
 
 export default function Header() {
   // We cast the context to our strict types
-  const { loading, user, health, config, agents } = useContext(
+  const { loading, user, health, config } = useContext(
     AppContext,
   ) as AppContextType
   const { setOpen } = useContext(LayoutContext) as LayoutContextType
@@ -84,13 +85,23 @@ export default function Header() {
             sx={{ userSelect: 'none' }}
             variant="h4"
           >
-            {agents.find((agent) => agent.id == agentId)?.name}
+            {config.getAgent(agentId)?.title || agentId}
           </Typography>
         </Box>
       )}
 
       {user ? (
-        <UserAvatar />
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            gap: '10px',
+          }}
+        >
+          <LanguageSelector />
+          <UserAvatar />
+        </Box>
       ) : (
         <>
           {loading ? null : (
@@ -98,7 +109,15 @@ export default function Header() {
               {user ? (
                 <UserAvatar />
               ) : (
-                <Box>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                    gap: '10px',
+                  }}
+                >
+                  <LanguageSelector />
                   <SigninButton borderRadius="4px" />
                 </Box>
               )}

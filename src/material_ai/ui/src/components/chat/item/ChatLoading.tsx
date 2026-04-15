@@ -1,6 +1,14 @@
-import { Box, Button, Collapse, Drawer, useTheme } from '@mui/material'
-import LoadingIndicator from './LoadingIndicator'
 import React, { useContext, useState } from 'react'
+import {
+  Box,
+  Button,
+  Collapse,
+  Divider,
+  Drawer,
+  Stack,
+  useTheme,
+} from '@mui/material'
+import LoadingIndicator from './LoadingIndicator'
 import {
   AppContext,
   ChatItemContext,
@@ -14,7 +22,7 @@ import type { ChatPart } from '../../../schema'
 import { does_chat_has_func } from '../../../utils'
 import ChatFunctionResponse from './ChatFunctionResponse'
 import ChatFunctionCall from './ChatFunctionCall'
-import HubOutlinedIcon from '@mui/icons-material/HubOutlined'
+import AccountTree from '@mui/icons-material/AccountTree'
 import ChatTextRenderer from './ChatTextRenderer'
 import { DARK_BORDER, LIGHT_BORDER } from '../../../assets/themes'
 import LoadingDots from './LoadingDots'
@@ -22,10 +30,10 @@ import AgentGraph from '../../agents/AgentGraph'
 import { useAgentId } from '../../../hooks'
 
 function ChatLoading(): React.JSX.Element | null {
-  const { agents } = useContext(AppContext) as AppContextType
+  const { agents, config } = useContext(AppContext) as AppContextType
   const { chat } = useContext(ChatItemContext) as ChatItemContextType
   const [showThinking, setShowThinking] = useState(false)
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [traceOpen, setTraceOpen] = useState(false)
   const theme = useTheme()
   const agentId = useAgentId()
   const agent = agents.find((agent) => agent.id === agentId)
@@ -37,7 +45,7 @@ function ChatLoading(): React.JSX.Element | null {
     border = `1px solid ${DARK_BORDER}`
   }
   const loadingText = chat.loading_finished ? (
-    'Show thinking'
+    config.get().buttons.showThinking
   ) : chat.loading_message ? (
     chat.loading_message
   ) : (
@@ -57,8 +65,8 @@ function ChatLoading(): React.JSX.Element | null {
         ModalProps={{
           keepMounted: true,
         }}
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
+        open={traceOpen}
+        onClose={() => setTraceOpen(false)}
       >
         <Box>
           <AgentGraph
@@ -77,6 +85,9 @@ function ChatLoading(): React.JSX.Element | null {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'flex-start',
+          '&:hover .agent-trace-button': {
+            opacity: '1',
+          },
         }}
       >
         <Box display="flex" flexDirection="column">
@@ -93,42 +104,62 @@ function ChatLoading(): React.JSX.Element | null {
               )}
             </Box>
             <Box display="flex" gap="10px">
-              <Button
-                data-testid="chat-loading-toggle"
-                sx={{
-                  borderRadius: '50px',
-                  fontWeight: 500,
-                  color: theme.palette.text.primary,
-                  padding: '8px 16px',
-                }}
-                onClick={() => setShowThinking(!showThinking)}
-                endIcon={
-                  showThinking ? (
-                    <KeyboardArrowUpIcon fontSize="small" />
-                  ) : (
-                    <KeyboardArrowDownIcon fontSize="small" />
-                  )
-                }
-              >
-                <span
-                  className="animate-loading-text"
-                  key={loadingText.toString()}
+              <Stack direction="row">
+                <Button
+                  data-testid="chat-loading-toggle"
+                  sx={{
+                    borderRadius: '50px',
+                    fontWeight: 500,
+                    color: theme.palette.text.primary,
+                    padding: '8px 16px',
+                  }}
+                  onClick={() => setShowThinking(!showThinking)}
+                  endIcon={
+                    showThinking ? (
+                      <KeyboardArrowUpIcon fontSize="small" />
+                    ) : (
+                      <KeyboardArrowDownIcon fontSize="small" />
+                    )
+                  }
                 >
-                  {loadingText}
-                </span>
-              </Button>
-              <Button
-                startIcon={<HubOutlinedIcon fontSize="small" />}
-                sx={{
-                  borderRadius: '50px',
-                  fontWeight: 500,
-                  color: theme.palette.text.primary,
-                  padding: '8px 16px',
-                }}
-                onClick={() => setDrawerOpen(true)}
-              >
-                Agent Graph
-              </Button>
+                  <span
+                    className="animate-loading-text"
+                    key={loadingText.toString()}
+                  >
+                    {loadingText}
+                  </span>
+                </Button>
+                <Divider
+                  className="agent-trace-button"
+                  orientation="vertical"
+                  flexItem
+                  sx={{
+                    height: 26,
+                    marginTop: '7px !important',
+                    ml: '5px',
+                    mr: '5px',
+                    opacity: '0',
+                  }}
+                />
+                <Button
+                  size="small"
+                  className="agent-trace-button"
+                  variant="text"
+                  startIcon={<AccountTree sx={{ fontSize: 16 }} />}
+                  onClick={() => setTraceOpen(true)}
+                  sx={{
+                    color: 'text.secondary',
+                    fontSize: '0.75rem',
+                    textTransform: 'none',
+                    padding: '8px 16px',
+                    '&:hover': { bgcolor: 'action.hover' },
+                    opacity: '0',
+                    transition: 'opacity 0.5s ease-in-out',
+                  }}
+                >
+                  {config.get().buttons.agentTrace}
+                </Button>
+              </Stack>
             </Box>
           </Box>
           <Box

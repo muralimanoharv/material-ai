@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from pydantic import Field
 
 
 class FeedbackRequest(BaseModel):
@@ -8,3 +7,9 @@ class FeedbackRequest(BaseModel):
     feedback_category: str
     feedback_text: str
     id: str
+
+
+class Microfrontend(BaseModel):
+    """Pydantic model for the microfrontend configuration"""
+
+    agents_page: str

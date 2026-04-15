@@ -1,6 +1,8 @@
 import { useTheme, Button } from '@mui/material'
 import { HOST } from '../service/api.service'
 import { useLocation } from 'react-router'
+import { useContext } from 'react'
+import { AppContext, type AppContextType } from '../context'
 
 interface SigninButtonProps {
   varient?: 'contained' | 'text' | 'outlined'
@@ -11,6 +13,7 @@ export default function SigninButton({
   varient = 'contained',
   borderRadius = '100px',
 }: SigninButtonProps) {
+  const { config } = useContext(AppContext) as AppContextType
   const theme = useTheme()
   const location = useLocation()
 
@@ -42,7 +45,7 @@ export default function SigninButton({
       disableRipple={varient === 'text'}
       variant={varient}
     >
-      Sign in
+      {config.get().buttons.signIn}
     </Button>
   )
 }

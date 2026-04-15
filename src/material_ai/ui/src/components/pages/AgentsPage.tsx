@@ -2,32 +2,32 @@ import { useContext, useEffect } from 'react'
 import { Box } from '@mui/material'
 import { withLayout } from '../../hooks'
 import { AppContext, type AppContextType } from '../../context'
-import Greeting from '../Greeting'
 import AgentCatalog from '../agents/AgentCatalog'
+import Microfrontend from '../microfrontend/MicroFrontend'
+import { HOST } from '../../service/api.service'
 
 function AgentsPage() {
-  const { agents, user, setSessions } = useContext(AppContext) as AppContextType
+  const { agents, setSessions } = useContext(AppContext) as AppContextType
 
   useEffect(() => {
-    if (!user) return
     setSessions([])
   }, [])
 
-  if (!user) {
-    return <Greeting />
-  }
+  const URL = `${HOST}/micro_frontend/agents_page`
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        gap: '10px',
-      }}
-    >
-      <AgentCatalog agents={agents} />
-    </Box>
+    <Microfrontend url={URL} props={{ agents }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          gap: '10px',
+        }}
+      >
+        <AgentCatalog agents={agents} />
+      </Box>
+    </Microfrontend>
   )
 }
 

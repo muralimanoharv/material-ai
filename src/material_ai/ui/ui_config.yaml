@@ -2,99 +2,916 @@
 # This file configures the basic UI elements, models, feedback system, and theme of the application.
 
 # -- General Settings --
-# title: The main title of the application, displayed in the browser tab.
-title: Gemini
-# greeting: The welcome message or initial prompt shown to the user.
-greeting: What should we do today?
-# errorMessage: A generic error message for unexpected issues.
+title:
+  en: Gemini
+  ja: ジェミニ
+  es: Gemini
+  fr: Gemini
+  de: Gemini
+  hi: जेमिनी
+  zh: 双子座 (Gemini)
+  ar: جيميني
+stopResponse: You stopped this response
+greeting:
+  en: What should we do today?
+  ja: 今日は何をしましょうか？
+  es: ¿Qué hacemos hoy?
+  fr: Que faisons-nous aujourd'hui ?
+  de: Was machen wir heute?
+  hi: आज हमें क्या करना चाहिए?
+  zh: 我们今天该做什么？
+  ar: ماذا نفعل اليوم؟
 errorMessage: Some error has occured, Please try again later
+promptCopyMessage:
+    en: Prompt copied
+    ja: プロンプトをコピーしました
+    es: Indicación copiada
+    fr: Invite copiée
+    de: Prompt kopiert
+    hi: प्रॉम्प्ट कॉपी किया गया
+    zh: 提示词已复制
+    ar: تم نسخ المطالبة
+responseCopyMessage:
+  en: Copied to clipboard
+  ja: クリップボードにコピーしました
+  es: Copiado al portapapeles
+  fr: Copié dans le presse-papiers
+  de: In Zwischenablage kopiert
+  hi: क्लिपबोर्ड पर कॉपी किया गया
+  zh: 已复制到剪贴板
+  ar: تم النسخ إلى الحافظة
+
+feedbackSuccessMessage:
+  en: Thank you! Your feedback helps make Agent better for everyone
+  ja: ありがとうございます！あなたのフィードバックは、エージェントをより良くするのに役立ちます
+  es: ¡Gracias! Tus comentarios ayudan a que el Agente sea mejor para todos
+  fr: Merci ! Vos commentaires aident à améliorer l'Agent pour tout le monde
+  de: Vielen Dank! Ihr Feedback hilft uns, den Agenten für alle besser zu machen
+  hi: धन्यवाद! आपकी प्रतिक्रिया एजेंट को सभी के लिए बेहतर बनाने में मदद करती है
+  zh: 谢谢！您的反馈有助于让代理变得更好
+  ar: شكرًا لك! تساعد تعليقاتك في تحسين الوكيل للجميع
+
+feedbackNegativeMessage:
+  en: Thank you for helping improve Agent
+  ja: エージェントの改善にご協力いただきありがとうございます
+  es: Gracias por ayudar a mejorar al Agente
+  fr: Merci de nous aider à améliorer l'Agent
+  de: Vielen Dank für Ihre Hilfe bei der Verbesserung des Agenten
+  hi: एजेंट को बेहतर बनाने में मदद करने के लिए धन्यवाद
+  zh: 感谢您帮助改进代理
+  ar: شكرًا لك على مساعدتنا في تحسين الوكيل
+languages:
+  - code: en
+    label: English
+  - code: ja
+    label: 日本語
+  - code: es
+    label: Español
+  - code: fr
+    label: Français
+  - code: de
+    label: Deutsch
+  - code: hi
+    label: हिन्दी
+  - code: zh
+    label: 简体中文
+  - code: ar
+    label: العربية
+buttons:
+  copyPrompt:
+    en: Copy prompt
+    ja: プロンプトをコピー
+    es: Copiar indicación
+    fr: Copier l'invite
+    de: Prompt kopieren
+    hi: प्रॉम्प्ट कॉपी करें
+    zh: 复制提示词
+    ar: نسخ المطالبة
+  editPrompt:
+    en: Edit prompt
+    ja: プロンプトを編集
+    es: Editar indicación
+    fr: Modifier l'invite
+    de: Prompt bearbeiten
+    hi: प्रॉम्प्ट संपादित करें
+    zh: 编辑提示词
+    ar: تعديل المطالبة
+  thumbsUp:
+    en: Good Response
+    ja: 良い応答
+    es: Buena respuesta
+    fr: Bonne réponse
+    de: Gute Antwort
+    hi: अच्छी प्रतिक्रिया
+    zh: 好的响应
+    ar: رد جيد
+  thumbsDown:
+    en: Bad Response
+    ja: 悪い応答
+    es: Mala respuesta
+    fr: Mauvaise réponse
+    de: Schlechte Antwort
+    hi: खराब प्रतिक्रिया
+    zh: 差的响应
+    ar: رد سيء
+  redo:
+    en: Redo
+    ja: やり直し
+    es: Rehacer
+    fr: Refaire
+    de: Wiederholen
+    hi: फिर से करें
+    zh: 重做
+    ar: إعادة المحاولة
+  share:
+    en: Share & export
+    ja: 共有とエクスポート
+    es: Compartir y exportar
+    fr: Partager et exporter
+    de: Teilen & Exportieren
+    hi: साझा करें और निर्यात करें
+    zh: 分享与导出
+    ar: مشاركة وتصدير
+  copyResponse:
+    en: Copy response
+    ja: 応答をコピー
+    es: Copiar respuesta
+    fr: Copier la réponse
+    de: Antwort kopieren
+    hi: प्रतिक्रिया कॉपी करें
+    zh: 复制响应
+    ar: نسخ الرد
+  addFiles:
+    en: Add files
+    ja: ファイルを追加
+    es: Añadir archivos
+    fr: Ajouter des fichiers
+    de: Dateien hinzufügen
+    hi: फ़ाइलें जोड़ें
+    zh: 添加文件
+    ar: إضافة ملفات
+  selectAgent:
+    en: Select Agent
+    ja: エージェントを選択
+    es: Seleccionar agente
+    fr: Sélectionner l'agent
+    de: Agent auswählen
+    hi: एजेंट चुनें
+    zh: 选择代理
+    ar: اختيار الوكيل
+  submit:
+    en: Submit
+    ja: 送信
+    es: Enviar
+    fr: Envoyer
+    de: Absenden
+    hi: सबमिट करें
+    zh: 提交
+    ar: إرسال
+  stopResponse:
+    en: Stop response
+    ja: 応答を停止
+    es: Detener respuesta
+    fr: Arrêter la réponse
+    de: Antwort stoppen
+    hi: प्रतिक्रिया रोकें
+    zh: 停止响应
+    ar: إيقاف الرد
+  executeNext:
+    en: Execute Next
+    ja: 次のステップを実行
+    es: Ejecutar siguiente
+    fr: Exécuter le suivant
+    de: Nächsten Schritt ausführen
+    hi: अगला निष्पादित करें
+    zh: 执行下一步
+    ar: تنفيذ التالي
+  blueprint:
+    en: Blueprint
+    ja: 設計図
+    es: Plano
+    fr: Plan
+    de: Blaupause
+    hi: ब्लूप्रिंट
+    zh: 蓝图
+    ar: المخطط
+  trace:
+    en: Trace
+    ja: トレース
+    es: Rastrear
+    fr: Trace
+    de: Rückverfolgung
+    hi: ट्रेस
+    zh: 追踪
+    ar: تتبع
+  showThinking:
+    en: Show Thinking
+    ja: 思考プロセスを表示
+    es: Mostrar pensamiento
+    fr: Afficher la réflexion
+    de: Gedankengang anzeigen
+    hi: विचार प्रक्रिया दिखाएं
+    zh: 显示思考过程
+    ar: إظهار التفكير
+  agentTrace:
+    en: Agent Trace
+    ja: エージェントのトレース
+    es: Rastro del agente
+    fr: Trace de l'agent
+    de: Agenten-Trace
+    hi: एजेंट ट्रेस
+    zh: 代理追踪
+    ar: تتبع الوكيل
+  reset:
+    en: Reset
+    ja: リセット
+    es: Restablecer
+    fr: Réinitialiser
+    de: Zurücksetzen
+    hi: रीसेट
+    zh: 重置
+    ar: إعادة تعيين
+  reCenter:
+    en: Recenter
+    ja: 再中心合わせ
+    es: Recentrar
+    fr: Recentrer
+    de: Zentrieren
+    hi: पुन केंद्र में लाएं
+    zh: 重新对齐
+    ar: إعادة توسيط
+  newChat:
+    en: New Chat
+    ja: 新しいチャット
+    es: Nuevo chat
+    fr: Nouvelle discussion
+    de: Neuer Chat
+    hi: नया चैट
+    zh: 新对话
+    ar: دردشة جديدة
+  uploadFile:
+    en: Upload File
+    ja: ファイルをアップロード
+    es: Subir archivo
+    fr: Charger un fichier
+    de: Datei hochladen
+    hi: फ़ाइल अपलोड करें
+    zh: 上传文件
+    ar: تحميل ملف
+  backToRegistry:
+    en: Back to Registry
+    ja: レジストリに戻る
+    es: Volver al registro
+    fr: Retour au registre
+    de: Zurück zum Register
+    hi: रजिस्ट्री पर वापस जाएं
+    zh: 返回注册表
+    ar: العودة إلى السجل
+  interactWithAgent:
+    en: Interact with Agent
+    ja: エージェントと対話する
+    es: Interactuar con el agente
+    fr: Interagir avec l'agent
+    de: Mit Agent interagieren
+    hi: एजेंट के साथ बातचीत करें
+    zh: 与代理交互
+    ar: التفاعل مع الوكيل
+  deployToGeminiEnterprize:
+    en: Deploy to Gemini Enterprise (Coming Soon)
+    ja: Gemini Enterprise にデプロイ（近日公開）
+    es: Desplegar en Gemini Enterprise (Próximamente)
+    fr: Déployer sur Gemini Enterprise (Prochainement)
+    de: In Gemini Enterprise bereitstellen (Demnächst)
+    hi: जेमिनी एंटरप्राइज पर तैनात करें (जल्द आ रहा है)
+    zh: 部署到 Gemini 企业版 (即将推出)
+    ar: النشر في Gemini Enterprise (قريباً)
+  deployToAgentEngine:
+    en: Deploy to Agent Engine (Coming Soon)
+    ja: Agent Engine にデプロイ（近日公開）
+    es: Desplegar en Agent Engine (Próximamente)
+    fr: Déployer sur Agent Engine (Prochainement)
+    de: In Agent Engine bereitstellen (Demnächst)
+    hi: एजेंट इंजन पर तैनात करें (जल्द आ रहा है)
+    zh: 部署到代理引擎 (即将推出)
+    ar: النشر في محرك الوكيل (قريباً)
+  deployToAgentCatalog:
+    en: Deploy to Agent Catalog (Coming Soon)
+    ja: エージェントカタログにデプロイ（近日公開）
+    es: Desplegar en Agent Catalog (Próximamente)
+    fr: Déployer sur Agent Catalog (Prochainement)
+    de: Im Agenten-Katalog bereitstellen (Demnächst)
+    hi: एजेंट कैटलॉग में तैनात करें (जल्द आ रहा है)
+    zh: 部署到代理目录 (即将推出)
+    ar: النشر في كتالوج الوكيل (قريباً)
+  signOut:
+    en: Sign out
+    ja: ログアウト
+    es: Cerrar sesión
+    fr: Déconnexion
+    de: Abmelden
+    hi: साइन आउट
+    zh: 退出登录
+    ar: تسجيل الخروج
+  signIn:
+    en: Sign in
+    ja: ログイン
+    es: Iniciar sesión
+    fr: Connexion
+    de: Anmelden
+    hi: साइन इन
+    zh: 登录
+    ar: تسجيل الدخول
+  settingsAndHelp:
+    en: Settings & Help
+    ja: 設定とヘルプ
+    es: Ajustes y ayuda
+    fr: Paramètres et aide
+    de: Einstellungen & Hilfe
+    hi: सेटिंग्स और सहायता
+    zh: 设置与帮助
+    ar: الإعدادات والمساعدة
+  theme:
+    en: Theme
+    ja: テーマ
+    es: Tema
+    fr: Thème
+    de: Design
+    hi: थीम
+    zh: 主题
+    ar: المظهر
+  lightTheme:
+    en: Light
+    ja: ライト
+    es: Claro
+    fr: Clair
+    de: Hell
+    hi: लाइट
+    zh: 浅色
+    ar: فاتح
+  darkTheme:
+    en: Dark
+    ja: ダーク
+    es: Oscuro
+    fr: Sombre
+    de: Dunkel
+    hi: डार्क
+    zh: 深色
+    ar: داكن
+  systemTheme:
+    en: System
+    ja: システム
+    es: Sistema
+    fr: Système
+    de: System
+    hi: सिस्टम
+    zh: 系统
+    ar: النظام
+  health:
+    en: Health
+    ja: ヘルスケア
+    es: Salud
+    fr: Santé
+    de: Gesundheit
+    hi: स्वास्थ्य
+    zh: 健康
+    ar: الصحة
+  agents:
+    en: Agents
+    ja: エージェント
+    es: Agentes
+    fr: Agents
+    de: Agenten
+    hi: एजेंट
+    zh: 代理
+    ar: الوكلاء
+
+uploadFileMenu:
+  logOutTitle: 
+    en: Sign in to upload files
+    ja: ファイルをアップロードするにはログインしてください
+    es: Inicia sesión para subir archivos
+    fr: Connectez-vous pour charger des fichiers
+    de: Anmelden, um Dateien hochzuladen
+    hi: फ़ाइलें अपलोड करने के लिए साइन इन करें
+    zh: 登录以上传文件
+    ar: تسجيل الدخول لتحميل الملفات
+  title:
+    en: Upload File
+    ja: ファイルをアップロード
+    es: Subir archivo
+    fr: Charger un fichier
+    de: Datei hochladen
+    hi: फ़ाइल अपलोड करें
+    zh: 上传文件
+    ar: تحميل ملف
+
+agentsMenu:
+  title:
+    en: Choose your agent
+    ja: エージェントを選択
+    es: Elige tu agente
+    fr: Choisissez votre agent
+    de: Wählen Sie Ihren Agenten
+    hi: अपना एजेंट चुनें
+    zh: 选择你的代理
+    ar: اختر وكيلك
+  placeholder: 
+    en: Search agents...
+    ja: エージェントを検索...
+    es: Buscar agentes...
+    fr: Rechercher des agents...
+    de: Agenten suchen...
+    hi: एजेंट खोजें...
+    zh: 搜索代理...
+    ar: البحث عن الوكلاء...
+  logOutTitle:
+    en: Sign in to select agents
+    ja: エージェントを選択するにはログインしてください
+    es: Inicia sesión para seleccionar agentes
+    fr: Connectez-vous pour sélectionner des agents
+    de: Anmelden, um Agenten auszuwählen
+    hi: एजेंटों का चयन करने के लिए साइन इन करें
+    zh: 登录以选择代理
+    ar: تسجيل الدخول لاختيار الوكلاء
+
+agentTrace:
+  blueprintTitle:
+    en: Agent Blueprint
+    ja: エージェントの設計図
+    es: Plano del agente
+    fr: Plan de l'agent
+    de: Agenten-Blaupause
+    hi: एजेंट ब्लूप्रिंट
+    zh: 代理蓝图
+    ar: مخطط الوكيل
+  traceTitle: 
+    en: Execution Trace
+    ja: 実行トレース
+    es: Rastro de ejecución
+    fr: Trace d'exécution
+    de: Ausführungs-Trace
+    hi: निष्पादन ट्रेस
+    zh: 执行追踪
+    ar: تتبع التنفيذ
+  systemEventLog:
+    en: SYSTEM EVENT LOG
+    ja: システムイベントログ
+    es: REGISTRO DE EVENTOS DEL SISTEMA
+    fr: JOURNAL DES ÉVÉNEMENTS SYSTÈME
+    de: SYSTEM-EREIGNISPROTOKOLL
+    hi: सिस्टम इवेंट लॉग
+    zh: 系统事件日志
+    ar: سجل أحداث النظام
+  initiatedFuncCall:
+    en: INITIATED FUNCTION CALL
+    ja: 関数呼び出しの開始
+    es: LLAMADA A FUNCIÓN INICIADA
+    fr: APPEL DE FONCTION INITIÉ
+    de: FUNKTIONSAUFRUF GESTARTET
+    hi: प्रारंभ किया गया फ़ंक्शन कॉल
+    zh: 已启动函数调用
+    ar: تم بدء استدعاء الوظيفة
+  receivedFuncResp:
+    en: RECEIVED FUNCTION RESPONSE
+    ja: 関数レスポンスの受信
+    es: RESPUESTA DE FUNCIÓN RECIBIDA
+    fr: RÉPONSE DE FUNCIÓN REÇUE
+    de: FUNKTIONSANTWORT ERHALTEN
+    hi: प्राप्त फ़ंक्शन प्रतिक्रिया
+    zh: 已收到函数响应
+    ar: تم استلام استجابة الوظيفة
+  event:
+    en: Event
+    ja: イベント
+    es: Evento
+    fr: Événement
+    de: Ereignis
+    hi: घटना
+    zh: 事件
+    ar: حدث
+  arguments:
+    en: Arguments
+    ja: 引数
+    es: Argumentos
+    fr: Arguments
+    de: Argumente
+    hi: तर्क
+    zh: 参数
+    ar: الوسائط
+  executionResponse:
+    en: Execution Response
+    ja: 実行レスポンス
+    es: Respuesta de ejecución
+    fr: Réponse d'exécution
+    de: Ausführungsantwort
+    hi: निष्पादन प्रतिक्रिया
+    zh: 执行响应
+    ar: استجابة التنفيذ
+  agentCore:
+    en: Agent Core
+    ja: エージェントコア
+    es: Núcleo del agente
+    fr: Cœur de l'agent
+    de: Agenten-Kern
+    hi: एजेंट कोर
+    zh: 代理核心
+    ar: نواة الوكيل
+  idel:
+    en: IDLE
+    ja: アイドル
+    es: INACTIVO
+    fr: INACTIF
+    de: LEERLAUF
+    hi: निष्क्रिय
+    zh: 空闲
+    ar: خامل
+  responded:
+    en: RESPONDED
+    ja: 応答済み
+    es: RESPONDIDO
+    fr: RÉPONDU
+    de: ANTWORTETE
+    hi: जवाब दिया
+    zh: 已响应
+    ar: تم الرد
+  awaitingPackets:
+    en: Awaiting execution packets...
+    ja: 実行パケットの待機中...
+    es: Esperando paquetes de ejecución...
+    fr: En attente des paquets d'exécution...
+    de: Warten auf Ausführungspakete...
+    hi: निष्पादन पैकेट की प्रतीक्षा है...
+    zh: 等待执行数据包...
+    ar: في انتظار حزم التنفيذ...
+
+drawer:
+  logOutTitle:
+    en: Sign in to start saving your chats
+    ja: ログインしてチャットの保存を開始
+    es: Inicia sesión para empezar a guardar tus chats
+    fr: Connectez-vous pour commencer à enregistrer vos discussions
+    de: Melden Sie sich an, um Ihre Chats zu speichern
+    hi: अपनी चैट सहेजना शुरू करने के लिए साइन इन करें
+    zh: 登录开始保存您的聊天记录
+    ar: سجل الدخول لبدء حفظ دردشاتك
+  logOutSubTitle:
+    en: Once you're signed in, you can access your recent chats here.
+    ja: ログインすると、最近のチャットにここからアクセスできます。
+    es: Una vez que inicies sesión, podrás acceder a tus chats recientes aquí.
+    fr: Une fois connecté, vous pourrez accéder à vos discussions récentes ici.
+    de: Sobald Sie angemeldet sind, können Sie hier auf Ihre letzten Chats zugreifen.
+    hi: साइन इन करने के बाद, आप यहां अपनी हालिया चैट देख सकते हैं।
+    zh: 登录后，您可以在此处访问最近的聊天。
+    ar: بمجرد تسجيل الدخول، يمكنك الوصول إلى دردشاتك الأخيرة هنا.
+
+footer:
+  title: 
+    en: Gemini can make mistakes, so double-check it
+    ja: Gemini は誤った情報を表示する場合があるため、回答を再確認してください。
+    es: Gemini puede cometer errores, por lo que debes verificarlo
+    fr: Gemini peut faire des erreurs, alors vérifiez les informations
+    de: Gemini kann Fehler machen, überprüfen Sie die Angaben
+    hi: जेमिनी गलतियाँ कर सकता है, इसलिए इसे दोबारा जांचें
+    zh: Gemini 可能会出错，请仔细核对
+    ar: قد يرتكب جيميني أخطاء، لذا تحقق مرة أخرى
+
+promptInput:
+  placeholder:
+    en: Sign in to ask Gemini
+    ja: ログインして Gemini に質問する
+    es: Inicia sesión para preguntar a Gemini
+    fr: Connectez-vous pour demander à Gemini
+    de: Anmelden, um Gemini zu fragen
+    hi: जेमिनी से पूछने के लिए साइन इन करें
+    zh: 登录以询问 Gemini
+    ar: سجل الدخول لسؤال جيميني
+  logOutPlaceholder:
+    en: Sign in to ask Gemini
+    ja: ログインして Gemini に質問する
+    es: Inicia sesión para preguntar a Gemini
+    fr: Connectez-vous pour demander à Gemini
+    de: Anmelden, um Gemini zu fragen
+    hi: जेमिनी से पूछने के लिए साइन इन करें
+    zh: 登录以询问 Gemini
+    ar: سجل الدخول لسؤال جيميني
+
+pages:
+  chatPage:
+    other:
+      en: Other
+      ja: その他
+      es: Otro
+      fr: Autre
+      de: Sonstiges
+      hi: अन्य
+      zh: 其他
+      ar: أخرى
+    feedback:
+      en: Feedback
+      ja: フィードバック
+      es: Comentarios
+      fr: Commentaires
+      de: Feedback
+      hi: प्रतिक्रिया
+      zh: 反馈
+      ar: تعليقات
+    placeholder:
+      en: Provide additional feedback
+      ja: 追加のフィードバックを入力してください
+      es: Proporcionar comentarios adicionales
+      fr: Fournir des commentaires supplémentaires
+      de: Zusätzliches Feedback geben
+      hi: अतिरिक्त प्रतिक्रिया प्रदान करें
+      zh: 提供更多反馈
+      ar: تقديم تعليقات إضافية
+    negativeFeedbackTitle: 
+      en: What went wrong?
+      ja: 何が問題でしたか？
+      es: ¿Qué salió mal?
+      fr: Qu'est-ce qui n'a pas fonctionné ?
+      de: Was ist schiefgelaufen?
+      hi: क्या गलत हुआ?
+      zh: 出了什么问题？
+      ar: ما الذي حدث بشكل خاطئ؟
+    negativeFeedbackSubtitle:
+      en: Your feedback helps make Agent better for everyone.
+      ja: あなたのフィードバックは、エージェントをより良くするのに役立ちます。
+      es: Tus comentarios ayudan a que el Agente sea mejor para todos.
+      fr: Vos commentaires aident à améliorer l'Agent pour tout le monde.
+      de: Ihr Feedback hilft uns, den Agenten für alle besser zu machen.
+      hi: आपकी प्रतिक्रिया एजेंट को सभी के लिए बेहतर बनाने में मदद करती है।
+      zh: 您的反馈有助于让代理变得更好。
+      ar: تساعد تعليقاتك في تحسين الوكيل للجميع.
+  loginPage:
+    title:
+      en: Meet Gemini
+      ja: Gemini へようこそ
+      es: Conoce a Gemini
+      fr: Rencontrez Gemini
+      de: Lernen Sie Gemini kennen
+      hi: जेमिनी से मिलें
+      zh: 见见 Gemini
+      ar: تعرف على جيميني
+    subTitle:
+      en: your personal AI assistant,
+      ja: あなた専用の AI アシスタント
+      es: tu asistente personal de IA
+      fr: votre assistant IA personnel
+      de: Ihr persönlicher KI-Assistent
+      hi: आपका व्यक्तिगत एआई सहायक
+      zh: 您的个人人工智能助手
+      ar: مساعدك الشخصي بالذكاء الاصطناعي
+  agentInfoPage:
+    agentOperations:
+      en: Agent Operations
+      ja: エージェント操作
+      es: Operaciones del agente
+      fr: Operaciones de l'agent
+      de: Agenten-Operationen
+      hi: एजेंट संचालन
+      zh: 代理操作
+      ar: عمليات الوكيل
+    documentation:
+      en: Documentation
+      ja: ドキュメント
+      es: Documentación
+      fr: Documentation
+      de: Dokumentation
+      hi: दस्तावेज़ीकरण
+      zh: 文档
+      ar: التوثيق
+    trace:
+      en: Trace
+      ja: トレース
+      es: Rastro
+      fr: Trace
+      de: Trace
+      hi: ट्रेस
+      zh: 追踪
+      ar: تتبع
+  agentsPage:
+    title:
+      en: Agent Catalog
+      ja: エージェントカタログ
+      es: Catálogo de agentes
+      fr: Catalogue d'agents
+      de: Agenten-Katalog
+      hi: एजेंट कैटलॉग
+      zh: 代理目录
+      ar: كتالوج الوكلاء
+    subTitle:
+      en: Agent Registry Dashboard
+      ja: エージェント登録ダッシュボード
+      es: Panel de registro de agentes
+      fr: Tableau de bord du registre des agents
+      de: Agenten-Register-Dashboard
+      hi: एजेंट रजिस्ट्री डैशबोर्ड
+      zh: 代理注册中心控制面板
+      ar: لوحة سجل الوكلاء
+    countText:
+      en: Agents
+      ja: エージェント
+      es: Agentes
+      fr: Agents
+      de: Agenten
+      hi: एजेंट
+      zh: 代理
+      ar: الوكلاء
+    placeholder: 
+      en: Search registry by identity, description, or model engine...
+      ja: 名前、説明、またはモデルエンジンで検索...
+      es: Buscar en el registro por identidad, descripción o motor de modelo...
+      fr: Rechercher dans le registre par identité, description ou moteur de modèle...
+      de: Register nach Identität, Beschreibung oder Modell-Engine durchsuchen...
+      hi: पहचान, विवरण या मॉडल इंजन द्वारा रजिस्ट्री खोजें...
+      zh: 按身份、描述或模型引擎搜索注册表...
+      ar: ابحث في السجل حسب الهوية أو الوصف أو محرك النموذج...
+    agentIdentityCol:
+      en: Agent Identity
+      ja: エージェント名
+      es: Identidad del agente
+      fr: Identité de l'agent
+      de: Agenten-Identität
+      hi: एजेंट की पहचान
+      zh: 代理身份
+      ar: هوية الوكيل
+    agentDescriptionCol:
+      en: Description
+      ja: 説明
+      es: Descripción
+      fr: Description
+      de: Beschreibung
+      hi: विवरण
+      zh: 描述
+      ar: الوصف
+    agentModelCol:
+      en: Model
+      ja: モデル
+      es: Modelo
+      fr: Modèle
+      de: Modell
+      hi: मॉडल
+      zh: 模型
+      ar: النموذج
+    agentStatusCol:
+      en: Status
+      ja: ステータス
+      es: Estado
+      fr: Statut
+      de: Status
+      hi: स्थिति
+      zh: 状态
+      ar: الحالة
 
 agents:
-  material_ai_agent:
-    # width of chat section
-    chat_section_width: 100%
-  greeting_agent:
-    # Agent Specific title
-    title: Greeting Agent
-    # Agent Specific greeting
-    greeting: What a great day to chat with you!
-    # If you would like to show footer
-    show_footer: true
-    # Ideal chat section width
-    chat_section_width: 760px
-    # Configuration related to agent feedback
-    feedback:
-      # Settings for a positive user response.
-      positive:
-        # value: The internal identifier sent for positive feedback.
-        value: GOOD
-        # categories: Sub-categories for feedback (empty for positive).
-        categories: []
-      # Settings for a negative user response.
-      negative:
-        # value: The internal identifier sent for negative feedback.
-        value: BAD
-        # categories: A list of predefined reasons for negative feedback.
-        categories:
-          - Not / poorly personalized
-          - Problem with saving information
-          - Not factually correct
-          - Didn't follow instructions
-          - Offensive / Unsafe
-          - Wrong language
-
   vector_agent:
     show_footer: false
+    title:
+      en: Vector Agent
+      ja: ベクターエージェント
+      es: Agente Vectorial
+      fr: Agent Vectoriel
+      de: Vektor-Agent
+      hi: वेक्टर एजेंट
+      zh: 向量代理
+      ar: وكيل المتجهات
+  sports_analytics_agent:
+    title:
+      en: Sports Analytics Agent
+      ja: スポーツアナリティクスエージェント
+      es: Agente de Análisis Deportivo
+      fr: Agent d'Analyse Sportive
+      de: Sportanalyse-Agent
+      hi: स्पोर्ट्स एनालिटिक्स एजेंट
+      zh: 体育分析代理
+      ar: وكيل التحليلات الرياضية
+  material_ai_agent:
+    title:
+      en: Material Ai Agent
+      ja: マテリアルAIエージェント
+      es: Agente de IA de Materiales
+      fr: Agent IA des Matériaux
+      de: Material-KI-Agent
+      hi: मटीरियल एआई एजेंट
+      zh: 材料人工智能代理
+      ar: وكيل الذكاء الاصطناعي للمواد
+    chat_section_width: 100%
+  greeting_agent:
+    title:
+      en: Greeting Agent
+      ja: 挨拶エージェント
+      es: Agente de Saludo
+      fr: Agent d'accueil
+      de: Begrüßungs-Agent
+      hi: ग्रीटिंग एजेंट
+      zh: 问候代理
+      ar: وكيل الترحيب
+    greeting:
+      en: What a great day to chat with you!
+      ja: あなたとお話しできて素晴らしい日ですね！
+      es: ¡Qué buen día para charlar contigo!
+      fr: Quelle belle journée pour discuter avec vous !
+      de: Was für ein toller Tag, um mit Ihnen zu chatten!
+      hi: आपसे बात करने के लिए कितना शानदार दिन है!
+      zh: 与你聊天真是美好的一天！
+      ar: يا له من يوم رائع للدردشة معك!
+    show_footer: true
+    chat_section_width: 760px
+    feedback:
+      positive:
+        value: GOOD
+        categories: []
+      negative:
+        value: BAD
+        categories:
+          - en: Not / poorly personalized
+            ja: パーソナライズが不十分
+            es: Poco personalizado
+            fr: Mal personnalisé
+            de: Schlecht personalisiert
+            hi: व्यक्तिगत नहीं / खराब तरीके से व्यक्तिगत
+            zh: 个性化不足
+            ar: تخصيص ضعيف
+          - en: Problem with saving information
+            ja: 情報の保存に関する問題
+            es: Problema al guardar información
+            fr: Problème d'enregistrement
+            de: Problem beim Speichern
+            hi: जानकारी सहेजने में समस्या
+            zh: 保存信息出错
+            ar: مشكلة في حفظ المعلومات
+          - en: Not factually correct
+            ja: 事実に基づかない内容
+            es: Incorrecto factualmente
+            fr: Factuellement incorrect
+            de: Sachlich falsch
+            hi: तथ्यात्मक रूप से सही नहीं है
+            zh: 事实错误
+            ar: غير صحيح واقعياً
+          - en: Didn't follow instructions
+            ja: 指示に従っていない
+            es: No siguió las instrucciones
+            fr: N'a pas suivi les instructions
+            de: Anweisungen nicht befolgt
+            hi: निर्देशों का पालन नहीं किया
+            zh: 未遵循指令
+            ar: لم يتبع التعليمات
+          - en: Offensive / Unsafe
+            ja: 攻撃的または不安全
+            es: Ofensivo / Inseguro
+            fr: Offensant / Dangereux
+            de: Beleidigend / Unsicher
+            hi: अपमानजनक / असुरक्षित
+            zh: 冒犯性 / 不安全
+            ar: مسيء / غير آمن
+          - en: Wrong language
+            ja: 言語が正しくない
+            es: Idioma incorrecto
+            fr: Mauvaise langue
+            de: Falsche Sprache
+            hi: गलत भाषा
+            zh: 语言错误
+            ar: لغة خاطئة
+
 # -- Theme Configuration --
-# Defines the visual appearance (colors) for light and dark modes.
 theme:
-  # lightPalette: Color scheme for the light mode UI.
   lightPalette:
     mode: light
-    # primary: Main accent color for buttons, links, etc.
     primary:
       main: '#1a73e8'
-    # background: Colors for various background surfaces.
     background:
-      default: '#ffffff'     # Main app background
-      paper: '#f0f4f9'       # Side panels, containers
-      card: '#f0f4f9'         # Card components
-      cardHover: '#dde3ea'    # Card on mouse hover
-      history: '#d3e3fd'      # History items
-    # text: Colors for different types of text.
+      default: '#ffffff'
+      paper: '#f0f4f9'
+      card: '#f0f4f9'
+      cardHover: '#dde3ea'
+      history: '#d3e3fd'
     text:
-      primary: '#07080aff'    # Main text
-      secondary: '#1b1c1d'    # Less important text
-      tertiary: '#575b5f'     # Hints, disabled text
-      h5: '#1f1f1f'          # H5 headings
-      selected: '#0842a0'     # Selected text/items
-      tagline: '#9a9b9c'      # Model taglines
-    # tooltip: Colors for tooltips.
+      primary: '#07080aff'
+      secondary: '#1b1c1d'
+      tertiary: '#575b5f'
+      h5: '#1f1f1f'
+      selected: '#0842a0'
+      tagline: '#9a9b9c'
     tooltip:
       background: '#1b1c1d'
       text: '#e8eaed'
-  # darkPalette: Color scheme for the dark mode UI.
   darkPalette:
     mode: dark
-    # primary: Main accent color for dark mode.
     primary:
       main: '#8ab4f8'
-    # background: Colors for various background surfaces in dark mode.
     background:
-      default: '#1b1c1d'     # Main app background
-      paper: '#333537'       # Side panels, containers
-      card: '#282a2c'         # Card components
-      cardHover: '#3d3f42'    # Card on mouse hover
-      history: '#1f3760'      # History items
-    # text: Colors for different types of text in dark mode.
+      default: '#1b1c1d'
+      paper: '#333537'
+      card: '#282a2c'
+      cardHover: '#3d3f42'
+      history: '#1f3760'
     text:
-      primary: '#fff'          # Main text
-      secondary: '#9aa0a6'    # Less important text
-      tertiary: '#a2a9b0'     # Hints, disabled text
-      h5: '#e3e3e3'          # H5 headings
-      selected: '#d3e3fd'     # Selected text/items
-      tagline: '#747775'      # Model taglines
-    # tooltip: Colors for tooltips in dark mode.
+      primary: '#fff'
+      secondary: '#9aa0a6'
+      tertiary: '#a2a9b0'
+      h5: '#e3e3e3'
+      selected: '#d3e3fd'
+      tagline: '#747775'
     tooltip:
       background: '#fff'
       text: '#1b1c1d'

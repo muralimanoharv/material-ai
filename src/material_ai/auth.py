@@ -10,10 +10,11 @@ import hashlib
 from typing import Tuple, TypeAlias
 from .exec import UnauthorizedException
 from .config import get_config
-from .request import FeedbackRequest
+from .request import FeedbackRequest, Microfrontend
 from .response import UserSuccessResponse
 from .oauth import OAuthErrorResponse, OAuthSuccessResponse, OAuthUserDetail
 from .oauth import IOAuthService
+from .ui_config import UIConfigManager
 
 _logger = logging.getLogger(__name__)
 FeedbackHandler: TypeAlias = Callable[[FeedbackRequest], Coroutine[Any, Any, Response]]
@@ -297,11 +298,15 @@ def get_oauth_service() -> IOAuthService:
     raise NotImplementedError("This dependency must be overridden by the application.")
 
 
-def get_ui_configuration() -> IOAuthService:
+def get_ui_configuration() -> UIConfigManager:
     raise NotImplementedError("This dependency must be overridden by the application.")
 
 
 def get_feedback_handler() -> FeedbackHandler:
+    raise NotImplementedError("This dependency must be overridden by the application.")
+
+
+def get_mirco_frontend() -> Microfrontend:
     raise NotImplementedError("This dependency must be overridden by the application.")
 
 

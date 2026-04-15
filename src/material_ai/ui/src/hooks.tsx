@@ -3,6 +3,7 @@ import { useParams } from 'react-router'
 import Layout from './components/layout/Layout'
 import { useContext } from 'react'
 import { AppContext, type AppContextType } from './context'
+import Greeting from './components/Greeting'
 
 export const useMobileHook = (): boolean => {
   const theme = useTheme()
@@ -26,7 +27,7 @@ export const useAgentId = (): string => {
 
 export const withLayout = (
   Component: React.FC,
-  options?: { showFooter?: boolean },
+  options?: { showFooter?: boolean; needUser?: boolean },
 ) => {
   return (props: Record<string, string>) => {
     const context = useContext(AppContext) as AppContextType
@@ -40,7 +41,15 @@ export const withLayout = (
             : true
         }
       >
-        <Component {...props} />
+        {!options?.needUser ? (
+          context.user ? (
+            <Component {...props} />
+          ) : (
+            <Greeting />
+          )
+        ) : (
+          <Component {...props} />
+        )}
       </Layout>
     )
   }

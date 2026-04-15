@@ -1,5 +1,12 @@
 /* eslint-disable */
-import React, { useState, useCallback, useEffect, useRef } from 'react'
+/* GENERATED_BY_MAI */
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  useContext,
+} from 'react'
 import {
   Box,
   Card,
@@ -63,8 +70,10 @@ import {
   PlayArrow as PlayIcon,
 } from '@mui/icons-material'
 import type { Agent, ChatPart, Tool } from '../../schema'
+import { AppContext, type AppContextType } from '../../context'
 
-// --- Types ---
+// --- Types & Interfaces ---
+
 type AppMode = 'static' | 'live'
 type ExecutionStatus = 'idle' | 'calling' | 'responded'
 
@@ -89,7 +98,6 @@ interface AgentOrchestrationProps {
   allowLiveMode?: boolean
 }
 
-// --- Animations ---
 const pulse = keyframes`
   0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(237, 108, 2, 0.4); }
   70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(237, 108, 2, 0); }
@@ -119,12 +127,15 @@ const AgentNode: React.FC<NodeProps<Node<CustomNodeData>>> = ({ data }) => {
         minWidth: 320,
         borderRadius: 3,
         borderColor: borderColor,
-        borderWidth: status === 'idle' ? 1.5 : 4,
+        borderWidth: !isLive || status === 'idle' ? 1.5 : 4,
         bgcolor: 'background.paper',
         animation:
           isLive && status === 'calling' ? `${pulse} 2s infinite` : 'none',
         transition: 'all 0.3s ease',
         boxShadow: isActive ? theme.shadows[10] : theme.shadows[1],
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
       }}
     >
       <Handle
@@ -170,7 +181,7 @@ const AgentNode: React.FC<NodeProps<Node<CustomNodeData>>> = ({ data }) => {
           alignItems="center"
         >
           <Chip
-            label={(isLive ? status : data.status || 'idle').toUpperCase()}
+            label={(isLive ? status : data.status || 'active').toUpperCase()}
             size="small"
             sx={{
               height: 18,
@@ -227,7 +238,7 @@ const ToolNode: React.FC<NodeProps<Node<CustomNodeData>>> = ({ data }) => {
     <Paper
       variant="outlined"
       sx={{
-        p: 1.2,
+        p: 1.1,
         px: 2.5,
         borderRadius: 10,
         border: 'none',
@@ -243,8 +254,8 @@ const ToolNode: React.FC<NodeProps<Node<CustomNodeData>>> = ({ data }) => {
       }}
     >
       <Handle type="target" position={Position.Top} />
-      <ToolIcon sx={{ fontSize: 16 }} />
-      <Typography variant="caption" fontWeight="bold">
+      <ToolIcon sx={{ fontSize: 18, display: 'block' }} />
+      <Typography variant="caption" fontWeight="bold" sx={{ lineHeight: 1 }}>
         {data.label}
       </Typography>
     </Paper>
@@ -261,6 +272,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
   initialMode = 'static',
   allowLiveMode = true,
 }) => {
+  const { health, config } = useContext(AppContext) as AppContextType
   const theme: Theme = useTheme()
   const isMdDown = useMediaQuery(theme.breakpoints.down('md'))
   const isSmDown = useMediaQuery(theme.breakpoints.down('sm'))
@@ -325,17 +337,17 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
         })
 
         if (parentId) {
+          // BLUE for agent-to-agent, GREY (divider) for agent-to-tool
+          const strokeColor = isTool
+            ? theme.palette.divider
+            : theme.palette.primary.main
           newEdges.push({
             id: `e-${parentId}-${id}`,
             source: parentId,
             target: id,
             type: 'default',
-            style: {
-              stroke: isTool
-                ? theme.palette.divider
-                : theme.palette.primary.main,
-              strokeWidth: 3,
-            },
+            style: { stroke: strokeColor, strokeWidth: 3 },
+            data: { isToTool: isTool }, // Internal marker to help theme updates
           })
         }
 
@@ -358,15 +370,38 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
     [theme, data],
   )
 
-  // Synchronizes visual statuses (colors, animations, pulse) based on visible history
-  const syncVisualsWithTrace = useCallback(
+  // FIX: Effect to update edges when theme changes (Light/Dark)
+  useEffect(() => {
+    setEdges((eds) =>
+      eds.map((edge) => {
+        const isToTool = edge.data?.isToTool === true
+        const baseColor = isToTool
+          ? theme.palette.divider
+          : theme.palette.primary.main
+        const currentStroke = edge.animated
+          ? theme.palette.warning.main
+          : baseColor
+        return {
+          ...edge,
+          style: { ...edge.style, stroke: currentStroke },
+        }
+      }),
+    )
+  }, [
+    theme.palette.mode,
+    theme.palette.divider,
+    theme.palette.primary.main,
+    theme.palette.warning.main,
+  ])
+
+  const applyTraceToNodes = useCallback(
     (trace: ChatPart[]): void => {
       setNodes((nds) =>
         nds.map((node) => {
-          let status: ExecutionStatus = 'idle'
-          let args = undefined
-          let result = undefined
-
+          let nextStatus: ExecutionStatus = 'idle'
+          let callArgs = undefined
+          let respResult = undefined
+          console.log(trace)
           trace.forEach((event) => {
             if (event.functionCall) {
               const call = event.functionCall
@@ -375,8 +410,8 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                 node.id === call.args?.agent_name ||
                 node.data.name === call.name
               ) {
-                status = 'calling'
-                args = call.args
+                nextStatus = 'calling'
+                callArgs = call.args
               }
             }
             if (event.functionResponse) {
@@ -386,8 +421,8 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                 node.data.name === res.name ||
                 node.id.includes(res.name)
               ) {
-                status = 'responded'
-                result = res.response?.result
+                nextStatus = 'responded'
+                respResult = res.response
               }
             }
           })
@@ -395,9 +430,9 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
             ...node,
             data: {
               ...node.data,
-              executionStatus: status,
-              lastCallArgs: args,
-              lastResponseResult: result,
+              executionStatus: nextStatus,
+              lastCallArgs: callArgs,
+              lastResponseResult: respResult,
             },
           }
         }),
@@ -405,7 +440,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
 
       setEdges((eds) =>
         eds.map((e) => {
-          let active = false
+          let isMatch = false
           trace.forEach((event) => {
             if (event.functionCall) {
               const call = event.functionCall
@@ -414,17 +449,19 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                 e.target === call.args?.agent_name ||
                 e.id.includes(call.name)
               )
-                active = true
+                isMatch = true
             }
           })
+          const isToTool = e.data?.isToTool === true
+          const baseColor = isToTool
+            ? theme.palette.divider
+            : theme.palette.primary.main
           return {
             ...e,
-            animated: active,
+            animated: isMatch,
             style: {
               ...e.style,
-              stroke: active
-                ? theme.palette.warning.main
-                : theme.palette.divider,
+              stroke: isMatch ? theme.palette.warning.main : baseColor,
             },
           }
         }),
@@ -433,16 +470,16 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
     [theme],
   )
 
-  // Handle Event Stream Reactively
+  // Reactive Prop Listener
   useEffect(() => {
     if (mode === 'live' && !isReplayMode && events.length > 0) {
       const currentSignature = JSON.stringify(
         events.map((e) => e[0].functionCall?.id || e[0].functionResponse?.id),
       )
       if (currentSignature !== lastEventSignature.current) {
-        const flat = events.flat()
-        setLiveHistory(flat)
-        syncVisualsWithTrace(flat)
+        const flatEvents = events.flat()
+        setLiveHistory(flatEvents)
+        applyTraceToNodes(flatEvents)
         setProcessedEventsCount(events.length)
         lastEventSignature.current = currentSignature
         handleRecenter()
@@ -453,46 +490,48 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
     mode,
     isReplayMode,
     processedEventsCount,
-    syncVisualsWithTrace,
+    applyTraceToNodes,
     handleRecenter,
   ])
 
-  // RESET LOGIC
   const handleFullReset = useCallback((): void => {
-    setSimStep(0)
     setLiveHistory([])
     setSelectedNodeData(null)
     setProcessedEventsCount(0)
+    setSimStep(0)
     lastEventSignature.current = null
     setIsReplayMode(true)
     generateLayout(mode)
     setTimeout(handleRecenter, 150)
   }, [mode, generateLayout, handleRecenter])
 
-  // Manual Replay Logic
-  const handleManualNext = (): void => {
+  const handleManualReplay = (): void => {
+    setSelectedNodeData(null)
     if (simStep < events.length) {
-      const nextBatch = events[simStep]
-      const newHistory = [...liveHistory, ...nextBatch]
+      const nextPacket = events[simStep][0]
+      const newHistory = [...liveHistory, nextPacket]
       setLiveHistory(newHistory)
-      syncVisualsWithTrace(newHistory)
+      applyTraceToNodes(newHistory)
       setSimStep((prev) => prev + 1)
+      handleRecenter()
     }
   }
 
-  // Sync Mode Toggles
   useEffect(() => {
     if (mode === 'static') {
       setSelectedNodeData(null)
+      setIsReplayMode(false)
       generateLayout('static')
     } else {
       generateLayout('live')
-      // If we have history or events, ensure they are rendered in live mode
-      if (liveHistory.length > 0) syncVisualsWithTrace(liveHistory)
-      else if (!isReplayMode && events.length > 0)
-        syncVisualsWithTrace(events.flat())
+      if (liveHistory.length > 0) {
+        setTimeout(() => applyTraceToNodes(liveHistory), 50)
+      } else if (events.length > 0 && !isReplayMode) {
+        setTimeout(() => applyTraceToNodes(events.flat()), 50)
+        setSimStep(events.length)
+      }
     }
-    setTimeout(handleRecenter, 200)
+    setTimeout(handleRecenter, 150)
   }, [mode])
 
   useEffect(() => {
@@ -546,7 +585,8 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
           >
             <Avatar
               sx={{
-                bgcolor: mode === 'live' ? 'warning.main' : 'primary.main',
+                bgcolor:
+                  mode === 'live' ? 'warning.main' : theme.palette.primary.main,
                 borderRadius: 2,
                 width: 36,
                 height: 36,
@@ -561,14 +601,16 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
             {!isSmDown && (
               <Box sx={{ minWidth: 120 }}>
                 <Typography variant="subtitle2" fontWeight="900" noWrap>
-                  {mode === 'live' ? 'Execution Trace' : 'Agent Blueprint'}
+                  {mode === 'live'
+                    ? config.get().agentTrace.traceTitle
+                    : config.get().agentTrace.blueprintTitle}
                 </Typography>
                 <Typography
                   variant="caption"
                   color="text.secondary"
                   sx={{ fontSize: '0.65rem', display: 'block' }}
                 >
-                  V.7.3 Orchestrator
+                  V.{health?.version}
                 </Typography>
               </Box>
             )}
@@ -590,7 +632,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                   <BlueprintIcon fontSize="small" sx={{ mr: { md: 1 } }} />
                   {!isMdDown && (
                     <Typography variant="caption" fontWeight="700">
-                      Blueprint
+                      {config.get().buttons.blueprint}
                     </Typography>
                   )}
                 </ToggleButton>
@@ -598,7 +640,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                   <TraceIcon sx={{ fontSize: 12, mr: { md: 1 } }} />
                   {!isMdDown && (
                     <Typography variant="caption" fontWeight="700">
-                      Trace
+                      {config.get().buttons.trace}
                     </Typography>
                   )}
                 </ToggleButton>
@@ -618,12 +660,12 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                 color="warning"
                 size="small"
                 disableElevation
-                onClick={handleManualNext}
+                onClick={handleManualReplay}
                 disabled={simStep >= events.length}
                 startIcon={<PlayIcon />}
                 sx={{ borderRadius: 2, height: 36, px: 2 }}
               >
-                {!isSmDown ? 'Execute Next' : 'Next'}
+                {config.get().buttons.executeNext}
               </Button>
             )}
             <Button
@@ -639,7 +681,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                 borderColor: 'divider',
               }}
             >
-              Reset
+              {config.get().buttons.reset}
             </Button>
             <Button
               variant="contained"
@@ -650,13 +692,13 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
               startIcon={<CenterIcon />}
               sx={{ borderRadius: 2, height: 36, px: 2 }}
             >
-              Recenter
+              {config.get().buttons.reCenter}
             </Button>
           </Stack>
         </Stack>
       </Box>
 
-      {/* MAIN LAYOUT */}
+      {/* WORKSPACE AREA */}
       <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'hidden' }}>
         <Box
           sx={{
@@ -740,7 +782,6 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
             </Panel>
           </ReactFlow>
 
-          {/* INSPECTOR DRAWER */}
           <Slide
             direction="left"
             in={!!selectedNodeData}
@@ -789,7 +830,11 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                           boxShadow: theme.shadows[2],
                         }}
                       >
-                        <RobotIcon sx={{ fontSize: 32, color: 'inherit' }} />
+                        {selectedNodeData.nodeType === 'agent' ? (
+                          <RobotIcon sx={{ fontSize: 32, color: 'inherit' }} />
+                        ) : (
+                          <ToolIcon sx={{ fontSize: 28, color: 'inherit' }} />
+                        )}
                       </Avatar>
                       <IconButton
                         size="small"
@@ -802,7 +847,11 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                     <Typography
                       variant="h5"
                       fontWeight="900"
-                      sx={{ mt: 3, letterSpacing: -1 }}
+                      sx={{
+                        mt: 3,
+                        letterSpacing: -1,
+                        color: theme.palette.background.default,
+                      }}
                     >
                       {selectedNodeData.name || selectedNodeData.label}
                     </Typography>
@@ -839,7 +888,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                                 color="text.secondary"
                                 fontWeight="900"
                               >
-                                Arguments
+                                {config.get().agentTrace.arguments}
                               </Typography>
                             </Stack>
                             <Paper
@@ -873,7 +922,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                                       null,
                                       2,
                                     )
-                                  : '// Awaiting packet content'}
+                                  : '{}'}
                               </Typography>
                             </Paper>
                           </Box>
@@ -890,7 +939,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                                 color="text.secondary"
                                 fontWeight="900"
                               >
-                                Execution Response
+                                {config.get().agentTrace.executionResponse}
                               </Typography>
                             </Stack>
                             <Paper
@@ -930,7 +979,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                                       null,
                                       2,
                                     )
-                                  : '// Processing payload...'}
+                                  : '{}'}
                               </Typography>
                             </Paper>
                           </Box>
@@ -964,66 +1013,68 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                               {selectedNodeData.description}
                             </Typography>
                           </Box>
-                          <Box>
-                            <List dense disablePadding>
-                              <ListItem disableGutters sx={{ py: 1.5 }}>
-                                <ListItemIcon sx={{ minWidth: 44 }}>
-                                  <ModelIcon color="primary" />
-                                </ListItemIcon>
-                                <ListItemText
-                                  primary={
-                                    <Typography
-                                      variant="caption"
-                                      fontWeight="900"
-                                      color="text.secondary"
-                                    >
-                                      ARCH: ENGINE
-                                    </Typography>
-                                  }
-                                  secondary={
-                                    <Typography
-                                      variant="body2"
-                                      fontWeight="bold"
-                                    >
-                                      {selectedNodeData.model ||
-                                        'v7.3 TypeScript'}
-                                    </Typography>
-                                  }
-                                />
-                              </ListItem>
-                              <ListItem disableGutters sx={{ py: 1.5 }}>
-                                <ListItemIcon sx={{ minWidth: 44 }}>
-                                  <StatusIcon
-                                    color={
-                                      selectedNodeData.status === 'active'
-                                        ? 'success'
-                                        : 'error'
+                          {selectedNodeData.nodeType === 'agent' && (
+                            <Box>
+                              <List dense disablePadding>
+                                <ListItem disableGutters sx={{ py: 1.5 }}>
+                                  <ListItemIcon sx={{ minWidth: 44 }}>
+                                    <ModelIcon color="primary" />
+                                  </ListItemIcon>
+                                  <ListItemText
+                                    primary={
+                                      <Typography
+                                        variant="caption"
+                                        fontWeight="900"
+                                        color="text.secondary"
+                                      >
+                                        MODEL:
+                                      </Typography>
+                                    }
+                                    secondary={
+                                      <Typography
+                                        variant="body2"
+                                        fontWeight="bold"
+                                      >
+                                        {selectedNodeData.model ||
+                                          'v7.3 TypeScript'}
+                                      </Typography>
                                     }
                                   />
-                                </ListItemIcon>
-                                <ListItemText
-                                  primary={
-                                    <Typography
-                                      variant="caption"
-                                      fontWeight="900"
-                                      color="text.secondary"
-                                    >
-                                      STATUS: REGISTRY
-                                    </Typography>
-                                  }
-                                  secondary={
-                                    <Typography
-                                      variant="body2"
-                                      fontWeight="bold"
-                                    >
-                                      {selectedNodeData.status?.toUpperCase() ||
-                                        'READY'}
-                                    </Typography>
-                                  }
-                                />
-                              </ListItem>
-                            </List>
-                          </Box>
+                                </ListItem>
+                                <ListItem disableGutters sx={{ py: 1.5 }}>
+                                  <ListItemIcon sx={{ minWidth: 44 }}>
+                                    <StatusIcon
+                                      color={
+                                        selectedNodeData.status === 'active'
+                                          ? 'success'
+                                          : 'error'
+                                      }
+                                    />
+                                  </ListItemIcon>
+                                  <ListItemText
+                                    primary={
+                                      <Typography
+                                        variant="caption"
+                                        fontWeight="900"
+                                        color="text.secondary"
+                                      >
+                                        STATUS:
+                                      </Typography>
+                                    }
+                                    secondary={
+                                      <Typography
+                                        variant="body2"
+                                        fontWeight="bold"
+                                      >
+                                        {selectedNodeData.status?.toUpperCase() ||
+                                          'READY'}
+                                      </Typography>
+                                    }
+                                  />
+                                </ListItem>
+                              </List>
+                            </Box>
+                          )}
                         </>
                       )}
                     </Stack>
@@ -1043,7 +1094,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                       fontWeight="800"
                       sx={{ letterSpacing: 2 }}
                     >
-                      AGENT CORE v7.3
+                      {`${config.get().agentTrace.agentCore} v${health?.version}`}
                     </Typography>
                   </Box>
                 </>
@@ -1075,7 +1126,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
               <Stack direction="row" spacing={1.5} alignItems="center">
                 <LogIcon color="warning" />
                 <Typography variant="subtitle2" fontWeight="900">
-                  SYSTEM EVENT LOG
+                  {config.get().agentTrace.systemEventLog}
                 </Typography>
               </Stack>
             </Box>
@@ -1083,7 +1134,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
               {liveHistory.length === 0 ? (
                 <Box sx={{ textAlign: 'center', mt: 8, opacity: 0.4 }}>
                   <Typography variant="caption">
-                    Awaiting execution packets...
+                    {config.get().agentTrace.awaitingPackets}
                   </Typography>
                 </Box>
               ) : (
@@ -1114,7 +1165,7 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                           sx={{ mb: 1 }}
                         >
                           <Chip
-                            label={`Event #${i + 1}`}
+                            label={`${config.get().agentTrace.event} #${i + 1}`}
                             size="small"
                             sx={{
                               height: 16,
@@ -1136,8 +1187,8 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
                           display="block"
                         >
                           {isCall
-                            ? 'INITIATED FUNCTION CALL'
-                            : 'RECEIVED FUNCTION RESPONSE'}
+                            ? config.get().agentTrace.initiatedFuncCall
+                            : config.get().agentTrace.receivedFuncResp}
                         </Typography>
                         <Typography
                           variant="caption"

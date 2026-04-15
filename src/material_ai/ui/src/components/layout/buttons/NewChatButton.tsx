@@ -10,7 +10,7 @@ import {
 import { useAgentId, useMobileHook } from '../../../hooks'
 
 export default function NewChatButton() {
-  const { on_new_chat, promptLoading, user } = useContext(
+  const { on_new_chat, promptLoading, user, config } = useContext(
     AppContext,
   ) as AppContextType
   const { setOpen } = useContext(LayoutContext) as LayoutContextType
@@ -25,7 +25,7 @@ export default function NewChatButton() {
       disabled={promptLoading || !user}
       tooltip="New Chat (Ctrl+Shift+O)"
       icon={<AddCommentOutlinedIcon fontSize="small" />}
-      title="New chat"
+      title={config.get().buttons.newChat}
       onClick={() => {
         on_new_chat(agent)
         if (isMobile) setOpen(false)

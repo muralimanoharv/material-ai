@@ -11,9 +11,14 @@ import { ThemeContext } from '../context'
 interface AppThemeProviderProps {
   config: AppConfigImpl
   children: ReactNode
+  refreshConfig: () => void
 }
 
-export function AppThemeProvider({ config, children }: AppThemeProviderProps) {
+export function AppThemeProvider({
+  config,
+  children,
+  refreshConfig,
+}: AppThemeProviderProps) {
   const [mode, setMode] = useState<ThemeMode>('system')
 
   const setTheme = (theme: ThemeMode) => {
@@ -36,7 +41,9 @@ export function AppThemeProvider({ config, children }: AppThemeProviderProps) {
   }, [mode, config])
 
   return (
-    <ThemeContext.Provider value={{ theme: mode, setTheme, config }}>
+    <ThemeContext.Provider
+      value={{ theme: mode, setTheme, config, refreshConfig }}
+    >
       <MuiThemeProvider theme={getTheme()}>{children}</MuiThemeProvider>
     </ThemeContext.Provider>
   )
