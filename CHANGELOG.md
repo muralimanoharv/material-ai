@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.4.0](https://github.com/muralimanoharv/material-ai/compare/v1.3.0...v1.4.0) (2026-04-15)
+
+
+### Features
+
+* Adding features for mai 1.4.0 ([9ac6e33](https://github.com/muralimanoharv/material-ai/commit/9ac6e33ed11d67fa287408e0e595ce5af8b68b6d))
+* Material AI 1.4.0 Changes ([f9a2426](https://github.com/muralimanoharv/material-ai/commit/f9a24262530108be343fb4eb9ce105954433dea4))
+
+
+### Bug Fixes
+
+* fix unit test cases ([84789b6](https://github.com/muralimanoharv/material-ai/commit/84789b60c2635e0abf77a54b68f579e9d002a79f))
+* playwright test cases ([8dc05c2](https://github.com/muralimanoharv/material-ai/commit/8dc05c27f292c46e3db514a337f36c60cfeebd03))
+
 ## [1.3.0](https://github.com/muralimanoharv/material-ai/compare/v1.2.4...v1.3.0) (2026-03-25)
 
 
