@@ -247,6 +247,11 @@ export interface InlineData {
   data: string
 }
 
+export interface InlineRequestData {
+  mime_type: string
+  data: string
+}
+
 export interface ChatPart {
   text?: string
   inlineData?: InlineData
@@ -300,7 +305,7 @@ export interface UserResponse {
 
 export interface RequestPart {
   text?: string
-  inline_data?: InlineData
+  inline_data?: InlineRequestData
 }
 
 export interface SendOptions {

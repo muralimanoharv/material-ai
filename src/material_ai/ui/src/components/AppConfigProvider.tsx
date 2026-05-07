@@ -28,6 +28,7 @@ export function AppConfigProvider({ children }: AppConfigProviderProps) {
       }
 
       const data = (await response.json()) as AppConfig
+      document.title = data.title || 'Material AI'
 
       setConfig(new AppConfigImpl(data))
     } catch (err) {

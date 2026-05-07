@@ -76,10 +76,44 @@ export const createParts = ({
     text: JSON.stringify({ fileNames: files.map((f) => f.name) }),
   }
 
+  const getMimeType = (mimeType: string): string => {
+    if (!mimeType) return 'text/plain'
+
+    const normalizedMime = mimeType.toLowerCase().trim()
+
+    // Unsupported structured data / code types that should be sent as plain text
+    const textFallbacks = [
+      'application/json',
+      'application/jsonl',
+      'text/javascript',
+      'text/html',
+      'text/css',
+      'text/xml',
+      'text/csv',
+      'text/rtf',
+    ]
+
+    if (textFallbacks.includes(normalizedMime)) {
+      return 'text/plain'
+    }
+
+    return mimeType
+  }
+
+  const getInlineData = (file: FileAttachment) => {
+    const { inlineData } = file
+    return {
+      inline_data: {
+        data: inlineData.data,
+        mime_type: getMimeType(inlineData.mimeType),
+      },
+    }
+  }
+
   // 3. Construct Request Parts (snake_case for API)
   const requestParts: RequestPart[] = [
     promptPart,
-    ...files.map((file) => ({ inline_data: file.inlineData })),
+    ...files.map((file) => getInlineData(file)),
     metaPart,
   ]
 
