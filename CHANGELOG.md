@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.1](https://github.com/muralimanoharv/material-ai/compare/v1.4.0...v1.4.1) (2026-05-07)
+
+
+### Bug Fixes
+
+* fix cloud run issues ([2228e1e](https://github.com/muralimanoharv/material-ai/commit/2228e1e47f9bf459db1fa6bcca96439eafabe405))
+* fix cloud run issues ([6c6e4c1](https://github.com/muralimanoharv/material-ai/commit/6c6e4c1e8819d544001a0acde71a43fd06c17a6b))
+
 ## [1.4.0](https://github.com/muralimanoharv/material-ai/compare/v1.3.0...v1.4.0) (2026-04-15)
 
 
