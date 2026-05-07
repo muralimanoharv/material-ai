@@ -34,7 +34,7 @@ class Nl2SqlAgent(LlmAgent):
             tables = await db_service.list_available_tables()
             return tables
 
-        async def get_schema(tables: List[str]) -> List[TableSchema]:
+        async def get_schema(tables: List[str]) -> List[dict]:
             """
             Provides the detailed column structure for a specific table.
 
@@ -42,7 +42,7 @@ class Nl2SqlAgent(LlmAgent):
                 tables (List[str]): list of tables for which schema is retrieved
 
             Returns:
-                List[TableSchema]: A List Pydantic model containing the table name,
+                List[dict]: A List Pydantic model containing the table name,
                         column metadata (including Enums), and join hints for each table.
             """
             schemas: List[TableSchema] = []

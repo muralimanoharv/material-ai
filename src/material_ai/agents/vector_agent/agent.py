@@ -28,7 +28,7 @@ class VectorGraph(BaseModel):
 
 root_agent = Agent(
     name="vector_agent",
-    model="gemini-2.0-flash",
+    model="gemini-3-flash-preview",
     output_key="json",  # This ensures the internal reasoning stays structured
     tools=[],
     output_schema=VectorGraph,

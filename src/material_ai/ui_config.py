@@ -393,7 +393,10 @@ class UIConfigManager:
             agent_config = formatted_config.get("agents", {}).get(agent, {})
             agents_map[agent] = AgentInfo(
                 title=agent_config.get("title", ""),
-                greeting=agent_config.get("greeting", DEFAULT_CONFIG.greeting),
+                greeting=agent_config.get(
+                    "greeting",
+                    formatted_config.get("greeting", DEFAULT_CONFIG.greeting),
+                ),
                 show_footer=agent_config.get("show_footer", True),
                 chat_section_width=agent_config.get("chat_section_width", "760px"),
                 feedback=agent_config.get("feedback", DEFAULT_FEEDBACK),

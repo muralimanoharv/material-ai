@@ -1,9 +1,13 @@
 import { test, expect } from '@playwright/test'
 import { check_health } from './util'
 
-test('has title', async ({ page }) => {
+test('has title', async ({ page, request }) => {
+  const response = await request.get('/config')
+  expect(response.ok()).toBeTruthy()
+  const body = await response.json()
+  expect(response.status()).toBe(200)
   await page.goto('/')
-  await expect(page).toHaveTitle(/Material AI/)
+  await expect(page).toHaveTitle(body.title)
 })
 
 test('backend health check returns 200', async ({ request }) => {

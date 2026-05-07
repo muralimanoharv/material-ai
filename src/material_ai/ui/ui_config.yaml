@@ -577,14 +577,14 @@ footer:
 
 promptInput:
   placeholder:
-    en: Sign in to ask Gemini
-    ja: ログインして Gemini に質問する
-    es: Inicia sesión para preguntar a Gemini
-    fr: Connectez-vous pour demander à Gemini
-    de: Anmelden, um Gemini zu fragen
-    hi: जेमिनी से पूछने के लिए साइन इन करें
-    zh: 登录以询问 Gemini
-    ar: سجل الدخول لسؤال جيميني
+    en: Ask Gemini
+    ja: Gemini に聞く
+    es: Pregúntale a Gemini
+    fr: Demander à Gemini
+    de: Frag Gemini
+    hi: Gemini से पूछें
+    zh: 问问 Gemini
+    ar: اسأل جمناي
   logOutPlaceholder:
     en: Sign in to ask Gemini
     ja: ログインして Gemini に質問する

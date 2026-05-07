@@ -401,7 +401,6 @@ const AgentOrchestrationSuite: React.FC<AgentOrchestrationProps> = ({
           let nextStatus: ExecutionStatus = 'idle'
           let callArgs = undefined
           let respResult = undefined
-          console.log(trace)
           trace.forEach((event) => {
             if (event.functionCall) {
               const call = event.functionCall
