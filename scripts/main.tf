@@ -231,8 +231,8 @@ resource "google_cloud_run_v2_service" "app_service" {
 
       resources {
         limits = {
-          cpu    = "1000m"
-          memory = "512Mi"
+          cpu    = "4000m"
+          memory = "4Gi"
         }
         startup_cpu_boost = true
       }
