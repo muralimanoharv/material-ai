@@ -90,6 +90,7 @@ jobs:
           TF_VAR_sso_scope: "openid email profile"
           TF_VAR_sso_session_secret_key: ${{ secrets.SSO_SESSION_SECRET_KEY }}
           TF_VAR_config_path: "config.ini"
-          TF_VAR_google_genai_use_vertexai: "true"
+          TF_VAR_google_genai_use_vertexai: "false"
+          TF_VAR_google_api_key: ${{ secrets.GOOGLE_API_KEY }}
           TF_VAR_adk_session_db_url: "sqlite:///./my_agent_data.db"
         run: terraform apply -auto-approve
