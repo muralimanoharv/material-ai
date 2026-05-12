@@ -100,7 +100,7 @@ export const createParts = ({
     return mimeType
   }
 
-  const getInlineData = (file: FileAttachment) => {
+  const getInlineData = (file: FileAttachment): RequestPart => {
     const { inlineData } = file
     return {
       inline_data: {

@@ -23,6 +23,7 @@ import AgentsPage from './components/pages/AgentsPage'
 import PageNotFound from './components/pages/PageNotFound'
 import HealthPage from './components/pages/HealthPage'
 import AgentInfoPage from './components/pages/AgentInfoPage'
+import PlaygroudPage from './components/pages/PlaygroundPage'
 
 function App() {
   const { config, refreshConfig } = useContext(ThemeContext) as ThemeContextType
@@ -193,6 +194,7 @@ function App() {
             <Route path="session/:sessionId" element={<AgentPage />} />
           </Route>
           <Route path="/health" element={<HealthPage />} />
+          <Route path="/playground" element={<PlaygroudPage />} />
           <Route path="/" element={<Navigate to="/agents" replace />} />
           <Route path="/404" element={<PageNotFound />} />
           <Route path="*" element={<PageNotFound />} />

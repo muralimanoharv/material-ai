@@ -446,6 +446,7 @@ GOOGLE_GENAI_USE_VERTEXAI=FALSE/TRUE
 GOOGLE_API_KEY="YOUR_GEMINI_API_KEY"
 ```
 Go to https://aistudio.google.com/apikey to generate API KEY
+Go to https://ai.google.dev/gemini-api/docs/models to check various models
 
 ```python
 # src/material_ai/agents/greeting_agent/agent.py
