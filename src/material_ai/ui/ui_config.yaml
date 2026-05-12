@@ -776,6 +776,8 @@ agents:
       zh: 向量代理
       ar: وكيل المتجهات
   questionnaire_agent:
+    title:
+      en: Questionnaire Agent
     chat_section_width: 80%
   sports_analytics_agent:
     title:
