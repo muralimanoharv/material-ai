@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.2](https://github.com/muralimanoharv/material-ai/compare/v1.4.1...v1.4.2) (2026-05-12)
+
+
+### Bug Fixes
+
+* adding env for model type ([41d9113](https://github.com/muralimanoharv/material-ai/commit/41d9113a767e2344c535080be425bfc024534415))
+* Increase CPU and memory of cloudrun ([bc3c0b0](https://github.com/muralimanoharv/material-ai/commit/bc3c0b03ec301ed87281b89835be0e0776662c22))
+* Increase CPU and memory of cloudrun ([9c36546](https://github.com/muralimanoharv/material-ai/commit/9c3654680fe56f63820413b2b491a566e37d84a4))
+* Make Agentic UI Production ready ([fbcccbd](https://github.com/muralimanoharv/material-ai/commit/fbcccbd0ec7a56a26518f1c6b5e559e3f6b60169))
+* Make Agentic UI Production ready ([8f6f0ef](https://github.com/muralimanoharv/material-ai/commit/8f6f0ef882fab5c928f1c33196b646932a64f301))
+* playwright test cases ([d8b0260](https://github.com/muralimanoharv/material-ai/commit/d8b02606761c7bc36e183d971c054f238723011f))
+
 ## [1.4.1](https://github.com/muralimanoharv/material-ai/compare/v1.4.0...v1.4.1) (2026-05-07)
 
 
