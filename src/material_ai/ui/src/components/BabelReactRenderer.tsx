@@ -1,28 +1,22 @@
 /* eslint-disable */
-import React, {
-  useState,
-  Component,
-  useEffect,
-  type ReactNode,
-  useContext,
-} from 'react'
-import {
-  Box,
-  IconButton,
-  Collapse,
-  Typography,
-  Stack,
-  Paper,
-} from '@mui/material'
-import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material'
-import { styled, useTheme } from '@mui/material/styles'
+import React, { useState, useEffect } from 'react'
+import { Box } from '@mui/material'
 import * as Babel from '@babel/standalone'
 import ShowReactCode from './ShowReactCode'
-import { ContentCopy as CopyIcon } from '@mui/icons-material'
-import { AppContext, type AppContextType } from '../context'
+import { AppContext } from '../context'
+import { useAgentId, useSessionId } from '../hooks'
+import { ShowErrorMessage, PreviewErrorBoundary } from './ShowErrorMessage'
 
 const loaders: Record<string, () => Promise<any>> = {
   react: () => import('react'),
+  app: async () => {
+    return {
+      default: AppContext,
+      AppContext,
+      useAgentId,
+      useSessionId,
+    }
+  },
   'chart.js': () => import('chart.js'),
   'chart.js/auto': () => import('chart.js/auto'),
   '@mui/material': () => import('@mui/material'),
@@ -31,51 +25,6 @@ const loaders: Record<string, () => Promise<any>> = {
   'react-hook-form': () => import('react-hook-form'),
   '@xyflow/react': () => import('@xyflow/react'),
   '@xyflow/react/dist/style.css': () => import('@xyflow/react/dist/style.css'),
-}
-
-interface PreviewErrorBoundaryProps {
-  code: string
-  children: ReactNode
-}
-
-interface PreviewErrorBoundaryState {
-  error: Error | null
-}
-
-class PreviewErrorBoundary extends Component<
-  PreviewErrorBoundaryProps,
-  PreviewErrorBoundaryState
-> {
-  public state: PreviewErrorBoundaryState = {
-    error: null,
-  }
-
-  public static getDerivedStateFromError(
-    error: Error,
-  ): PreviewErrorBoundaryState {
-    return { error }
-  }
-
-  public componentDidUpdate(prevProps: PreviewErrorBoundaryProps): void {
-    if (prevProps.code !== this.props.code && this.state.error !== null) {
-      this.setState({ error: null })
-    }
-  }
-
-  public componentDidCatch(error: Error, errorInfo: any): void {
-    console.error('Uncaught error:', error, errorInfo)
-  }
-
-  public render(): ReactNode {
-    const { error } = this.state
-    const { code, children } = this.props
-
-    if (error) {
-      return <ShowErrorMessage error={error.message} code={code} />
-    }
-
-    return children
-  }
 }
 
 export default function BabelReactRenderer({ code }: { code: string }) {
@@ -170,101 +119,20 @@ export default function BabelReactRenderer({ code }: { code: string }) {
   return (
     <Box
       sx={{
+        position: 'relative',
         '&:hover .show-code-button': {
           opacity: '1',
         },
       }}
     >
       {syntaxError ? (
-        <ShowErrorMessage error={syntaxError} code={code} />
+        <ShowErrorMessage error={new Error(syntaxError)} code={code} />
       ) : (
         <PreviewErrorBoundary code={code}>
           <ShowReactCode code={code} />
           {Component && <Component />}
         </PreviewErrorBoundary>
       )}
-    </Box>
-  )
-}
-
-const ExpandIconWrapper = styled(IconButton, {
-  shouldForwardProp: (prop) => prop !== 'expand',
-})<{ expand: boolean }>(({ theme, expand }) => ({
-  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-  transition: theme.transitions.create('transform', {
-    duration: theme.transitions.duration.shortest,
-  }),
-}))
-
-function ShowErrorMessage({ error, code }: { error: string; code: string }) {
-  const { setSnack } = useContext(AppContext) as AppContextType
-  const [expanded, setExpanded] = useState(false)
-  const theme = useTheme()
-
-  return (
-    <Box sx={{ width: '100%', my: 1 }}>
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        sx={{ color: 'error.main' }}
-      >
-        <Typography variant="body2" fontWeight="medium">
-          <b>Runtime Error:</b> {error}
-        </Typography>
-        <ExpandIconWrapper
-          expand={expanded}
-          onClick={() => setExpanded(!expanded)}
-          size="small"
-          aria-label="show more"
-          data-testid="chat-function-response-toggle"
-        >
-          <ExpandMoreIcon fontSize="inherit" />
-        </ExpandIconWrapper>
-      </Stack>
-
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <Paper
-          variant="outlined"
-          sx={{
-            p: 1.5,
-            mt: 1,
-            color: 'warning.main',
-            borderColor: 'error.light',
-            position: 'relative',
-          }}
-        >
-          <IconButton
-            onClick={async () => {
-              await navigator.clipboard.writeText(code)
-              setSnack('Copied to clipboard')
-            }}
-            sx={{
-              position: 'absolute',
-              top: 12,
-              right: 25,
-              zIndex: 1,
-              backgroundColor: theme.palette.background.paper,
-              boxShadow: theme.shadows[2],
-              '&:hover': { backgroundColor: theme.palette.background.default },
-            }}
-            size="small"
-          >
-            {<CopyIcon fontSize="small" />}
-          </IconButton>
-          <Typography
-            component="pre"
-            sx={{
-              whiteSpace: 'pre-wrap',
-              fontSize: '0.75rem',
-              fontFamily: 'monospace',
-              m: 0,
-            }}
-          >
-            {code}
-          </Typography>
-        </Paper>
-      </Collapse>
     </Box>
   )
 }

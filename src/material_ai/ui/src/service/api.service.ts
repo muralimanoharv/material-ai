@@ -12,6 +12,7 @@ import {
   type AgentResponse,
   type Health,
   AppConfigImpl,
+  type UIBug,
 } from '../schema'
 import { getI18n } from '../utils'
 
@@ -267,6 +268,17 @@ export class ApiService {
     )
 
     return await response.text()
+  }
+
+  async ui_render_bug(bug: UIBug): Promise<void> {
+    const response = await fetch(`${HOST}/ui_render_bug`, {
+      method: 'POST',
+      headers: this.get_default_headers(),
+      credentials: 'include',
+      body: JSON.stringify(bug),
+    })
+
+    this.handle_response(response)
   }
 
   get_default_headers() {

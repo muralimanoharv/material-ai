@@ -367,3 +367,12 @@ export interface Health {
     }
   }
 }
+
+export interface UIBug {
+  app_name: string
+  session_id: string
+  error: string
+  stack_trace?: string
+  code: string
+  id: string
+}

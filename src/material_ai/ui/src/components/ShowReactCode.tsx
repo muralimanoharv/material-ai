@@ -46,7 +46,7 @@ const ShowReactCode = ({ code: codeSnippet }: { code: string }) => {
   }
 
   return (
-    <Grid container spacing={3} sx={{ position: 'relative' }}>
+    <Grid container spacing={3}>
       <Grid size={{ xs: 12, md: 6, lg: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'flex-start', p: 1 }}>
           {/* Transparent Button with Primary Icon */}
@@ -60,10 +60,11 @@ const ShowReactCode = ({ code: codeSnippet }: { code: string }) => {
               backgroundColor: 'transparent',
               position: 'absolute',
               right: 0,
+              bottom: '-35px',
               borderRadius: '30px',
               opacity: 0,
               transition: 'opacity 0.2s ease-in-out',
-              padding: '12px 24px',
+              padding: '12px 16px',
               color: 'text.primary',
               fontWeight: 600,
               '&:hover': {

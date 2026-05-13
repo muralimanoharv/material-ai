@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class FeedbackRequest(BaseModel):
@@ -6,6 +7,16 @@ class FeedbackRequest(BaseModel):
 
     feedback_category: str
     feedback_text: str
+    id: str
+
+
+class UIBug(BaseModel):
+    """Pydantic model for the feedback request body."""
+
+    app_name: str
+    session_id: str
+    stack_trace: Optional[str] | None = None
+    code: str
     id: str
 
 
