@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.3](https://github.com/muralimanoharv/material-ai/compare/v1.4.2...v1.4.3) (2026-05-13)
+
+
+### Bug Fixes
+
+* Adding actions to mai agent ([6174a9f](https://github.com/muralimanoharv/material-ai/commit/6174a9f861b141a70c7bf35ccc37934f317ba2b1))
+* Adding actions to mai agent ([0de8fc2](https://github.com/muralimanoharv/material-ai/commit/0de8fc2c4fb1f7540ebcb1f90df1eebc81b11ce9))
+
 ## [1.4.2](https://github.com/muralimanoharv/material-ai/compare/v1.4.1...v1.4.2) (2026-05-12)
 
 
