@@ -61,6 +61,10 @@ export default function Header() {
           sx={{ cursor: 'pointer' }}
           title={health?.version}
           onClick={() => {
+            if (agentId) {
+              navigate(`/agents/info/${agentId}`)
+              return
+            }
             navigate('/agents')
           }}
         >

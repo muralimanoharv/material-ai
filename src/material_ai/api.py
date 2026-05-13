@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Header, Response, Request, Cookie, status, Depends, Query
 from fastapi.responses import FileResponse, RedirectResponse
 from .exec import UnauthorizedException
-from .request import FeedbackRequest, Microfrontend
+from .request import FeedbackRequest, Microfrontend, UIBug
 from .app import STATIC_DIR
 from . import __version__, __app_name__
 import json
@@ -426,3 +426,9 @@ async def get_ui(ui: str, micro_frontend: Microfrontend = Depends(get_mirco_fron
         )
 
     return FileResponse(path=file_path, media_type="application/javascript")
+
+
+@router.post("/ui_render_bug")
+async def ui_render_bug(bug: UIBug):
+    _logger.error(f"UIRenderError: {bug.model_dump_json()}")
+    return Response(status_code=200)

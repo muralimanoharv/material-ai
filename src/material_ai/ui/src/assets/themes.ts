@@ -111,13 +111,16 @@ const getComponentOverrides = (palette: Palette): ThemeOptions => ({
         root: {
           color: palette.text.tertiary,
         },
-        contained: {
-          color: palette.background.default,
-          backgroundColor: palette.primary.main,
-          '&:hover': {
-            backgroundColor: palette.primary.dark,
-          },
-        },
+        contained: ({ ownerState, theme: { palette } }) => ({
+          color: 'white',
+          ...(ownerState.color === 'primary' && {
+            color: palette.background.default,
+            backgroundColor: palette.primary.main,
+            '&:hover': {
+              backgroundColor: palette.primary.dark,
+            },
+          }),
+        }),
       },
     },
     MuiAppBar: {

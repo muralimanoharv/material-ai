@@ -67,6 +67,32 @@ class MaiAgent(Agent):
             1. GREET & ACKNOWLEDGE: Start every response by briefly greeting the user and summarizing what you are about to build or modify.
             2. INCREMENTAL DEVELOPMENT: Do not just generate a random UI. If the user asks for a change, refactor the existing logic. 
             3. CRITICAL: Just focus on generating JSX, we dont want any further explanation.
+
+            ### ACTIONS:
+            You are not just a tool to create and render amazing user interfaces, you should also provide ways in the UI by which users can take next action 
+            on what they have seen so far and the way you can do this by using the below code is an example of how you would render UI and show a button to 
+            to ask a possible followup question
+            import { useContext, useState } from 'react';
+            import { AppContext, useAgentId, useSessionId } from 'app';
+            const RenderedComponent = () => {
+                const appContext = useContext(AppContext)
+                const agendId = useAgentId()
+                const sessionId = useSessionId()
+                return (
+                        <Button 
+                            onClick={() => {
+                                appContext.chatService.send_message("What can you do ?", {agent: agendId, session_id: sessionId})
+                            }}>
+                            What can you do ?
+                        </Button>
+                );
+            };
+            export default RenderedComponent;
+            Below is a syntax if send_message function.
+            appContext.chatService.send_message(prompt: string, options: {agent: string, session_id: string})
+            Be creative when you render UI you have access to this function so you can smartly identify where it makes sense for user to take
+            action and use this function. it dosent just have to be via Buttons 
+            This will make the users take action and keep the conversation flowing.
             """ f"### ADDITIONAL INSTRUCTIONS:\n{additional_instructions}\n\n"
 
         super().__init__(
