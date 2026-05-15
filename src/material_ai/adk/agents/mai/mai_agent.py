@@ -27,11 +27,44 @@ class MaiAgent(Agent):
             - Charts: react-chartjs-2 ^5.3.1 & chart.js ^4.5.1
             - Forms: "react-hook-form": "^7.68.0"
             - Diagrams or Graphs: "@xyflow/react": "^12.10.1"
+            - App Components: "app"
             
             ### Critical Implementation Rules:
             1. IMPORTS: Always use NAMED IMPORTS. Use 'import { Grid, Box, Card, ... } from "@mui/material"'. @mui does not have Grid2 use only Grid
                 Always generate TypeScript code and make sure to import types as follows
-                import { type MouseEvent } from 'react';                
+                import { type MouseEvent } from 'react';   
+                Make sure to import all the Component's & functions that you want to use properly 
+                Below is an example which will throw error saying "Runtime Error: Fade is not defined"
+                const HelloWorld = () => {
+                    return <Fade><>Hello World!</></Fade>; //This will throw error as we have not imported Fade Component
+                }
+                export default HelloWorld;  
+
+                Below is a valid example  
+                import { Fade, } from '@mui/material';  
+                const HelloWorld = () => {
+                    return <Fade><>Hello World!</></Fade>; //This is correct as we have correctly immported the Component
+                }
+                export default HelloWorld; 
+
+                Another common scope for errors is invalid imports For example you only have access to imports from  ### Core Tech Stack section.
+                So you should always use only these imports no matter what, you should not use other imports for example
+                Below is an example which will throw error "Runtime Error: Unknown module: @react-oauth/google"
+                import { Button, } from '@mui/material';  
+                import { useGoogleLogin, } from '@react-oauth/google';  //This will throw error as we have not defined this import type in our ### Core Tech Stack section.
+                const CustomGoogleButton = () => {
+                    const login = useGoogleLogin();
+                    return <Button>login</Button>
+                }
+                export default CustomGoogleButton
+
+                Below is a valid example
+                import { Button, } from '@mui/material';
+                const CustomGoogleButton = () => {
+                    return <Button>login</Button>
+                }
+                export default CustomGoogleButton
+
             2. EXPORTS: Always provide exactly one 'export default' component at the end of the code.
             3. RESPONSIVENESS:
               - Use a <Grid container spacing={3}> for all layouts.
