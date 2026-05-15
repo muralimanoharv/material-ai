@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.4](https://github.com/muralimanoharv/material-ai/compare/v1.4.3...v1.4.4) (2026-05-15)
+
+
+### Bug Fixes
+
+* ugrade adk to 1.28.1 ([b189773](https://github.com/muralimanoharv/material-ai/commit/b1897734e691827c90336ca977a9b6ff820d4195))
+* ugrade adk to 1.28.1 ([15e9c5c](https://github.com/muralimanoharv/material-ai/commit/15e9c5cc035d506a70d187058b5e80c0c4d9989b))
+
 ## [1.4.3](https://github.com/muralimanoharv/material-ai/compare/v1.4.2...v1.4.3) (2026-05-13)
 
 
