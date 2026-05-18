@@ -1,5 +1,5 @@
 __app_name__ = "material_ai"
-__version__ = "1.4.4"
+__version__ = "1.4.5"
 
 from .app import get_app
 from .config import get_config
