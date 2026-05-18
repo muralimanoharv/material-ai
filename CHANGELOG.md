@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.4.5](https://github.com/muralimanoharv/material-ai/compare/v1.4.4...v1.4.5) (2026-05-18)
+
+
+### Bug Fixes
+
+* fix cors issue in development ([67b6acf](https://github.com/muralimanoharv/material-ai/commit/67b6acfa968c393432a2a09df72408b7e3cef1af))
+* fix cors issue in development ([518fe67](https://github.com/muralimanoharv/material-ai/commit/518fe67820b89bd0ceacae3af58f8494a0ae1b0e))
+* fix debug in deployment ([937b574](https://github.com/muralimanoharv/material-ai/commit/937b57493b5892ba77b775cf176edca4551053bc))
+
 ## [1.4.4](https://github.com/muralimanoharv/material-ai/compare/v1.4.3...v1.4.4) (2026-05-15)
 
 
