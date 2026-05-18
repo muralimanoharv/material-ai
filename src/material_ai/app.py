@@ -62,12 +62,7 @@ from google.adk.cli.fast_api import get_fast_api_app
 STATIC_DIR = f"{os.path.dirname(os.path.abspath(__file__))}/ui/dist"
 UI_CONFIG_YAML = f"{os.path.dirname(os.path.abspath(__file__))}/ui/ui_config.yaml"
 AGENT_DIR = f"{os.path.dirname(os.path.abspath(__file__))}/agents"
-ALLOWED_ORIGINS = [
-    "http://localhost",
-    "http://localhost:5173",
-    "http://127.0.0.1",
-    "http://127.0.0.1:5173",
-]
+ALLOWED_ORIGINS = ["*"]
 
 
 def _setup_logging(config: Config):
