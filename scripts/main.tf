@@ -239,6 +239,10 @@ resource "google_cloud_run_v2_service" "app_service" {
 
       # Environment Variables
       env {
+        name  = "GENERAL_DEBUG"
+        value = "FALSE"
+      }
+      env {
         name  = "SSO_ISSUER"
         value = var.sso_issuer
       }
