@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.6](https://github.com/muralimanoharv/material-ai/compare/v1.4.5...v1.4.6) (2026-05-27)
+
+
+### Bug Fixes
+
+* mai agent tool calling ([3071422](https://github.com/muralimanoharv/material-ai/commit/30714228cbc6d466cd0f528525781abb845d52a7))
+* mai agent tool calling ([b4faea6](https://github.com/muralimanoharv/material-ai/commit/b4faea6091c8cf03242fb45efedaa4af64f1eec5))
+
 ## [1.4.5](https://github.com/muralimanoharv/material-ai/compare/v1.4.4...v1.4.5) (2026-05-18)
 
 
