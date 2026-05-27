@@ -113,7 +113,14 @@ download_template_files() {
     curl -sO  https://raw.githubusercontent.com/muralimanoharv/material-ai/refs/heads/main/scripts/main.tf
 }
 
-
+sanitize_for_cloud_run() {
+    # 1. tr: Translate spaces and underscores to hyphens
+    # 2. tr: Convert to lowercase
+    # 3. sed: Remove leading/trailing hyphens
+    # 4. cut: Limit to 63 characters
+    echo "$1" | tr ' _' '-' | tr '[:upper:]' '[:lower:]' | \
+    sed 's/^-*//;s/-*$//' | cut -c 1-63
+}
 ### --- SCRIPT START --- ###
 
 echo "🚀 Material-AI Project Boilerplate Generator 🚀"
@@ -129,7 +136,7 @@ PROJECT_NAME=${PROJECT_NAME:-$DEFAULT_PROJECT_NAME} # A shorter way to set defau
 
 echo "⚙️  Processing project name..."
 PROJECT_NAME_SANITIZED="${PROJECT_NAME// /_}"
-PROJECT_NAME_CRUN_SANTIZED="${PROJECT_NAME// /-}"
+PROJECT_NAME_CRUN_SANTIZED=$(sanitize_for_cloud_run "$PROJECT_NAME")
 PROJECT_NAME_SANITIZED="${PROJECT_NAME_SANITIZED//-/_}"
 PROJECT_NAME_LOWERCASE=$(echo "$PROJECT_NAME_SANITIZED" | tr '[:upper:]' '[:lower:]')
 

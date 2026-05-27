@@ -764,6 +764,8 @@ pages:
       ar: الحالة
 
 agents:
+  survey_agent:
+    title: Survey Agent
   vector_agent:
     show_footer: false
     title:

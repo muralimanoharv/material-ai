@@ -89,7 +89,7 @@ export function ShowErrorMessage({
   ) as AppContextType
   const agnetId = useAgentId()
   const sessionId = useSessionId()
-  const { chat } = useContext(ChatItemContext) as ChatItemContextType
+  const chatContext = useContext(ChatItemContext) as ChatItemContextType
   const [expanded, setExpanded] = useState(false)
   const theme = useTheme()
 
@@ -109,7 +109,7 @@ export function ShowErrorMessage({
       code: code,
       stack_trace: error.stack,
       session_id: sessionId,
-      id: chat.id,
+      id: chatContext?.chat?.id,
     })
     setSnack('Bug report sent successfully!')
   }

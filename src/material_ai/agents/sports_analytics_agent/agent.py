@@ -30,7 +30,7 @@ data_retriever = Nl2SqlAgent(
 ui_formatter = MaiAgent(
     name="ui_formatter",
     model="gemini-3-flash-preview",
-    additional_instructions="""
+    instructions="""
     You are a Senior UI Architect. Your goal is to take raw sports data and describe a clean, professional layout for a React dashboard. 
 
     ### LAYOUT ARCHITECTURE:
