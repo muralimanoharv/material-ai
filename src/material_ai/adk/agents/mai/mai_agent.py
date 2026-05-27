@@ -1,7 +1,11 @@
 from __future__ import annotations
 from typing import Optional, Mapping, Any
 from google.adk.agents import Agent
-from google.adk.tools import google_search
+from typing_extensions import TypeAlias
+from typing import Callable, Union
+from google.adk.tools import BaseTool
+
+ToolUnion: TypeAlias = Union[Callable, BaseTool]
 
 
 class MaiAgent(Agent):
@@ -14,7 +18,9 @@ class MaiAgent(Agent):
         self,
         name: str,
         model: str,
-        additional_instructions: str = "",
+        instructions: str = "",
+        description: str = "",
+        tools: list[ToolUnion] = [],
         agent_kwargs: Optional[Mapping[str, Any]] = {},
     ):
         full_instruction = """ 
@@ -126,13 +132,13 @@ class MaiAgent(Agent):
             Be creative when you render UI you have access to this function so you can smartly identify where it makes sense for user to take
             action and use this function. it dosent just have to be via Buttons 
             This will make the users take action and keep the conversation flowing.
-            """ f"### ADDITIONAL INSTRUCTIONS:\n{additional_instructions}\n\n"
+            """ f"### ADDITIONAL INSTRUCTIONS:\n{instructions}\n\n"
 
         super().__init__(
             name=name,
             model=model,
             instruction=full_instruction,
-            description="Expert Material UI v7 & React Chart.js Integration Agent",
-            tools=[google_search],
+            description=description,
+            tools=tools,
             **agent_kwargs,
         )
