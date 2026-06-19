@@ -5,7 +5,9 @@ import { useContext, type ReactNode } from 'react'
 import { AppContext, type AppContextType } from '../../context'
 import CustomCode from './CustomCode'
 import BabelReactRenderer from '../BabelReactRenderer'
-import { isValidJson } from '../../utils'
+import { isValidJson, processA2UIResponse } from '../../utils'
+import { A2UIRender } from './item/A2UIRender'
+import type { A2uiMessage } from '@a2ui/web_core/v0_9'
 
 export function TypographyParser(variant: TypographyProps['variant']) {
   return ({ children }: { children?: ReactNode }) => (
@@ -19,6 +21,30 @@ interface MarkdownProps {
 
 export default function Markdown(props: MarkdownProps) {
   const content = props.children || ''
+
+  if (content.includes('<a2ui-json>')) {
+    const processedContent = processA2UIResponse(content)
+    return (
+      <div className="react-markdown" style={{ flexGrow: 1 }}>
+        {processedContent.map((item, idx) => {
+          if (typeof item === 'string') {
+            return (
+              <ReactMarkdown
+                key={idx}
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  code: CustomCodeRenderer,
+                }}
+              >
+                {item}
+              </ReactMarkdown>
+            )
+          }
+          return <A2UIRender messages={item as A2uiMessage[]} />
+        })}
+      </div>
+    )
+  }
 
   return (
     <div className="react-markdown" style={{ flexGrow: 1 }}>

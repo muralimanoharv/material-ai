@@ -240,6 +240,7 @@ def get_app(
     oauth_service: IOAuthService = None,
     ui_config_yaml: str = UI_CONFIG_YAML,
     feedback_handler: FeedbackHandler = None,
+    # micro_frontend: Microfrontend | None = Microfrontend(agents_page=str(agents_page)),
     micro_frontend: Microfrontend | None = None,
     adk_kwargs: Optional[Mapping[str, Any]] = {},
 ):

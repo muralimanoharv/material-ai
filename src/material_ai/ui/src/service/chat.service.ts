@@ -70,7 +70,7 @@ export class ChatService {
       }
 
       if (!session_id) return
-      const url = `/agents/${agent}/session/${session_id}?is_new_session=${is_new_session}`
+      const url = `/agents/chat/${agent}/session/${session_id}?is_new_session=${is_new_session}`
       await this.context.navigate(url)
       await this.cancel_api()
 
@@ -136,7 +136,7 @@ export class ChatService {
             scroll_to_view()
           }, 100)
           if (!is_new_session) return
-          this.context.navigate(`/agents/${agent}/session/${session_id}`)
+          this.context.navigate(`/agents/chat/${agent}/session/${session_id}`)
         },
       })
       this.reader = reader

@@ -12,6 +12,8 @@ title:
   zh: 双子座 (Gemini)
   ar: جيميني
 stopResponse: You stopped this response
+show_header: true
+show_drawer: true
 greeting:
   en: What should we do today?
   ja: 今日は何をしましょうか？
@@ -765,7 +767,25 @@ pages:
 
 agents:
   survey_agent:
-    title: Survey Agent
+    title:
+      en: Survey Agent
+      ja: アンケートエージェント
+      es: Agente de Encuestas
+      fr: Agent de Sondage
+      de: Umfrage-Agent
+      hi: सर्वेक्षण एजेंट
+      zh: 调查代理
+      ar: وكيل الاستطلاع
+  restaurant_agent:
+    title:
+      en: Restaurant Agent
+      ja: レストランエージェント
+      es: Agente de Restaurantes
+      fr: Agent de Restaurant
+      de: Restaurant-Agent
+      hi: रेस्तरां एजेंट
+      zh: 餐厅代理
+      ar: وكيل المطعم
   vector_agent:
     show_footer: false
     title:
@@ -780,6 +800,13 @@ agents:
   questionnaire_agent:
     title:
       en: Questionnaire Agent
+      ja: 質問票エージェント
+      es: Agente de Cuestionarios
+      fr: Agent de Questionnaire
+      de: Fragebogen-Agent
+      hi: प्रश्नावली एजेंट
+      zh: 问卷代理
+      ar: وكيل الاستبيان
     chat_section_width: 80%
   sports_analytics_agent:
     title:

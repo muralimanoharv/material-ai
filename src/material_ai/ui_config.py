@@ -145,6 +145,8 @@ class UIConfig(pydantic.BaseModel):
 
     title: str
     greeting: str
+    show_header: bool
+    show_drawer: bool
     errorMessage: str
     stopResponse: str
     promptCopyMessage: str
@@ -183,6 +185,8 @@ DEFAULT_FEEDBACK = FeedbackInfo(
 DEFAULT_CONFIG = UIConfig(
     title="Gemini",
     greeting="What should we do today?",
+    show_drawer=True,
+    show_header=True,
     errorMessage="Some error has occured, Please try again later",
     stopResponse="You stopped this response",
     promptCopyMessage="Prompt copied",
@@ -392,7 +396,7 @@ class UIConfigManager:
         for agent in agents:
             agent_config = formatted_config.get("agents", {}).get(agent, {})
             agents_map[agent] = AgentInfo(
-                title=agent_config.get("title", ""),
+                title=agent_config.get("title", agent),
                 greeting=agent_config.get(
                     "greeting",
                     formatted_config.get("greeting", DEFAULT_CONFIG.greeting),
@@ -405,6 +409,8 @@ class UIConfigManager:
         return UIConfig(
             title=formatted_config.get("title", DEFAULT_CONFIG.title),
             greeting=formatted_config.get("greeting", DEFAULT_CONFIG.greeting),
+            show_header=formatted_config.get("show_header", True),
+            show_drawer=formatted_config.get("show_drawer", True),
             errorMessage=formatted_config.get(
                 "errorMessage", DEFAULT_CONFIG.errorMessage
             ),

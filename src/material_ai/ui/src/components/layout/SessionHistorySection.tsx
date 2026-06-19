@@ -117,7 +117,7 @@ function SessionItem({ session, sessionIdx }: SessionItemProps) {
       width={isDrawerOpen() ? drawerWidth - 35 : 0}
       onClick={async () => {
         if (promptLoading) return
-        await navigate(`/agents/${session.app_name}/session/${session.id}`)
+        await navigate(`/agents/chat/${session.app_name}/session/${session.id}`)
         if (isMobile) setOpen(false)
       }}
       sx={{

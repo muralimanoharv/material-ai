@@ -280,22 +280,24 @@ export default function PromptInput() {
             {/* <ModelSelectMenu /> */}
             {promptLoading ? (
               <Tooltip title={config.get().buttons.stopResponse}>
-                <IconButton
-                  data-testid="page-prompt-input-cancel"
-                  onClick={() => chatService.cancel_api()}
-                  sx={{ backgroundColor: theme.palette.background.paper }}
-                  color="primary"
-                  aria-label="directions"
-                >
-                  <StopRoundedIcon
-                    sx={{
-                      color:
-                        theme.palette.text.selected ||
-                        theme.palette.primary.main,
-                    }}
-                    fontSize="medium"
-                  />
-                </IconButton>
+                <div>
+                  <IconButton
+                    data-testid="page-prompt-input-cancel"
+                    onClick={() => chatService.cancel_api()}
+                    sx={{ backgroundColor: theme.palette.background.paper }}
+                    color="primary"
+                    aria-label="directions"
+                  >
+                    <StopRoundedIcon
+                      sx={{
+                        color:
+                          theme.palette.text.selected ||
+                          theme.palette.primary.main,
+                      }}
+                      fontSize="medium"
+                    />
+                  </IconButton>
+                </div>
               </Tooltip>
             ) : (
               <Tooltip title={config.get().buttons.submit}>

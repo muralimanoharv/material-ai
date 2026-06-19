@@ -151,6 +151,8 @@ export interface Language {
 export interface AppConfig {
   greeting: string
   title: string
+  show_header: boolean
+  show_drawer: boolean
   errorMessage: string
   stopResponse: string
   promptCopyMessage: string

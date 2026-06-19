@@ -26,7 +26,9 @@ import AgentInfoPage from './components/pages/AgentInfoPage'
 import PlaygroudPage from './components/pages/PlaygroundPage'
 
 function App() {
-  const { config, refreshConfig } = useContext(ThemeContext) as ThemeContextType
+  const { config, refreshConfig, theme } = useContext(
+    ThemeContext,
+  ) as ThemeContextType
 
   // const [session, setSession] = useState<string | undefined>()
   const [user, setUser] = useState<User | undefined>(undefined)
@@ -101,7 +103,7 @@ function App() {
       return
     }
 
-    navigate(`/agents/${agent}`)
+    navigate(`/agents/chat/${agent}`)
     input_focus()
   }
 
@@ -128,6 +130,7 @@ function App() {
   }
 
   const appContext: AppContextType = {
+    theme,
     user,
     setUser,
     loading,
@@ -188,11 +191,11 @@ function App() {
     <>
       <AppContext.Provider value={appContext}>
         <Routes>
-          <Route path="/agents" element={<AgentsPage />} />
           <Route path="/agents/info/:agentId" element={<AgentInfoPage />} />
-          <Route path="/agents/:agentId" element={<AgentPage />}>
+          <Route path="/agents/chat/:agentId" element={<AgentPage />}>
             <Route path="session/:sessionId" element={<AgentPage />} />
           </Route>
+          <Route path="/agents/*" element={<AgentsPage />} />
           <Route path="/health" element={<HealthPage />} />
           <Route path="/playground" element={<PlaygroudPage />} />
           <Route path="/" element={<Navigate to="/agents" replace />} />

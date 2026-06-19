@@ -95,42 +95,44 @@ export default function Layout({ children, showFooter = false }: LayoutProps) {
     >
       <Box sx={{ display: 'flex', flexFlow: 'row' }}>
         <CssBaseline />
-        <FlexibleDrawer>
-          <Box
-            sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}
-          >
-            {!isMobile && <MenuButton />}
-            {context.user ? (
-              <AgentsButton />
-            ) : (
-              <Box p={1}>
-                <DrawerSigninButton />
-              </Box>
-            )}
-            {showChatButtons() && <NewChatButton />}
-
+        {context.config.get().show_drawer && (
+          <FlexibleDrawer>
             <Box
-              onMouseLeave={() => setHoverOpen(false)}
-              onMouseEnter={() => setHoverOpen(true)}
-              sx={{
-                flexGrow: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                overflowY: isDrawerOpen() ? 'auto' : 'hidden',
-                overflowX: 'hidden',
-              }}
+              sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}
             >
-              {showChatButtons() && <SessionHistorySection />}
+              {!isMobile && <MenuButton />}
+              {context.user ? (
+                <AgentsButton />
+              ) : (
+                <Box p={1}>
+                  <DrawerSigninButton />
+                </Box>
+              )}
+              {showChatButtons() && <NewChatButton />}
+
+              <Box
+                onMouseLeave={() => setHoverOpen(false)}
+                onMouseEnter={() => setHoverOpen(true)}
+                sx={{
+                  flexGrow: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  overflowY: isDrawerOpen() ? 'auto' : 'hidden',
+                  overflowX: 'hidden',
+                }}
+              >
+                {showChatButtons() && <SessionHistorySection />}
+              </Box>
+              <SettingsButton />
             </Box>
-            <SettingsButton />
-          </Box>
-        </FlexibleDrawer>
+          </FlexibleDrawer>
+        )}
         <SettingsSwipeableDrawer />
         <Box component="main" sx={{ flexGrow: 1 }}>
           <Box
             sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}
           >
-            <Header />
+            {context.config.get().show_header && <Header />}
             <Box
               sx={{ flexGrow: 1, overflowY: 'auto', padding: '0 16px' }}
               ref={scrollableBoxRef}
