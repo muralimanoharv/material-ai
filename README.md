@@ -51,7 +51,7 @@ This allows your developers to bypass these hurdles and focus exclusively on wha
 * **NEW: Microfrontend:** Break free from the 'chat bubble' constraint. While Material Agent Interface (MAI) offers powerful out-of-the-box components, its true strength lies in its Microfrontend Architecture. This allows you to inject custom, agent-specific UI flows dynamically. Whether your agent requires a data grid, a creative canvas, or a bespoke dashboard, you can orchestrate the exact interface the task demands, ensuring the UI is as specialized as the agent itself.
 * **NEW: Enhacing UI to show thinking:** Experience the "brain" of your agent in real-time. MAI now supports Native Thinking Tracks, allowing users to follow an agent’s logic as it unfolds. Instead of staring at a loading spinner, users see the agent’s internal monologue and decision-making process. This builds trust and provides immediate context on how the final answer is being constructed.
 * **NEW: Production Ready Deployment Using Terraform:** Skip the manual cloud configuration. With our new Terraform Deployment Suite, you can spin up a production-ready environment for your agents in minutes. We’ve baked security directly into the code using PoLP (Principle of Least Privilege) architecture, automatically configuring isolated environments and scoped permissions so you can focus on building agents, not managing infrastructure.
-* **NEW: Support for A2UI:** Material AI now natively support A2UI 
+* **NEW: Support for A2UI:** Material AI now natively support A2UI v8 & v9
 
 -----
 
@@ -237,7 +237,7 @@ submit:
 This approach ensures that the application remains "language-agnostic" at the code level, retrieving strings dynamically based on the user's active locale setting.
 
 ### 4. A2UI 
-Material AI now natively supports A2UI. Skip the complex UI setup—just start building agents and see A2UI in action. Check out restaurant_agent for more details.
+Material AI now natively supports A2UI v8 & v9. Skip the complex UI setup—just start building agents and see A2UI in action. Check out restaurant_agent for more details.
 
 ---
 
