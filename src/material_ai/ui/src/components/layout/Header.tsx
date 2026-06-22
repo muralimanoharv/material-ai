@@ -70,7 +70,7 @@ export default function Header() {
         >
           <Typography
             sx={{ userSelect: 'none' }}
-            fontSize={'22px'}
+            fontSize={isMobile ? '12px' : '22px'}
             lineHeight={'26px'}
             variant="h4"
             data-testid="page-header"
@@ -80,7 +80,7 @@ export default function Header() {
         </Box>
       </Box>
 
-      {!isMobile && agentId && (
+      {/* {!isMobile && agentId && (
         <Box>
           <Typography
             data-testid="page-agent-name"
@@ -92,7 +92,7 @@ export default function Header() {
             {config.getAgent(agentId)?.title || agentId}
           </Typography>
         </Box>
-      )}
+      )} */}
 
       {user ? (
         <Box

@@ -5,7 +5,11 @@ import { useContext, type ReactNode } from 'react'
 import { AppContext, type AppContextType } from '../../context'
 import CustomCode from './CustomCode'
 import BabelReactRenderer from '../BabelReactRenderer'
-import { isValidJson } from '../../utils'
+import { isValidJson, processA2UIResponse } from '../../utils'
+import { A2UIV9Render } from '../a2ui/v0_9/A2UIV9Render'
+import type { A2uiMessage } from '@a2ui/web_core/v0_9'
+import { type ServerToClientMessage } from '@a2ui/react/v0_8'
+import { A2UIV8Render } from '../a2ui/v0_8/A2UIV8Render'
 
 export function TypographyParser(variant: TypographyProps['variant']) {
   return ({ children }: { children?: ReactNode }) => (
@@ -19,6 +23,41 @@ interface MarkdownProps {
 
 export default function Markdown(props: MarkdownProps) {
   const content = props.children || ''
+  const context = useContext(AppContext) as AppContextType
+
+  if (content.includes('<a2ui-json>')) {
+    const processedContent = processA2UIResponse(content)
+    return (
+      <div className="react-markdown" style={{ flexGrow: 1 }}>
+        {processedContent.map((item, idx) => {
+          if (typeof item === 'string') {
+            return (
+              <ReactMarkdown
+                key={idx}
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  code: CustomCodeRenderer,
+                }}
+              >
+                {item}
+              </ReactMarkdown>
+            )
+          }
+          if (!['0.8', '0.9'].includes(context.config.get().a2ui_version)) {
+            ;<>
+              A2UI version {context.config.get().a2ui_version} not supported!
+            </>
+          }
+
+          if ('0.8' === context.config.get().a2ui_version) {
+            return <A2UIV8Render messages={item as ServerToClientMessage[]} />
+          }
+
+          return <A2UIV9Render messages={item as A2uiMessage[]} />
+        })}
+      </div>
+    )
+  }
 
   return (
     <div className="react-markdown" style={{ flexGrow: 1 }}>

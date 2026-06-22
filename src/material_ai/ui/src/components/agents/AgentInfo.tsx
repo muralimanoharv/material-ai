@@ -205,7 +205,7 @@ const AgentInfo: React.FC<AgentInfoPageProps> = ({ agent }) => {
                     fullWidth
                     data-testid={`agents-page-info-${agent.id}-chat-button`}
                     onClick={() => {
-                      navigate(`/agents/${agent.id}`)
+                      navigate(`/agents/chat/${agent.id}`)
                     }}
                     disableElevation
                     startIcon={<ChatIcon />}

@@ -17,6 +17,7 @@ import type { HistoryService } from './service/history.service'
 
 export interface AppContextType {
   // User State
+  theme: ThemeMode
   user: User | undefined
   setUser: React.Dispatch<React.SetStateAction<User | undefined>>
 

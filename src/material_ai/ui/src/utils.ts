@@ -192,3 +192,60 @@ export const setI18n = (lang: string) => {
   })
   window.dispatchEvent(event)
 }
+
+export function processA2UIResponse(rawLlmText: string): unknown[] {
+  const tagRegex = /<a2ui-json>([\s\S]*?)<\/a2ui-json>/g
+
+  const result: unknown[] = []
+  let currentJsonGroup: unknown[] = []
+  let lastIndex = 0
+  let match
+
+  while ((match = tagRegex.exec(rawLlmText)) !== null) {
+    // 1. Extract and trim the plain text that appears *before* the current JSON tag
+    const textPart = rawLlmText.slice(lastIndex, match.index).trim()
+
+    // 2. If there is valid text, it means we break the consecutive JSON chain
+    if (textPart) {
+      // Flush the current JSON group to the result array if it has items
+      if (currentJsonGroup.length > 0) {
+        result.push(currentJsonGroup)
+        currentJsonGroup = [] // Reset for the next group
+      }
+      // Push the text part
+      result.push(textPart)
+    }
+
+    // 3. Parse the JSON and add it to our running group
+    try {
+      const jsonStr = match[1].trim()
+      const parsedJson = JSON.parse(jsonStr)
+
+      // If the LLM returned an array, spread it. If it's an object, push it.
+      if (Array.isArray(parsedJson)) {
+        currentJsonGroup.push(...parsedJson)
+      } else {
+        currentJsonGroup.push(parsedJson)
+      }
+    } catch (error) {
+      console.error('Failed to parse an <a2ui-json> block:', error)
+      // Optional: You could push the raw string if it fails, but skipping is safer
+    }
+
+    // Update lastIndex to the end of the current match
+    lastIndex = tagRegex.lastIndex
+  }
+
+  // 4. Clean up any remaining text or JSON groups after the loop finishes
+  const finalText = rawLlmText.slice(lastIndex).trim()
+
+  if (currentJsonGroup.length > 0) {
+    result.push(currentJsonGroup)
+  }
+
+  if (finalText) {
+    result.push(finalText)
+  }
+
+  return result
+}

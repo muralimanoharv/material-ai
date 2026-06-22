@@ -1,6 +1,6 @@
 /* eslint-disable */
 /* GENERATED_BY_MAI */
-import React, { useContext, useEffect, useState, type MouseEvent } from 'react'
+import React, { useContext, useState, type MouseEvent } from 'react'
 import {
   Box,
   Button,
@@ -19,10 +19,12 @@ import {
 import { getI18n, setI18n } from '../../utils'
 import { AppContext, type AppContextType } from '../../context'
 import type { Language } from '../../schema'
+import { useMobileHook } from '../../hooks'
 
 const LanguageSelector: React.FC = () => {
   const { refreshConfig, config } = useContext(AppContext) as AppContextType
   const theme: Theme = useTheme()
+  const isMobile = useMobileHook()
 
   // State management with TypeScript types
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -30,11 +32,6 @@ const LanguageSelector: React.FC = () => {
   const language =
     languages.find((lang) => lang.code === getI18n()) || languages[0]
   const [selectedLang, setSelectedLang] = useState<Language>(language)
-
-  useEffect(() => {
-    setI18n(selectedLang.code)
-    refreshConfig()
-  }, [selectedLang])
 
   const open = Boolean(anchorEl)
 
@@ -54,6 +51,8 @@ const LanguageSelector: React.FC = () => {
     setAnchorEl(null)
     if (lang) {
       setSelectedLang(lang)
+      setI18n(lang.code)
+      refreshConfig()
     }
   }
 
@@ -94,7 +93,12 @@ const LanguageSelector: React.FC = () => {
             >
               <Typography
                 variant="body1"
-                sx={{ flexGrow: 1, textAlign: 'left', ml: 1 }}
+                sx={{
+                  flexGrow: 1,
+                  textAlign: 'left',
+                  ml: 1,
+                  fontSize: isMobile ? '12px' : undefined,
+                }}
               >
                 {selectedLang.label}
               </Typography>

@@ -1,5 +1,7 @@
 /* eslint-disable */
 import React, { lazy, useMemo, Suspense, useContext } from 'react'
+import * as ReactDOM from 'react-dom'
+import * as ReactRouter from 'react-router'
 import * as MaterialUI from '@mui/material'
 import * as MaterialUIIcons from '@mui/icons-material'
 import * as ReactHookForm from 'react-hook-form'
@@ -9,6 +11,8 @@ import RemoteErrorBoundary from './RemoteErrorBoundary'
 declare global {
   interface Window {
     React: typeof React
+    ReactDOM: typeof ReactDOM
+    ReactRouter: typeof ReactRouter
     MaterialUI: typeof MaterialUI
     MaterialUIIcons: typeof MaterialUIIcons
     ReactHookForm: typeof ReactHookForm
@@ -16,6 +20,8 @@ declare global {
 }
 
 window.React = React
+window.ReactDOM = ReactDOM
+window.ReactRouter = ReactRouter
 window.MaterialUI = MaterialUI
 window.MaterialUIIcons = MaterialUIIcons
 window.ReactHookForm = ReactHookForm

@@ -199,7 +199,7 @@ function AgentItem({ agent, handleClose }: AgentItemProps) {
     <MenuItem
       key={agent.id}
       onClick={async () => {
-        navigate(`/agents/${agent.id}`)
+        navigate(`/agents/chat/${agent.id}`)
         handleClose()
       }}
       data-testid={`prompt-input-agent-${agent.id}`}

@@ -6,6 +6,7 @@ readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.13"
 dependencies = [
+    "a2ui-agent-sdk>=0.2.4",
     "deprecated==1.2.18",
     "google-adk==1.28.1",
     "psutil>=7.1.0",
