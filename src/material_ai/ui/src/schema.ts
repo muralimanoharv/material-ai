@@ -153,6 +153,7 @@ export interface AppConfig {
   title: string
   show_header: boolean
   show_drawer: boolean
+  a2ui_version: '0.8' | '0.9'
   errorMessage: string
   stopResponse: string
   promptCopyMessage: string

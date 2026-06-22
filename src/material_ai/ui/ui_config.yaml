@@ -14,6 +14,7 @@ title:
 stopResponse: You stopped this response
 show_header: true
 show_drawer: true
+a2ui_version: "0.8"
 greeting:
   en: What should we do today?
   ja: 今日は何をしましょうか？

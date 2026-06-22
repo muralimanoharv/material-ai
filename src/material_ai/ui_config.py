@@ -147,6 +147,7 @@ class UIConfig(pydantic.BaseModel):
     greeting: str
     show_header: bool
     show_drawer: bool
+    a2ui_version: str
     errorMessage: str
     stopResponse: str
     promptCopyMessage: str
@@ -187,6 +188,7 @@ DEFAULT_CONFIG = UIConfig(
     greeting="What should we do today?",
     show_drawer=True,
     show_header=True,
+    a2ui_version="0.8",
     errorMessage="Some error has occured, Please try again later",
     stopResponse="You stopped this response",
     promptCopyMessage="Prompt copied",
@@ -411,6 +413,9 @@ class UIConfigManager:
             greeting=formatted_config.get("greeting", DEFAULT_CONFIG.greeting),
             show_header=formatted_config.get("show_header", True),
             show_drawer=formatted_config.get("show_drawer", True),
+            a2ui_version=formatted_config.get(
+                "a2ui_version", DEFAULT_CONFIG.a2ui_version
+            ),
             errorMessage=formatted_config.get(
                 "errorMessage", DEFAULT_CONFIG.errorMessage
             ),

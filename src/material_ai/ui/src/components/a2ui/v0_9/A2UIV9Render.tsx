@@ -7,13 +7,13 @@ import {
 } from '@a2ui/web_core/v0_9'
 import { renderMarkdown } from '@a2ui/markdown-it'
 import { A2uiSurface, MarkdownContext } from '@a2ui/react/v0_9'
-import { muiCatalog } from '../../a2ui'
+import { muiCatalog } from './catalog'
 import { useAgentId, useSessionId } from '../../../hooks'
 import { AppContext, type AppContextType } from '../../../context'
 
 const BASIC_FUNCTIONS = new Set(['MODAL_TRIGGERED'])
 
-export function A2UIRender({ messages }: { messages: A2uiMessage[] }) {
+export function A2UIV9Render({ messages }: { messages: A2uiMessage[] }) {
   // 1. Create the processor and feed it messages.
   const agentId = useAgentId()
   const sessionId = useSessionId()

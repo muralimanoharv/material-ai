@@ -104,3 +104,9 @@ pre {
 code {
   white-space: pre-wrap !important;
 }
+
+.a2ui-surface *,
+.a2ui-surface *::before,
+.a2ui-surface *::after {
+  border-spacing: none;
+}

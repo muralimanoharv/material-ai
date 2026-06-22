@@ -1,9 +1,3 @@
-/* eslint-disable */
-import React from 'react'
-import { IconApi } from '@a2ui/web_core/v0_9/basic_catalog'
-import { createComponentImplementation } from '@a2ui/react/v0_9'
-
-import { SvgIcon } from '@mui/material'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import AddIcon from '@mui/icons-material/Add'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
@@ -64,7 +58,7 @@ import VolumeOffIcon from '@mui/icons-material/VolumeOff'
 import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 import WarningIcon from '@mui/icons-material/Warning'
 
-// 2. Map your API's string names to the corresponding MUI component
+// Map your API's string names to the corresponding MUI component
 export const ICON_COMPONENTS: Record<string, React.ElementType> = {
   accountCircle: AccountCircleIcon,
   add: AddIcon,
@@ -83,7 +77,7 @@ export const ICON_COMPONENTS: Record<string, React.ElementType> = {
   error: ErrorIcon,
   fastForward: FastForwardIcon,
   favorite: FavoriteIcon,
-  favoriteOff: FavoriteBorderIcon, // Custom mapping for "Off" state
+  favoriteOff: FavoriteBorderIcon,
   folder: FolderIcon,
   help: HelpIcon,
   home: HomeIcon,
@@ -102,10 +96,10 @@ export const ICON_COMPONENTS: Record<string, React.ElementType> = {
   person: PersonIcon,
   phone: PhoneIcon,
   photo: PhotoIcon,
-  play: PlayArrowIcon, // Custom mapping from "play"
+  play: PlayArrowIcon,
   print: PrintIcon,
   refresh: RefreshIcon,
-  rewind: FastRewindIcon, // Custom mapping from "rewind"
+  rewind: FastRewindIcon,
   search: SearchIcon,
   send: SendIcon,
   settings: SettingsIcon,
@@ -115,7 +109,7 @@ export const ICON_COMPONENTS: Record<string, React.ElementType> = {
   skipPrevious: SkipPreviousIcon,
   star: StarIcon,
   starHalf: StarHalfIcon,
-  starOff: StarBorderIcon, // Custom mapping for "Off" state
+  starOff: StarBorderIcon,
   stop: StopIcon,
   upload: UploadIcon,
   visibility: VisibilityIcon,
@@ -126,33 +120,3 @@ export const ICON_COMPONENTS: Record<string, React.ElementType> = {
   volumeUp: VolumeUpIcon,
   warning: WarningIcon,
 }
-export const Icon = createComponentImplementation(IconApi, ({ props }) => {
-  // Handle custom SVG paths just like before
-  const isPath =
-    typeof props.name === 'object' &&
-    props.name !== null &&
-    'svgPath' in props.name
-
-  if (isPath) {
-    const path = (props.name as unknown as { svgPath: string }).svgPath
-    return (
-      <SvgIcon sx={{ color: 'inherit', fontSize: 'inherit' }}>
-        <path d={path} />
-      </SvgIcon>
-    )
-  }
-
-  // 3. Render the mapped component dynamically
-  if (typeof props.name === 'string') {
-    const MappedIcon = ICON_COMPONENTS[props.name]
-
-    if (MappedIcon) {
-      return <MappedIcon sx={{ color: 'inherit', fontSize: 'inherit' }} />
-    }
-  }
-
-  // Fallback if the icon name isn't found in your map
-  return <>{props?.name}</>
-})
-
-export default Icon

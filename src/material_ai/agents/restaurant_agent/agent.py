@@ -6,7 +6,7 @@ from a2ui.schema.manager import A2uiSchemaManager
 from a2ui.basic_catalog.provider import BasicCatalog
 from a2ui.schema.common_modifiers import remove_strict_validation
 
-SELECTED_VERSION = VERSION_0_9  # Use VERSION_0_9 for newer protocol
+SELECTED_VERSION = VERSION_0_8  # Use VERSION_0_9 for newer protocol
 
 
 def get_restaurants(tool_context: ToolContext) -> str:
@@ -76,9 +76,9 @@ A2UI_AND_AGENT_INSTRUCTION = schema_manager.generate_system_prompt(
     validate_examples=True,
 )
 
-A2UI_AND_AGENT_INSTRUCTION = A2UI_AND_AGENT_INSTRUCTION.replace(
-    "{expression}", "{-expression-}"
-)
+# A2UI_AND_AGENT_INSTRUCTION = A2UI_AND_AGENT_INSTRUCTION.replace(
+#     "{expression}", "{-expression-}"
+# )
 
 root_agent = Agent(
     model="gemini-3.5-flash",
