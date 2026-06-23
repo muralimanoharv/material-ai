@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0](https://github.com/muralimanoharv/material-ai/compare/v1.4.6...v1.5.0) (2026-06-22)
+
+
+### Features
+
+* Adding features for 1.4.7 hide or show header and drawer & also a2ui integration & microfront end landing page with support for routing to show full app ([91d4013](https://github.com/muralimanoharv/material-ai/commit/91d401382a41b5ef5a4bd36c282fe2d4efc5ce67))
+
+
+### Bug Fixes
+
+* Mai Version 1.4.7 ([9b55154](https://github.com/muralimanoharv/material-ai/commit/9b551542cff1921ed1f1999a290c7603bac32672))
+
 ## [1.4.6](https://github.com/muralimanoharv/material-ai/compare/v1.4.5...v1.4.6) (2026-05-27)
 
 
