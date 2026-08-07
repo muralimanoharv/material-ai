@@ -15,16 +15,12 @@ const envPaths = [
 for (const envPath of envPaths) {
   if (fs.existsSync(envPath)) {
     try {
-      // @ts-expect-error this error is due to node type not avaiable in playwright
-      if (
-        'loadEnvFile' in process &&
-        typeof (process as any).loadEnvFile === 'function'
-      ) {
-        // @ts-expect-error this error is due to node type not avaiable in playwright
-        ;(process as any).loadEnvFile(envPath)
+      const proc = process as { loadEnvFile?: (path: string) => void }
+      if (typeof proc.loadEnvFile === 'function') {
+        proc.loadEnvFile(envPath)
       }
       break
-    } catch (e) {
+    } catch {
       // ignore
     }
   }
