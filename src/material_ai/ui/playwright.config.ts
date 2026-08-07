@@ -6,9 +6,12 @@ import { defineConfig, devices } from '@playwright/test';
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+import path from 'path';
+try {
+  process.loadEnvFile(path.resolve(__dirname, '../../../.env'));
+} catch (e) {
+  // .env is optional (e.g. in CI)
+}
 const TIMEOUT = 30 * 10000
 /**
  * See https://playwright.dev/docs/test-configuration.
