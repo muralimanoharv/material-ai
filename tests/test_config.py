@@ -87,12 +87,14 @@ class TestConfigLoader(unittest.TestCase):
 
     # --- Tests for get_config ---
 
-    def test_get_config_path_not_set_raises_error(self):
-        """ConfigError should be raised if CONFIG_PATH environment variable is not set."""
+    @patch("pathlib.Path.exists")
+    def test_get_config_path_not_set_raises_error(self, mock_exists):
+        """ConfigError should be raised if CONFIG_PATH environment variable is not set and default config.ini is missing."""
         if "CONFIG_PATH" in os.environ:
             del os.environ["CONFIG_PATH"]
+        mock_exists.return_value = False
         with self.assertRaisesRegex(
-            ConfigError, "Environment variable CONFIG_PATH not set"
+            ConfigError, "Please ensure config.ini exists or set CONFIG_PATH"
         ):
             config_loader.get_config()
 

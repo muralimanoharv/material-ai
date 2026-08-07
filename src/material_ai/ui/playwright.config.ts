@@ -88,7 +88,7 @@ export default defineConfig({
   webServer: {
     // 1. The command to start your FastAPI server
     // We use 'cd' to step out of 'ui' and into 'backend'
-    command: 'cd ../../../ && make run',
+    command: 'cd ../../../ && make build-ui && PYTHONPATH=src/material_ai/ui/tests uv run uvicorn --host 0.0.0.0 --port 8080 --factory mock_app:get_test_app',
 
     // 2. Playwright waits for this URL to return a 200 OK before starting tests
     url: 'http://127.0.0.1:8080/health', 

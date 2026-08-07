@@ -1,8 +1,33 @@
 import { expect, type Page } from '@playwright/test'
 import { User, type Agent, type AppConfig, type Health } from '../src/schema'
+// @ts-expect-error this error is due to node type not avaiable in playwright
+import fs from 'fs'
+// @ts-expect-error this error is due to node type not avaiable in playwright
+import path from 'path'
+
+const envPaths = [
+  // @ts-expect-error this error is due to node type not avaiable in playwright
+  path.resolve(process.cwd(), '.env'),
+  // @ts-expect-error this error is due to node type not avaiable in playwright
+  path.resolve(process.cwd(), '../../../.env'),
+]
+
+for (const envPath of envPaths) {
+  if (fs.existsSync(envPath)) {
+    try {
+      const proc = process as { loadEnvFile?: (path: string) => void }
+      if (typeof proc.loadEnvFile === 'function') {
+        proc.loadEnvFile(envPath)
+      }
+      break
+    } catch {
+      // ignore
+    }
+  }
+}
 
 // @ts-expect-error this error is due to node type not avaiable in playwright
-export const REFRESH_TOKEN = process.env.REFRESH_TOKEN || ''
+export const REFRESH_TOKEN = process.env.REFRESH_TOKEN || 'mock_refresh_token'
 
 export class AutomationService {
   constructor(
