@@ -1,8 +1,12 @@
+
 # File Info
+
 
 file_type: demo
 
+
 # Demo Info
+
 
 # The type of demo.
 # Supported options:
@@ -15,11 +19,15 @@ file_type: demo
 #    video
 type: application
 
+
 # The name of the demo.
 title: Material AI
 
+
 # A short description of the demo.
 thumbnail_summary: Material AI is a comprehensive framework built to solve these exact challenges. It enhances the ADK by providing the necessary layers for security, user experience, and custom functionality, turning your agent prototypes into secure, scalable, and enterprise-ready AI applications.
+
+
 
 # [Optional] A summary of the demo's intention. Markdown supported.
 purpose: |
@@ -33,6 +41,9 @@ purpose: |
   * **Cluttered Interfaces:** Complex data (like charts or dashboards) doesn't fit in chat bubbles. MAI embeds custom, specialized visual tools directly into the flow.
   * **The "Black Box" Trust Issue:** Instead of a loading spinner, MAI displays the AI's step-by-step thinking in real-time to build user trust.
   * **Slow Time-to-Market:** Creating custom frontends for every AI task is expensive. MAI auto-generates these interfaces, saving months of frontend engineering.
+  
+
+
 
 # [Optional] A summary of the demo's business value. Markdown supported.
 business_value: |
@@ -45,6 +56,9 @@ business_value: |
   * **Instant Compliance:** Features built-in SSO (Google/Azure) and role-based access control (RBAC) to pass corporate security audits easily.
   * **Higher Trust & Adoption:** Shows real-time agent reasoning tracks, eliminating the AI "black box" concern and boosting client confidence.
   * **White-Label Ready:** Quick configuration options enable instant client-specific branding and multi-language (i18n) localization.
+  
+
+
 
 # [Optional] A summary of the demo's technical value. Markdown supported.
 technical_value: |
@@ -58,12 +72,19 @@ technical_value: |
   * **Namespaced Configurations:** Resolves environment variable naming collisions across multiple agents using a centralized `config.ini` engine.
   * **Least-Privilege Deployments:** Terraform automation builds secure, isolated GCP Cloud Run environments with zero side-effects on shared resources.
   * **Agentic Library:** Pre-built specialized base agents (like `Nl2SqlAgent`) to avoid boilerplates.
+  
+
+
+
+
 
 # Demo Attribution
+
 
 # The Googler who owns this demo. This user has edit access to the demo,
 # is the point of contact for the demo, and is responsible for maintaining the demo.
 owner: muralimanoharv
+
 
 # [Optional] The Moma Team ID that owns this demo.
 # Displayed as an owner of the demo for attribution.
@@ -71,9 +92,11 @@ owner: muralimanoharv
 # Example: https://moma.corp.google.com/team/1234 --> ID = 1234
 # team_owner:
 
+
 # [Optional] Googlers and Moma Teams that contributed to this demo.
 # Contributors are listed on the demo page for attribution.
 # contributors:
+
 
 # [Optional] Specify a channel ID to add this demo to a channel.
 # The owner of the demo must be a member of the channel.
@@ -81,21 +104,30 @@ owner: muralimanoharv
 # Example: https://cloud-demo-hub.corp.google.com/channels/123 --> ID = 123
 # channel_id:
 
+
+
+
 # Demo Assets
+
 
 # [Optional] List URLs to images that will be displayed on the demo.
 # The first image is used as the demo's thumbnail.
 # You may only choose up to 10 images.
 # Images must have a format of PNG or JPG.
 images:
+  - https://storage.cloud.google.com/demo-hub-images-prod/1786086211.png
   - https://storage.cloud.google.com/demo-hub-images-prod/1786084455.png
+
 
 # [Optional] Provide the link to your demo automation folder on go/demos GOB repo.
 # See go/demo-automation-guide for more information.
 # click_to_deploy_path:
 
+
+
 #  A link to instructions on how to use the demo.
 demo_guide: https://github.com/muralimanoharv/material-ai
+
 
 # [Optional] Assets belonging to the demo, such as a website, video, code repository, etc.
 artifacts:
@@ -103,11 +135,13 @@ artifacts:
   type: live_application
   link: https://material-ai-crun-1021081614978.us-central1.run.app
 
+
 # [Optional] Designate an asset as the demo's key asset.
 #
 # This asset will be featured as a button on the top of the demo's page.
 # Artifact Title must match to one of the artifacts listed in `artifacts`.
-# featured_artifact_title:
+featured_artifact_title: material-ai
+
 
 # [Optional] Feature a supporting video. This video will be
 # embedded in its own section on the demo's page.
@@ -116,8 +150,12 @@ artifacts:
 # Artifact URL must be a YouTube, Drive, Broadcast, or Screencast link.
 # featured_video_artifact_title:
 
+
+
+
 # Demo Metadata
 # For industries, and products, IDs can be found at <URL>.
+
 
 # Relevant industries.
 # Supported options:
@@ -135,7 +173,8 @@ artifacts:
 #    consumer_packaged_goods
 #    supply_chain
 industries:
-  - all
+  - 1
+
 
 # Products featured by the demo.
 products:
@@ -144,8 +183,10 @@ products:
   - gemini_api
   - generative_ai_on_vertex_ai
 
+
 # Additional tags to support demo discoverability.
 # tags:
+
 
 # Add restriction labels if one or more of these options are applicable.
 # Supported options:
