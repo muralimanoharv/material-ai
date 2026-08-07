@@ -27,7 +27,7 @@ for (const envPath of envPaths) {
 }
 
 // @ts-expect-error this error is due to node type not avaiable in playwright
-export const REFRESH_TOKEN = process.env.REFRESH_TOKEN || ''
+export const REFRESH_TOKEN = process.env.REFRESH_TOKEN || 'mock_refresh_token'
 
 export class AutomationService {
   constructor(
