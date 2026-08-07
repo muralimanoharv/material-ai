@@ -7,7 +7,11 @@ import { defineConfig, devices } from '@playwright/test';
  * https://github.com/motdotla/dotenv
  */
 import path from 'path';
-process.loadEnvFile(path.resolve(__dirname, '../../../.env'));
+try {
+  process.loadEnvFile(path.resolve(__dirname, '../../../.env'));
+} catch (e) {
+  // .env is optional (e.g. in CI)
+}
 const TIMEOUT = 30 * 10000
 /**
  * See https://playwright.dev/docs/test-configuration.
