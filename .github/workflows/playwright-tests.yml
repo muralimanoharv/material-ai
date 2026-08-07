@@ -93,8 +93,6 @@ jobs:
           SSO_REDIRECT_URI: http://localhost:8080/auth
           SSO_SCOPE: openid email profile
           SSO_SESSION_SECRET_KEY: mock_session_secret_key_of_at_least_32_characters_long
-          CONFIG_PATH: ${{ secrets.CONFIG_PATH }}
-          GOOGLE_GENAI_USE_VERTEXAI: ${{ secrets.GOOGLE_GENAI_USE_VERTEXAI }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
 
       # --- 5. REPORTING ---

@@ -67,15 +67,10 @@ def get_config() -> Config:
     global _config_instance
     with _lock:
         if _config_instance is None:
-            config_path_from_env = os.environ.get("CONFIG_PATH")
-            if not config_path_from_env:
-                msg = "ERROR: Environment variable CONFIG_PATH not set"
-                _logger.error(msg)
-                raise ConfigError(msg)
-
+            config_path_from_env = os.environ.get("CONFIG_PATH", "config.ini")
             config_path = pathlib.Path(config_path_from_env)
             if not config_path.exists() or not config_path.is_file():
-                msg = f"ERROR: Config file not found at {config_path}"
+                msg = f"ERROR: Config file not found at {config_path.resolve()}. Please ensure config.ini exists or set CONFIG_PATH environment variable."
                 _logger.error(msg)
                 raise ConfigError(msg)
 
