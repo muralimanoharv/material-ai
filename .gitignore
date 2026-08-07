@@ -19,3 +19,7 @@ build/
 **/.terraform.tfstate.lock.info
 uploaded_files.txt
 tests.txt
+
+# macOS
+.DS_Store
+**/.DS_Store
