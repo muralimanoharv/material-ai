@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.5.1](https://github.com/muralimanoharv/material-ai/compare/v1.5.0...v1.5.1) (2026-08-07)
+
+
+### Bug Fixes
+
+* add demo metadata and update UI configuration ([8ff63df](https://github.com/muralimanoharv/material-ai/commit/8ff63df5a3330ba010721e024a0f48cf3e5f2bde))
+
+
+### Documentation
+
+* add material-ai_metadata.yaml for go/demos ([6595f00](https://github.com/muralimanoharv/material-ai/commit/6595f00665db621043037342b9ff07679293f436))
+* update material-ai_metadata.yaml demo assets and industries ([3ceb871](https://github.com/muralimanoharv/material-ai/commit/3ceb87157b678c5063c303e88b4867a2bf6ed4c0))
+
 ## [1.5.0](https://github.com/muralimanoharv/material-ai/compare/v1.4.6...v1.5.0) (2026-06-22)
 
 
