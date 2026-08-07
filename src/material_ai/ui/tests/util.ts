@@ -17,9 +17,10 @@ export class AutomationService {
     await expect(
       page.getByTestId(`agents-page-card-${agent.id}-heading`),
     ).toBeVisible()
+    const expectedTitle = this.config.agents[agent.id]?.title || agent.name
     await expect(
       page.getByTestId(`agents-page-card-${agent.id}-heading`),
-    ).toHaveText(agent.name)
+    ).toHaveText(expectedTitle)
     await expect(
       page.getByTestId(`agents-page-card-${agent.id}-description`),
     ).toBeVisible()
